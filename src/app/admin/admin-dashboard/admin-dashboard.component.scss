@@ -49,9 +49,10 @@
 
 /* --- 4. MAIN CONTENT AREA --- */
 .main-content {
-  flex-grow: 1; /* Takes up the remaining width of the screen */
-  padding: 40px;
-  overflow-y: auto; /* Adds a scrollbar only to the content area if it gets too long */
+  margin-left: 250px; /* Make sure this matches your exact sidebar width */
+  padding: 40px; /* Adjust your padding to fit your design */
+  width: calc(100% - 250px); /* Ensures the content doesn't bleed off the right edge */
+  box-sizing: border-box; /* Adds a scrollbar only to the content area if it gets too long */
 }
 
 .dashboard-header {

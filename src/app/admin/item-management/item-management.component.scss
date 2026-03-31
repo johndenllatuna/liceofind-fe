@@ -60,6 +60,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Automatically fits cards side-by-side */
   gap: 20px; 
+  width: 100%;
   padding-left: 0; /* Ensures nothing is pushing it right */
   margin-left: 0;
 }
@@ -68,6 +69,7 @@
 
 /* --- ITEM CARD --- */
 .item-card {
+  width: 100%;
   margin-left: 10px;
   background-color: white;
   border: 1px solid #eaeaea;

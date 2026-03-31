@@ -1,12 +1,15 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ItemService, Item } from '../../services/item.service'; // Adjust path if needed
+import { ItemService, Item } from '../../services/item.service'; 
+import { Sidebar } from '../../shared/sidebar/sidebar.component'; 
 
 @Component({
   selector: 'app-item-management',
+  standalone: true,
+  imports: [Sidebar],
   templateUrl: './item-management.component.html',
   styleUrls: ['./item-management.component.scss']
 })
-export class ItemManagementComponent implements OnInit {
+export class ItemManagement implements OnInit {
   // Inject the service
   private itemService = inject(ItemService);
   

@@ -1,38 +1,59 @@
-<div class="dashboard-layout">
-  <app-sidebar></app-sidebar>
+<app-sidebar></app-sidebar>
 
-  <main class="main-content">
-    <header class="page-header">
-      <h1>Post an Item</h1>
-    </header>
+<div class="main-content">
+  <div class="header">
+    <h2>Post Item</h2>
+  </div>
 
-    <div class="form-container">
+  <div class="form-container">
+    <form>
       <div class="form-group">
-        <label for="itemName">Item Name</label>
-        <input type="text" id="itemName" placeholder="e.g., Black Airpods">
+        <label for="itemTitle">Item Title</label>
+        <input type="text" id="itemTitle" placeholder="">
       </div>
 
       <div class="form-group">
-        <label for="itemDescription">Description</label>
-        <textarea id="itemDescription" rows="4" placeholder="Describe the item's condition or unique marks..."></textarea>
+        <label for="category">Category</label>
+        <input type="text" id="category" placeholder="">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="itemLocation">Found Location</label>
-          <input type="text" id="itemLocation" placeholder="e.g., NAC Building, Room 302">
-        </div>
-        
-        <div class="form-group">
-          <label for="itemDate">Date Found</label>
-          <input type="date" id="itemDate">
+      <div class="form-group">
+        <label for="date">Date</label>
+        <input type="date" id="date" value="2026-01-16">
+      </div>
+
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" placeholder="">
+      </div>
+
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status">
+          <option value="lost">Lost</option>
+          <option value="found">Found</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" rows="4"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Item Image</label>
+        <div class="file-upload-box">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 16V4M12 4L8 8M12 4L16 8M4 16V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V16" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p><span class="highlight">Upload a file</span> or drag and drop</p>
+          <p class="sub-text">PNG, JPG, GIF up to 10MB</p>
         </div>
       </div>
 
       <div class="form-actions">
-        <button class="cancel-btn">Cancel</button>
-        <button class="submit-btn">Post Item</button>
+        <button type="button" class="btn-primary">Post Item</button>
       </div>
-    </div>
-  </main>
+    </form>
+  </div>
 </div>
