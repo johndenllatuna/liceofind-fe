@@ -1,88 +1,135 @@
-.page-header {
-  margin-bottom: 30px;
-  h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: #111; }
+/* Wraps the page alongside the sidebar */
+:host {
+  display: block; /* Change this from flex to block */
+  min-height: 100vh;
+  background-color: #FFFFFF;
+}
+
+.main-content {
+  margin-left: 250px; /* Make sure this matches your sidebar width! */
+  padding: 40px 60px;
+  box-sizing: border-box;
+}
+
+.header {
+  margin-bottom: 40px;
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #000000;
+    margin: 0;
+  }
 }
 
 .form-container {
-  background-color: white;
-  border: 1px solid #eaeaea;
-  border-radius: 12px;
-  padding: 30px;
-  max-width: 800px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  max-width: 800px; /* Constrains the form width exactly like Figma */
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 
   label {
-    font-size: 0.9rem;
+    display: block;
+    font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: #111111;
     margin-bottom: 8px;
   }
 
-  input, textarea {
-    padding: 12px 15px;
-    border: 1px solid #dcdcdc;
+  /* Style all inputs identically */
+  input[type="text"],
+  input[type="date"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 14px;
+    border: 1px solid #E5E7EB;
     border-radius: 8px;
-    font-size: 0.95rem;
-    font-family: inherit;
-    outline: none;
-    transition: border-color 0.2s;
+    background-color: #FFFFFF;
+    color: #333333;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
     &:focus {
-      border-color: #8a0000; /* Your brand maroon */
+      outline: none;
+      border-color: #8C0000; /* Maroon focus state */
+      box-shadow: 0 0 0 3px rgba(140, 0, 0, 0.1);
     }
-    
-    &::placeholder {
-      color: #999;
-    }
+  }
+
+  /* Custom Dropdown Styling */
+  select {
+    appearance: none; 
+    background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polyline points="6 9 12 15 18 9"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
   }
 }
 
-.form-row {
-  display: flex;
-  gap: 20px;
-  
-  .form-group {
-    flex: 1; /* Makes columns side-by-side */
+/* Drag and Drop Box Styling */
+.file-upload-box {
+  background-color: #F3F4F6;
+  border-radius: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #E5E7EB;
+  }
+
+  svg {
+    margin-bottom: 12px;
+  }
+
+  p {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #6B7280;
+
+    .highlight {
+      color: #8C0000; /* Maroon color for 'Upload a file' */
+      font-weight: 600;
+    }
+  }
+
+  .sub-text {
+    font-size: 12px;
+    color: #9CA3AF;
   }
 }
 
+/* Submit Button Layout */
 .form-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #eaeaea;
+  justify-content: flex-end; /* Pushes button to the right */
+  margin-top: 32px;
+  padding-bottom: 60px;
 
-  button {
-    padding: 10px 24px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.2s;
-  }
-
-  .cancel-btn {
-    background-color: transparent;
-    border: 1px solid #dcdcdc;
-    color: #555;
-
-    &:hover { background-color: #f8f9fa; }
-  }
-
-  .submit-btn {
-    background-color: #8a0000;
+  .btn-primary {
+    background-color: #8C0000; /* Your brand maroon */
+    color: #FFFFFF;
     border: none;
-    color: white;
+    padding: 14px 40px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 
-    &:hover { background-color: #6b0000; }
+    &:hover {
+      background-color: #6A0000;
+    }
   }
 }
