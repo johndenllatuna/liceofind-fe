@@ -1,135 +1,136 @@
-/* Wraps the page alongside the sidebar */
-:host {
-  display: block; /* Change this from flex to block */
-  min-height: 100vh;
-  background-color: #FFFFFF;
-}
-
-.main-content {
-  margin-left: 250px; /* Make sure this matches your sidebar width! */
-  padding: 40px 60px;
+/* --- MAIN WRAPPER --- */
+.post-item-container {
+  margin-left: 260px; /* Matches the exact width of your sidebar */
+  padding: 20px 40px;
   box-sizing: border-box;
+  width: 80%;
 }
 
-.header {
-  margin-bottom: 40px;
-
-  h2 {
-    font-size: 28px;
-    font-weight: 700;
-    color: #000000;
-    margin: 0;
-  }
+.page-title {
+  font-size: 1.8rem;
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: #000;
 }
 
-.form-container {
-  max-width: 800px; /* Constrains the form width exactly like Figma */
+/* --- FORM LAYOUT --- */
+.post-item-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 850px; /* Keeps the form from stretching too wide on massive screens */
 }
 
+/* --- STANDARD INPUTS --- */
 .form-group {
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
   label {
-    display: block;
-    font-size: 14px;
+    font-size: 0.85rem;
     font-weight: 600;
-    color: #111111;
-    margin-bottom: 8px;
+    color: #333;
   }
 
-  /* Style all inputs identically */
-  input[type="text"],
-  input[type="date"],
-  select,
-  textarea {
-    width: 100%;
-    padding: 14px 16px;
-    font-size: 14px;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    background-color: #FFFFFF;
-    color: #333333;
-    box-sizing: border-box;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  input, textarea {
+    padding: 14px 15px;
+    border: 1px solid #e4e4e4;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: border-color 0.2s;
 
     &:focus {
-      outline: none;
-      border-color: #8C0000; /* Maroon focus state */
-      box-shadow: 0 0 0 3px rgba(140, 0, 0, 0.1);
+      border-color: #8a0000;
     }
   }
 
-  /* Custom Dropdown Styling */
-  select {
-    appearance: none; 
-    background-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><polyline points="6 9 12 15 18 9"/></svg>');
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    background-size: 16px;
-    padding-right: 40px;
-    cursor: pointer;
-  }
-
   textarea {
-    resize: vertical;
     min-height: 120px;
+    resize: vertical; /* Allows the user to drag it taller if needed, but not wider */
   }
 }
 
-/* Drag and Drop Box Styling */
-.file-upload-box {
-  background-color: #F3F4F6;
+/* --- SIDE-BY-SIDE ROW (Location & Date) --- */
+.form-row {
+  display: flex;
+  gap: 20px;
+
+  .location-input {
+    flex: 3; /* Takes up 3/4 of the available space */
+  }
+
+  .date-input {
+    flex: 1; /* Takes up 1/4 of the available space */
+    
+    input {
+      text-align: center;
+    }
+  }
+}
+
+/* --- CUSTOM UPLOAD DROPZONE --- */
+.upload-dropzone {
+  background-color: #f1f1f1; /* Soft grey background */
+  border: 1px solid #e4e4e4;
   border-radius: 8px;
   padding: 40px 20px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s;
 
   &:hover {
-    background-color: #E5E7EB;
+    background-color: #e9e9e9;
   }
 
-  svg {
-    margin-bottom: 12px;
+  .upload-icon {
+    margin-bottom: 10px;
   }
 
-  p {
-    margin: 0 0 4px 0;
-    font-size: 14px;
-    color: #6B7280;
+  .upload-text {
+    margin: 0 0 5px 0;
+    font-size: 0.9rem;
+    color: #555;
 
     .highlight {
-      color: #8C0000; /* Maroon color for 'Upload a file' */
+      color: #8a0000; /* Maroon text */
       font-weight: 600;
     }
   }
 
-  .sub-text {
-    font-size: 12px;
-    color: #9CA3AF;
+  .upload-subtext {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #999;
   }
 }
 
-/* Submit Button Layout */
+/* --- SUBMIT BUTTON --- */
 .form-actions {
   display: flex;
-  justify-content: flex-end; /* Pushes button to the right */
-  margin-top: 32px;
-  padding-bottom: 60px;
+  justify-content: flex-end;
+  margin-top: 15px;
 
-  .btn-primary {
-    background-color: #8C0000; /* Your brand maroon */
-    color: #FFFFFF;
+  .submit-btn {
+    background-color: #7a0000; /* Deep maroon */
+    color: white;
     border: none;
-    padding: 14px 40px;
-    font-size: 14px;
+    padding: 12px 40px;
+    border-radius: 6px;
     font-weight: 600;
-    border-radius: 8px;
+    font-size: 0.95rem;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s;
 
     &:hover {
-      background-color: #6A0000;
+      background-color: #5c0000;
     }
   }
 }

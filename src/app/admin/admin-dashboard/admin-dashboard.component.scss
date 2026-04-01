@@ -48,11 +48,13 @@
 }
 
 /* --- 4. MAIN CONTENT AREA --- */
-.main-content {
-  margin-left: 250px; /* Make sure this matches your exact sidebar width */
-  padding: 40px; /* Adjust your padding to fit your design */
-  width: calc(100% - 250px); /* Ensures the content doesn't bleed off the right edge */
-  box-sizing: border-box; /* Adds a scrollbar only to the content area if it gets too long */
+.main-content { /* Use whatever class wraps your dashboard */
+  margin-left: 260px; /* Matches the exact width of your sidebar */
+  
+  /* Your other existing styles for this container will be here... */
+  padding: 40px; /* Keeps the content from touching the very edge */
+  box-sizing: border-box; 
+  width: calc(100% - 260px); /* Ensures the dashboard doesn't overflow the right side of the screen */
 }
 
 .dashboard-header {
@@ -68,8 +70,7 @@
 /* --- 5. STATS GRID --- */
 .stats-grid {
   display: grid;
-  /* This creates exactly 4 equal columns. '1fr' means 1 fraction of the available space */
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr); /* CHANGED TO 3 */
   gap: 20px;
   margin-bottom: 40px;
 }

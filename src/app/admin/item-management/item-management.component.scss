@@ -1,9 +1,19 @@
 /* --- HEADER --- */
 .page-header {
   margin-bottom: 40px;
-  margin-top: 10px;
-  margin-left: 10px;
+  margin-top: 0px;
+  margin-left: 0px;
   h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: #111; }
+}
+
+/* --- 4. MAIN CONTENT AREA --- */
+.main-content { /* Use whatever class wraps your dashboard */
+  margin-left: 260px; /* Matches the exact width of your sidebar */
+  
+  /* Your other existing styles for this container will be here... */
+  padding: 40px; /* Keeps the content from touching the very edge */
+  box-sizing: border-box; 
+  width: calc(100% - 260px); /* Ensures the dashboard doesn't overflow the right side of the screen */
 }
 
 /* --- CONTROLS (Search & Filter) --- */

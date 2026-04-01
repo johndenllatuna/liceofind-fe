@@ -1,11 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ItemService, Item } from '../../services/item.service'; 
+import { Item } from '../../models/item'; // Adjust the '../' path if needed based on your folder structure
+import { ItemService } from '../../services/item.service'; 
 import { Sidebar } from '../../shared/sidebar/sidebar.component'; 
+import { PostItem } from '../post-item/post-item.component';
 
 @Component({
   selector: 'app-item-management',
   standalone: true,
-  imports: [Sidebar],
+  imports: [Sidebar, PostItem], // Add the Module here
   templateUrl: './item-management.component.html',
   styleUrls: ['./item-management.component.scss']
 })

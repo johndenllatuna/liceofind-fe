@@ -1,59 +1,47 @@
 <app-sidebar></app-sidebar>
 
-<div class="main-content">
-  <div class="header">
-    <h2>Post Item</h2>
-  </div>
+<div class="post-item-container">
+  <h2 class="page-title">Post Item</h2>
 
-  <div class="form-container">
-    <form>
-      <div class="form-group">
-        <label for="itemTitle">Item Title</label>
-        <input type="text" id="itemTitle" placeholder="">
+  <form class="post-item-form">
+    <div class="form-group">
+      <label>Item Title</label>
+      <input type="text" />
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group location-input">
+        <label>Location</label>
+        <input type="text" />
       </div>
-
-      <div class="form-group">
-        <label for="category">Category</label>
-        <input type="text" id="category" placeholder="">
+      <div class="form-group date-input">
+        <label>Date</label>
+        <input type="date" value="2026-01-16" />
       </div>
+    </div>
 
-      <div class="form-group">
-        <label for="date">Date</label>
-        <input type="date" id="date" value="2026-01-16">
-      </div>
-
-      <div class="form-group">
-        <label for="location">Location</label>
-        <input type="text" id="location" placeholder="">
-      </div>
-
-      <div class="form-group">
-        <label for="status">Status</label>
-        <select id="status">
-          <option value="lost">Lost</option>
-          <option value="found">Found</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="description">Description</label>
-        <textarea id="description" rows="4"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Item Image</label>
-        <div class="file-upload-box">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 16V4M12 4L8 8M12 4L16 8M4 16V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V16" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <div class="form-group">
+      <label>Item Image</label>
+      <div class="upload-dropzone">
+        <div class="upload-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
           </svg>
-          <p><span class="highlight">Upload a file</span> or drag and drop</p>
-          <p class="sub-text">PNG, JPG, GIF up to 10MB</p>
         </div>
+        <p class="upload-text"><span class="highlight">Upload a file</span> or drag and drop</p>
+        <p class="upload-subtext">PNG, JPG, GIF up to 10MB</p>
       </div>
+    </div>
 
-      <div class="form-actions">
-        <button type="button" class="btn-primary">Post Item</button>
-      </div>
-    </form>
-  </div>
+    <div class="form-actions">
+      <button type="submit" class="submit-btn">Post Item</button>
+    </div>
+  </form>
 </div>

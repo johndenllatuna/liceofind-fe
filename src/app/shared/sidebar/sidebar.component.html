@@ -1,31 +1,37 @@
 <aside class="sidebar">
-  <div class="user-profile">
-    <div class="avatar">A</div>
-    <span class="user-name">Admin</span>
+  <div class="sidebar-header">
+    <div class="admin-avatar">A</div>
+    <span class="admin-name">Admin</span>
   </div>
 
   <nav class="nav-links">
-  <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-    <span class="custom-mask dashboard-mask"></span> Dashboard
-  </a>
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+      <span class="custom-mask dashboard-mask"></span> Dashboard
+    </a>
+    
+    <a routerLink="/item-management" routerLinkActive="active" class="nav-item">
+      <span class="custom-mask box-mask"></span> Item Management
+    </a>
+    
+    <a routerLink="/claim-verification" routerLinkActive="active" class="nav-item">
+      <span class="custom-mask check-mask"></span> Claim Verification
+    </a>
+    
+    <a routerLink="/post-item" routerLinkActive="active" class="nav-item">
+      <span class="custom-mask plus-mask"></span> Post Item
+    </a>
 
-  <a routerLink="/item-management" routerLinkActive="active" class="nav-item">
-    <span class="custom-mask box-mask"></span> Item Management
-  </a>
+    <a routerLink="/settled-items" routerLinkActive="active" class="nav-item">
+      <span class="custom-mask history-mask"></span> Settled Items
+    </a>
 
-  <a href="#" class="nav-item">
-    <span class="custom-mask check-mask"></span> Claim Verification
-  </a>
-  <a routerLink="/post-item" routerLinkActive="active" class="nav-item">
-    <span class="custom-mask plus-mask"></span> Post Item
-  </a>
-  <a href="#" class="nav-item">
-    <span class="custom-mask user-mask"></span> Users
-  </a>
-</nav>
+    <a routerLink="/users" routerLinkActive="active" class="nav-item">
+      <span class="custom-mask user-mask"></span> User Management
+    </a>
+  </nav>
 
   <div class="bottom-links">
-    <a href="#" class="nav-item sign-out">
+    <a href="#" class="nav-item">
       <span class="custom-mask door-mask"></span> Sign Out
     </a>
   </div>

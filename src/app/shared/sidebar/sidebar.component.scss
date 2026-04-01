@@ -1,60 +1,111 @@
-/* --- SIDEBAR SCSS --- */
+/* --- SIDEBAR CONTAINER --- */
 .sidebar {
+  background-color: #8a0000;
+  width: 260px;
+  height: 100vh; /* Restored to full height */
+  display: flex;
+  flex-direction: column;
+  color: white;
+  
+  /* THIS IS THE MAGIC LINE */
+  /* Values are: Top-Left, Top-Right, Bottom-Right, Bottom-Left */
+  border-radius: 0 14px 14px 0; 
+  
+  padding: 20px 0;
+  box-sizing: border-box;
+
+  /* Keeps it pinned to the left edge of the screen */
   position: fixed;
   top: 0;
   left: 0;
-  width: 250px; /* Adjust this to match your actual sidebar width */
-  height: 100vh; /* Forces it to always be exactly the height of the screen */
-  overflow-y: auto;
-  background-color: #800000;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  padding: 30px 20px;
-  height: 100vh;
-  box-sizing: border-box;
+  z-index: 1000; 
 }
 
-.user-profile {
+.sidebar-header {
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-bottom: 40px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0 20px 30px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
-  .avatar {
-    width: 40px; height: 40px;
-    background-color: white; color: #800000;
-    border-radius: 50%; display: flex;
-    align-items: center; justify-content: center;
-    font-weight: bold; font-size: 1.2rem;
+  .admin-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    color: #8a0000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.2rem;
   }
-  .user-name { font-weight: 600; font-size: 1.1rem; }
+
+  .admin-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
 }
 
 .nav-links {
-  display: flex; flex-direction: column; gap: 10px; flex-grow: 1;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0 15px;
 }
 
 .nav-item {
-  display: flex; align-items: center; gap: 15px;
-  color: white; text-decoration: none;
-  padding: 12px 15px; border-radius: 8px;
-  transition: all 0.3s ease; font-weight: 500; font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 20px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
 
-  &:hover { background-color: rgba(255, 255, 255, 0.1); }
-  
-  /* This is the magic class that triggers when you are on that page */
+  /* The active state */
   &.active {
     background-color: white;
-    color: #800000;
-    
-    .custom-mask { background-color: #800000; }
+    color: #8a0000;
+    font-weight: 600;
+  }
+
+  /* Hover effect */
+  &:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }
 
 .bottom-links {
+  padding: 0 15px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding-top: 20px;
 }
+
+/* --- SVG MASKS FOR SIDEBAR --- */
+/* We have to declare these here too so the sidebar can 'see' them */
+.custom-mask {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background-color: currentColor; 
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.dashboard-mask   { mask-image: url('/assets/icons/dashboard-icon.svg'); -webkit-mask-image: url('/assets/icons/dashboard-icon.svg'); }
+.box-mask         { mask-image: url('/assets/icons/item-management-icon.svg'); -webkit-mask-image: url('/assets/icons/item-management-icon.svg'); }
+.check-mask       { mask-image: url('/assets/icons/claim-verification-icon.svg'); -webkit-mask-image: url('/assets/icons/claim-verification-icon.svg'); }
+.plus-mask        { mask-image: url('/assets/icons/post-item-icon.svg'); -webkit-mask-image: url('/assets/icons/post-item-icon.svg'); }
+.user-mask        { mask-image: url('/assets/icons/users-icon.svg'); -webkit-mask-image: url('/assets/icons/users-icon.svg'); }
+.door-mask        { mask-image: url('/assets/icons/logout-icon.svg'); -webkit-mask-image: url('/assets/icons/logout-icon.svg'); }
+.history-mask    { mask-image: url('/assets/icons/settled-items-icon.svg'); -webkit-mask-image: url('/assets/icons/settled-items-icon.svg'); }
