@@ -24,7 +24,7 @@
 }
 
 .search-bar {
-  margin-left: 10px;
+  margin-left: 0px;
   flex-grow: 1; /* Pushes the dropdown to the right */
   display: flex;
   align-items: center;
@@ -48,21 +48,101 @@
   }
 }
 
-.status-filter select {
-  padding: 12px 40px 12px 15px;
+/* --- CUSTOM STATUS DROPDOWN --- */
+.status-filter {
+  position: relative;
+  width: 180px; /* Fixed width so it doesn't jump when text changes */
+  font-family: inherit;
+  z-index: 10; /* Keeps dropdown above the grid items */
+}
+
+.custom-select {
+  position: relative;
+  
+  .selected-value {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: white;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:hover { border-color: #bbb; }
+
+    .arrow {
+      margin-left: auto;
+      font-size: 0.7rem;
+      color: #888;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+
+  /* When the dropdown is clicked open */
+  &.open .selected-value {
+    border-color: #8a0000; /* Liceo Theme Color */
+    box-shadow: 0 0 0 3px rgba(138, 0, 0, 0.1);
+    
+    .arrow {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.options-list {
+  position: absolute;
+  top: calc(100% + 5px); /* Just slightly below the button */
+  left: 0;
+  right: 0;
+  background-color: white;
   border: 1px solid #dcdcdc;
   border-radius: 8px;
-  background-color: white;
-  font-size: 0.95rem;
-  font-family: inherit;
-  color: #333;
-  cursor: pointer;
-  outline: none;
-  appearance: none; /* Removes default OS arrow */
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 15px center;
-  background-size: 16px;
+  margin: 0;
+  padding: 5px 0;
+  list-style: none;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  animation: slideDown 0.2s ease-out forwards;
+  transform-origin: top;
+
+  li {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    font-size: 0.95rem;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #f7f7f7;
+    }
+  }
+}
+
+/* Status Dots mapped from your Image */
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 12px;
+  display: inline-block;
+  flex-shrink: 0;
+
+  &.all { background-color: #d1d5db; }          /* Gray */
+  &.pending { background-color: #f59e0b; }      /* Orange */
+  &.claimed { background-color: #10b981; }      /* Green */
+  &.turned-over { background-color: #3b82f6; }  /* Blue */
+  &.disposed { background-color: #ef4444; }     /* Red */
+}
+
+/* Smooth opening animation */
+@keyframes slideDown {
+  from { opacity: 0; transform: scaleY(0.95); }
+  to { opacity: 1; transform: scaleY(1); }
 }
 
 /* --- ITEMS GRID --- */
@@ -80,7 +160,7 @@
 /* --- ITEM CARD --- */
 .item-card {
   width: 100%;
-  margin-left: 10px;
+  margin-left: 0px;
   background-color: white;
   border: 1px solid #eaeaea;
   border-radius: 12px;
@@ -155,6 +235,7 @@
 }
 
 .details-btn {
+  margin-left: 180px;
   background-color: white;
   border: 1px solid #dcdcdc;
   border-radius: 6px;

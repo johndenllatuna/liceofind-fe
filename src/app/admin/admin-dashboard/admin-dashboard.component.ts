@@ -1,47 +1,86 @@
-import { Component, AfterViewInit } from '@angular/core';
-import { RouterLink } from '@angular/router'; 
-import Chart from 'chart.js/auto'; 
-import { Sidebar } from '../../shared/sidebar/sidebar.component';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Sidebar } from '../../shared/sidebar/sidebar.component'; // Adjust path if needed
+import { Chart, registerables } from 'chart.js';
+
+// 1. Register all Chart.js components
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [ Sidebar],
+  imports: [Sidebar],
   templateUrl: './admin-dashboard.component.html',
-  styleUrl: './admin-dashboard.component.scss'
+  styleUrls: ['./admin-dashboard.component.scss']
 })
-export class AdminDashboard implements AfterViewInit { // 3. Add implements AfterViewInit
-  
+export class AdminDashboard implements OnInit, AfterViewInit {
   public chart: any;
 
-  // 4. This lifecycle hook ensures the HTML canvas exists BEFORE we try to draw on it
-  ngAfterViewInit(): void {
+  ngOnInit() {}
+
+  // 2. We use ngAfterViewInit so the HTML canvas is fully loaded before we draw on it
+  ngAfterViewInit() {
     this.createChart();
   }
 
   createChart() {
-    this.chart = new Chart("MyChart", {
-      type: 'line', // We are making a line chart
+    const canvas = document.getElementById('MyChart') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
+
+    let gradient;
+    if (ctx) {
+      gradient = ctx.createLinearGradient(0, 0, 0, 400);
+      // CHANGED: Using Liceo Maroon (138, 0, 0) for the shadow
+      gradient.addColorStop(0, 'rgba(138, 0, 0, 0.4)'); 
+      gradient.addColorStop(1, 'rgba(138, 0, 0, 0.0)');
+    }
+
+    this.chart = new Chart('MyChart', {
+      type: 'line',
       data: {
-        labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], 
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], 
         datasets: [
           {
             label: 'Items Reported',
-            data: [12, 19, 3, 5, 2, 8, 15], // This is our dummy data!
-            backgroundColor: 'rgba(128, 0, 0, 0.1)', // A light maroon tint
-            borderColor: '#800000', // Your LiceoFind Maroon
-            borderWidth: 2,
-            fill: true, // Fills the area under the line
-            tension: 0.4 // This makes the line curve smoothly instead of jagged angles
+            data: [12, 18, 25, 20, 30, 8, 4], 
+            // CHANGED: Liceo Maroon for all the lines and dots
+            borderColor: '#8a0000', 
+            backgroundColor: gradient || 'rgba(138, 0, 0, 0.2)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0, 
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#8a0000', // CHANGED
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
           }
         ]
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // This allows the chart to stretch and fill our custom box
+        maintainAspectRatio: false, // This forces the chart to fill your CSS .chart-box
         plugins: {
           legend: {
-            display: false // Hides the legend since we only have one line anyway
+            display: false // Hides the default legend to look cleaner, just like your image
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: '#f0f0f0', // Very light horizontal grid lines
+            },
+            border: {
+              display: false // Hides the hard vertical axis line
+            }
+          },
+          x: {
+            grid: {
+              display: false, // Hides vertical grid lines for a cleaner look
+            },
+            border: {
+              display: false // Hides the hard horizontal axis line
+            }
           }
         }
       }

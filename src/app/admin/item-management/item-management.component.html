@@ -15,12 +15,35 @@
       </div>
       
       <div class="status-filter">
-        <select>
-          <option value="all">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="claimed">Claimed</option>
-        </select>
-      </div>
+  <div class="custom-select" [class.open]="isDropdownOpen">
+    
+    <div class="selected-value" (click)="toggleDropdown()">
+      <span class="status-dot" [ngClass]="selectedStatus"></span>
+      {{ getStatusLabel(selectedStatus) }}
+      <span class="arrow">▼</span>
+    </div>
+    
+    @if (isDropdownOpen) {
+      <ul class="options-list">
+        <li (click)="selectStatus('all')">
+          <span class="status-dot all"></span> All Status
+        </li>
+        <li (click)="selectStatus('pending')">
+          <span class="status-dot pending"></span> Pending
+        </li>
+        <li (click)="selectStatus('claimed')">
+          <span class="status-dot claimed"></span> Claimed
+        </li>
+        <li (click)="selectStatus('turned-over')">
+          <span class="status-dot turned-over"></span> Turned Over
+        </li>
+        <li (click)="selectStatus('disposed')">
+          <span class="status-dot disposed"></span> Disposed
+        </li>
+      </ul>
+    }
+  </div>
+</div>
     </div>
 
     <div class="items-grid">
@@ -44,9 +67,6 @@
             </div>
 
             <div class="card-actions">
-              <button class="icon-btn">
-                <span class="custom-mask edit-icon-mask"></span>
-              </button>
               <button class="details-btn">Details</button>
             </div>
           </div>
