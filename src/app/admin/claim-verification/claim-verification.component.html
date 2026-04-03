@@ -1,0 +1,115 @@
+<div class="dashboard-layout">
+  <app-sidebar></app-sidebar> 
+
+  <main class="main-content">
+    <header class="page-header">
+      <h1>Claim Verification</h1>
+    </header>
+
+    <div class="status-tabs">
+      <button [class.active]="activeTab === 'all'" (click)="setTab('all')">All</button>
+      <button [class.active]="activeTab === 'pending'" (click)="setTab('pending')">Pending</button>
+      <button [class.active]="activeTab === 'verified'" (click)="setTab('verified')">Verified</button>
+      <button [class.active]="activeTab === 'rejected'" (click)="setTab('rejected')">Rejected</button>
+    </div>
+
+    <div class="table-container">
+      <table class="claims-table">
+        
+        <thead>
+          <tr>
+            <th>Claim ID</th>
+            <th>Item Details</th>
+            <th>Claimant Name</th>
+            <th>Date Submitted</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        
+        <tbody>
+          @for (claim of filteredClaims; track claim.id) {
+            <tr>
+              <td class="id-column">{{ claim.id }}</td>
+              
+              <td class="item-column">
+                <div class="item-cell">
+                  <img [src]="claim.itemImageUrl" onerror="this.src='https://placehold.co/40x40?text=No+Img'" alt="Item">
+                  <span>{{ claim.itemName }}</span>
+                </div>
+              </td>
+              
+              <td>{{ claim.claimantName }}</td>
+              <td>{{ claim.claimDate }}</td>
+              
+              <td>
+                <span class="status-badge" [ngClass]="claim.status">{{ claim.status }}</span>
+              </td>
+              
+              <td class="action-column">
+                @if (claim.status === 'pending') {
+                    <button class="review-btn" (click)="openReviewModal(claim)">Review</button>
+                        } @else {
+                    <button class="view-btn" (click)="openReviewModal(claim)">View</button>
+                                                    }
+            </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty-state">
+                No claims found for this status.
+              </td>
+            </tr>
+          }
+        </tbody>
+
+      </table>
+    </div>
+
+  </main>
+</div>
+
+@if (selectedClaim) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      
+      <div class="modal-header">
+        <h2>Review Claim: {{ selectedClaim.id }}</h2>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="item-summary">
+          <img [src]="selectedClaim.itemImageUrl" onerror="this.src='https://placehold.co/100x100?text=No+Img'" alt="Item">
+          <div class="item-text">
+            <h3>{{ selectedClaim.itemName }}</h3>
+            <p><strong>Claimant:</strong> {{ selectedClaim.claimantName }}</p>
+            <p><strong>Date Submitted:</strong> {{ selectedClaim.claimDate }}</p>
+          </div>
+        </div>
+
+        <div class="proof-section">
+          <h4>Submitted Evidence</h4>
+          <div class="proof-box">
+            <p>"I left this in Room 302 during my 10:30 AM class. It has a small scratch on the bottom right corner."</p>
+            <div class="proof-attachment">
+              <span class="attachment-icon">📄</span> Student_ID_Scan.pdf
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        @if (selectedClaim.status === 'pending') {
+            <button class="reject-btn" (click)="rejectClaim()">Reject Claim</button>
+            <button class="approve-btn" (click)="approveClaim()">Approve & Verify</button>
+        } @else {
+            <span class="status-message">This claim is already {{ selectedClaim.status }}.</span>
+            <button class="close-action-btn" (click)="closeModal()">Close</button>
+        }
+      </div>
+
+    </div>
+  </div>
+}
