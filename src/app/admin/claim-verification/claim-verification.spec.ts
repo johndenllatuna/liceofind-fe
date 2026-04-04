@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Users } from './users';
+import { ClaimVerification } from './claim-verification.component';
 
-describe('Users', () => {
-  let component: Users;
-  let fixture: ComponentFixture<Users>;
+describe('ClaimVerification', () => {
+  let component: ClaimVerification;
+  let fixture: ComponentFixture<ClaimVerification>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Users],
+      imports: [ClaimVerification],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Users);
+    fixture = TestBed.createComponent(ClaimVerification);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -32,28 +32,4 @@ export class ItemManagement implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  isDropdownOpen = false;
-selectedStatus = 'all'; // Default text
-
-toggleDropdown() {
-  this.isDropdownOpen = !this.isDropdownOpen;
-}
-
-selectStatus(status: string) {
-  this.selectedStatus = status;
-  this.isDropdownOpen = false; // Close the menu after clicking
-}
-
-// This helper converts the code to the nice display text
-getStatusLabel(status: string): string {
-  const labels: { [key: string]: string } = {
-    'all': 'All Status',
-    'pending': 'Pending',
-    'claimed': 'Claimed',
-    'turned-over': 'Turned Over',
-    'disposed': 'Disposed'
-  };
-  return labels[status];
-}
-
 }
