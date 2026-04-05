@@ -5,38 +5,81 @@
     <h2>Liceo de Cagayan University</h2>
     <p class="admin-portal">Admin Portal</p>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSignIn($event)">
-  
-  <div class="form-group">
-    <label>Email address</label>
-    <input type="email" formControlName="email" placeholder="example@liceo.edu.ph">
-    
-    @if(loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-      <small style="color: maroon; font-size: 12px; margin-top: 4px; display: block;">
-        Please enter a valid email address.
-      </small>
-    }
-  </div>
-  
-  <div class="form-group">
-    <label>Password</label>
-    <input type="password" formControlName="password" placeholder="Enter your password here">
-  </div>
-  
-  <div class="options-group">
-    <div class="remember-me">
-      <input type="checkbox" id="rememberMe">
-      <label for="rememberMe">Remember Me</label>
-    </div>
-    <a href="#" class="forgot-password">Forgot Password?</a>
-  </div>
+    @if (!isForgotPasswordMode) {
+      <form [formGroup]="loginForm" (ngSubmit)="onSignIn($event)">
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" formControlName="email" placeholder="example@liceo.edu.ph">
+          @if(loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <small style="color: maroon; font-size: 12px; margin-top: 4px; display: block;">
+              Please enter a valid email address.
+            </small>
+          }
+        </div>
+        
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" formControlName="password" placeholder="Enter your password here">
+        </div>
+        
+        <div class="options-group">
+          <div class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <label for="rememberMe">Remember Me</label>
+          </div>
+          <a href="#" class="forgot-password" (click)="toggleForgotPassword(); $event.preventDefault()">Forgot Password?</a>
+        </div>
 
-  <button type="submit" class="sign-in-btn" [disabled]="loginForm.invalid" 
-          [style.opacity]="loginForm.invalid ? '0.6' : '1'" 
-          [style.cursor]="loginForm.invalid ? 'not-allowed' : 'pointer'">
-    Sign In
-  </button>
-</form>
+        @if(loginError) {
+          <div style="color: maroon; font-size: 13px; text-align: center; margin-bottom: 15px; font-weight: 600;">
+            Invalid email or password. Please try again.
+          </div>
+        }
+
+        <button type="submit" class="sign-in-btn" [disabled]="loginForm.invalid" 
+                [style.opacity]="loginForm.invalid ? '0.6' : '1'" 
+                [style.cursor]="loginForm.invalid ? 'not-allowed' : 'pointer'">
+          Sign In
+        </button>
+      </form>
+    } 
+    
+    @else {
+      <div style="width: 100%; display: flex; flex-direction: column; gap: 20px;">
+        
+        @if (!resetLinkSent) {
+          <p style="font-size: 0.9rem; color: #555; text-align: center; margin: 0;">
+            Enter your university email address and we'll send you a link to reset your password.
+          </p>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onResetPassword()">
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label>Email address</label>
+              <input type="email" formControlName="email" placeholder="example@liceo.edu.ph">
+            </div>
+
+            <button type="submit" class="sign-in-btn" [disabled]="loginForm.get('email')?.invalid"
+                    [style.opacity]="loginForm.get('email')?.invalid ? '0.6' : '1'">
+              Send Reset Link
+            </button>
+          </form>
+        } 
+        
+        @else {
+          <div style="background-color: #f8fcf8; border: 1px solid #c3e6cb; padding: 20px; border-radius: 6px; text-align: center;">
+            <p style="color: #155724; margin: 0; font-weight: 500; font-size: 0.95rem;">
+              If an account exists for that email, a password reset link has been sent.
+            </p>
+          </div>
+        }
+
+        <button type="button" 
+                style="background: none; border: none; color: #660000; font-weight: 600; cursor: pointer; padding: 10px; font-family: inherit; font-size: 0.95rem;"
+                (click)="toggleForgotPassword()">
+          &larr; Back to Login
+        </button>
+      </div>
+    }
     
     <p class="bottom-text">Lost and Found Management System</p>
   </div>
