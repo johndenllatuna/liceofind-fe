@@ -2,19 +2,50 @@
 /* --- BASE LAYOUT --- */
 .dashboard-layout { display: flex; height: 100vh; background-color: #fafafa; margin: 0; overflow: hidden; }
 .main-content { margin-left: 260px; padding: 30px; box-sizing: border-box; width: calc(100% - 260px); height: 100vh; display: flex; flex-direction: column; }
-.page-header { margin-bottom: 16px; margin-left: 10px; margin-top: 10px;h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: #111; } }
+.page-header { margin-bottom: 20px; margin-left: 10px; margin-top: 10px;h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: #111; } }
 
 /* --- SEARCH BAR --- */
 .search-bar {
-  display: flex; align-items: center; gap: 12px; background: white;
-  border: 1px solid #eaeaea; border-radius: 8px; padding: 12px 16px;
-  margin-bottom: 20px;
-  input { border: none; outline: none; width: 100%; font-size: 0.95rem; color: #333; }
-  .search-icon { color: #888; display: flex; }
+  margin-left: 10px; 
+  margin-bottom: 30px; 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  background-color: white;
+  border: 1px solid #dcdcdc; 
+  border-radius: 8px; 
+  padding: 0 15px; 
+  
+  /* ✅ THE FIX: Replaced flex-grow with width */
+  width: 100%; 
+  box-sizing: border-box;
+
+  input { 
+    flex-grow: 1; /* It is okay to leave this one here on the input */
+    border: none; 
+    outline: none; 
+    padding: 12px 0; 
+    font-size: 0.95rem; 
+    font-family: inherit;
+    color: #333; 
+    background: transparent;
+    
+    &::placeholder { color: #999; }
+  }
+
+  .search-mask-icon { 
+        display: inline-block; 
+        width: 20px; 
+        height: 20px; 
+        background-color: #666; /* Note: We use background-color for masks, not color! */
+        -webkit-mask: url('../../../assets/icons/search-icon.svg') no-repeat center / contain; 
+        mask: url('../../../assets/icons/search-icon.svg') no-repeat center / contain; 
+    }
 }
 
 /* --- TABLE VIEW --- */
 .table-container {
+  margin-left: 10px;
   background-color: white; border: 1px solid #eaeaea;
   border-radius: 12px; overflow-y: auto; flex: 1;
   box-shadow: 0 2px 10px rgba(0,0,0,0.02);
