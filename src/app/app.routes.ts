@@ -5,6 +5,7 @@ import { ItemManagement } from './admin/item-management/item-management.componen
 import { PostItem } from './admin/post-item/post-item.component'; 
 import { ClaimVerification } from './admin/claim-verification/claim-verification.component';
 import { SettledItems } from './admin/settled-items/settled-items.component';
+import { UserManagement } from './admin/user-management/user-management.component';
 
 export const routes: Routes = [
   { path: '', component: Login }, 
@@ -13,4 +14,5 @@ export const routes: Routes = [
   { path: 'claim-verification', component: ClaimVerification },
   { path: 'post-item', component: PostItem },
   { path: 'settled-items', component: SettledItems },
+  { path: 'user-management', component: UserManagement },
 ];
