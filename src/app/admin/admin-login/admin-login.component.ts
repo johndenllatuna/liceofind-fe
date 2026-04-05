@@ -1,37 +1,80 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-// 1. Import Reactive Forms tools
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms'; 
+import { Auth } from '../../services/auth.service'; // Adjust path if needed
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-admin-login',
   standalone: true,
-  // 2. Add ReactiveFormsModule to your imports array
-  imports: [ReactiveFormsModule], 
+  imports: [ReactiveFormsModule], // Required for [formGroup] to work
   templateUrl: './admin-login.component.html',
-  styleUrl: './admin-login.component.scss'
+  styleUrls: ['./admin-login.component.scss']
 })
-export class Login {
-  
-  // 3. Create the Form Group and set the rules!
-  loginForm = new FormGroup({
-    // Email requires something typed in, AND it must be a valid email format (with an @)
-    email: new FormControl('', [Validators.required, Validators.email]),
-    // Password just requires something to be typed in
-    password: new FormControl('', [Validators.required])
-  });
+export class AdminLogin {
+  loginForm: FormGroup;
+  loginError: boolean = false; // Tracks if they typed the wrong password
 
-  constructor(private router: Router) {}
+  // --- NEW VARIABLES FOR FORGOT PASSWORD ---
+  isForgotPasswordMode: boolean = false;
+  resetLinkSent: boolean = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: Auth,
+    private router: Router
+  ) {
+    // Initialize your form with validation
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+  }
+
+  // --- NEW METHODS FOR FORGOT PASSWORD ---
+  
+  // Toggles the UI between the Login screen and Forgot Password screen
+  toggleForgotPassword() {
+    this.isForgotPasswordMode = !this.isForgotPasswordMode;
+    this.resetLinkSent = false; // Reset the success message
+    this.loginError = false;    // Clear any login errors
+    
+    // If we are entering forgot password mode, we don't require the password field anymore
+    if (this.isForgotPasswordMode) {
+      this.loginForm.get('password')?.clearValidators();
+    } else {
+      this.loginForm.get('password')?.setValidators(Validators.required);
+    }
+    this.loginForm.get('password')?.updateValueAndValidity();
+  }
+
+  // Simulates sending the reset email
+  onResetPassword() {
+    if (this.loginForm.get('email')?.valid) {
+      // In a real app, you would call this.authService.sendResetLink(email) here.
+      // For now, we just show the success UI.
+      this.resetLinkSent = true;
+    }
+  }
+
+  // --- EXISTING LOGIN LOGIC ---
 
   onSignIn(event: Event) {
-    event.preventDefault(); 
-    
-    // 4. Check if the form follows all the rules before navigating
+    event.preventDefault(); // Prevents page reload
+
     if (this.loginForm.valid) {
-      this.router.navigate(['/dashboard']); 
-    } else {
-      // If they bypassed the button disable somehow, highlight the errors
-      this.loginForm.markAllAsTouched();
+      const { email, password } = this.loginForm.value;
+      
+      // Pass the typed values to our auth service
+      const isSuccess = this.authService.login(email, password);
+
+      if (isSuccess) {
+        this.loginError = false;
+        // Logged in! Send them to the dashboard.
+        this.router.navigate(['/admin-dashboard']); 
+      } else {
+        // Show error text if credentials don't match
+        this.loginError = true;
+      }
     }
   }
 }

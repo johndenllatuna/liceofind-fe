@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Sidebar } from '../../shared/sidebar/sidebar.component'; // Adjust path
-import { ClaimService, Claim } from '../../services/claim.service'; // Adjust path
+import { Sidebar } from '../../shared/sidebar/sidebar.component'; 
+import { ClaimService, Claim } from '../../services/claim.service'; 
 import { CommonModule } from '@angular/common';
 
 @Component({
