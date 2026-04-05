@@ -2,7 +2,7 @@
 /* --- BASE LAYOUT --- */
 .dashboard-layout { display: flex; height: 100vh; background-color: #fafafa; margin: 0; overflow: hidden; }
 .main-content { margin-left: 260px; padding: 30px; box-sizing: border-box; width: calc(100% - 260px); height: 100vh; display: flex; flex-direction: column; }
-.page-header { margin-bottom: 16px; h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: #111; } }
+.page-header { margin-bottom: 16px; margin-left: 10px; margin-top: 10px;h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: #111; } }
 
 /* --- SEARCH BAR --- */
 .search-bar {
