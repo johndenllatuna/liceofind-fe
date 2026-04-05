@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Item } from '../models/item'; 
+import { Item } from '../models/item.model'; 
 import { ItemService } from './item.service';
 
 describe('Item', () => {

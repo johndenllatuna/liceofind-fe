@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common'; // 👈 1. ADD THIS
-import { Item } from '../../models/item'; 
+import { Item } from '../../models/item.model'; 
 import { ItemService } from '../../services/item.service'; 
 import { Sidebar } from '../../shared/sidebar/sidebar.component'; 
 import { Subscription } from 'rxjs';

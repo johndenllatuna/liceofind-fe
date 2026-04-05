@@ -283,13 +283,6 @@
 .plus-mask        { mask-image: url('/assets/icons/post-item-icon.svg'); -webkit-mask-image: url('/assets/icons/post-item-icon.svg'); }
 .user-mask        { mask-image: url('/assets/icons/users-icon.svg'); -webkit-mask-image: url('/assets/icons/users-icon.svg'); }
 .door-mask        { mask-image: url('/assets/icons/logout-icon.svg'); -webkit-mask-image: url('/assets/icons/logout-icon.svg'); }
-.bell-mask        { mask-image: url('/assets/icons/notification-icon.svg'); -webkit-mask-image: url('/assets/icons/notification-icon.svg'); }
 .exclamation-mask { mask-image: url('/assets/icons/pending-claims-icon.svg'); -webkit-mask-image: url('/assets/icons/pending-claims-icon.svg'); }
 .chart-mask       { mask-image: url('/assets/icons/chart-icon.svg'); -webkit-mask-image: url('/assets/icons/chart-icon.svg'); }
 
-/* Quick fix for the notification bell size so it's not tiny */
-.notification-bell .custom-mask {
-  width: 28px;
-  height: 28px;
-  color: #000000; /* Gives the bell a nice dark gray color */
-}

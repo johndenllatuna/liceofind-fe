@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Item } from '../models/item'; // Make sure this file exists in your models folder!
+import { Item } from '../models/item.model'; // Make sure this file exists in your models folder!
 
 @Injectable({
   providedIn: 'root'
