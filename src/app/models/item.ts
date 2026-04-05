@@ -5,5 +5,5 @@ export interface Item {
   location: string;
   date: string;
   imageUrl: string;
-  status: 'Available' | 'Claim Pending' | 'Settled'; // Crucial for your workflow!
+  status: 'Available' | 'Claim Pending' | 'Settled';
 }
