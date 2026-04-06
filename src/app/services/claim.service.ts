@@ -69,4 +69,12 @@ export class ClaimService {
     // 3. Wrap it in 'of()' to return it as an Observable, which Angular prefers for data streams
     return of(pendingCount);
   }
+
+  updateClaim(updatedClaim: Claim) {
+    const index = this.mockClaims.findIndex(c => c.id === updatedClaim.id);
+    if (index !== -1) {
+      // Overwrite the old claim with the newly edited data
+      this.mockClaims[index] = { ...updatedClaim };
+    }
+  }
 }

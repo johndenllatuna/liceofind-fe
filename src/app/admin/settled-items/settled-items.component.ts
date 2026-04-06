@@ -100,15 +100,18 @@ export class SettledItems implements OnInit {
 
   saveChanges() {
     if (this.selectedItem) {
-        console.log("Saving changes for claim:", this.selectedItem.id);
-        
+        // 1. Update the local object with the new text
         this.selectedItem.proofText = this.tempProofDetails;
         
+        // 2. Update the local object with the new image (if one was uploaded)
         if (this.tempImageUrl && this.selectedFile) {
           this.selectedItem.itemImageUrl = this.tempImageUrl as string;
-          console.log("New image uploaded:", this.selectedFile.name);
         }
         
+        // 3. Send the updated item to the service so it updates globally!
+        this.claimService.updateClaim(this.selectedItem);
+        
+        // 4. Exit edit mode
         this.isEditMode = false;
     }
   }
