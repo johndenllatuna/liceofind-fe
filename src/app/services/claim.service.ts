@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs'; // 👈 ADDED: Import RxJS utilities
 
 export interface Claim {
   id: string;
@@ -7,7 +8,6 @@ export interface Claim {
   claimantName: string;
   claimDate: string;
   status: 'pending' | 'verified' | 'rejected';
-  // 👇 ADDED: The missing property for the proof paragraph
   proofText: string; 
 }
 
@@ -58,5 +58,15 @@ export class ClaimService {
 
   getClaims() {
     return this.mockClaims;
+  }
+
+  // 👇 ADDED: The method to count pending claims
+  getPendingClaimsCount(): Observable<number> {
+    // 1. Filter the array to only get items where status is 'pending'
+    // 2. Get the length of that filtered array
+    const pendingCount = this.mockClaims.filter(claim => claim.status === 'pending').length;
+    
+    // 3. Wrap it in 'of()' to return it as an Observable, which Angular prefers for data streams
+    return of(pendingCount);
   }
 }

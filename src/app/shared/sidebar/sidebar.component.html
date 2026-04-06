@@ -6,35 +6,49 @@
 
   <nav class="nav-links">
     <a routerLink="/admin-dashboard" routerLinkActive="active" class="nav-item">
-      <span class="custom-mask dashboard-mask"></span> Dashboard
+      <span class="custom-mask dashboard-mask"></span> 
+      <span class="nav-label">Dashboard</span>
     </a>
     
     <a routerLink="/item-management" routerLinkActive="active" class="nav-item">
-      <span class="custom-mask box-mask"></span> Item Management
+      <span class="custom-mask box-mask"></span> 
+      <span class="nav-label">Item Management</span>
     </a>
     
     <a routerLink="/claim-verification" routerLinkActive="active" class="nav-item">
-      <span class="custom-mask check-mask"></span> Claim Verification
+      <span class="custom-mask check-mask"></span> 
+      <span class="nav-label">Claim Verification</span>
+      
+      @if (pendingClaimsCount > 0) {
+        <span class="badge-container">
+          <span class="custom-mask circle-mask"></span>
+          <span class="badge-number">{{ pendingClaimsCount }}</span>
+        </span>
+      }
     </a>
     
     <a routerLink="/post-item" routerLinkActive="active" class="nav-item">
-      <span class="custom-mask plus-mask"></span> Post Item
+      <span class="custom-mask plus-mask"></span> 
+      <span class="nav-label">Post Item</span>
     </a>
 
     <a routerLink="/settled-items" routerLinkActive="active" class="nav-item">
-      <span class="custom-mask history-mask"></span> Settled Items
+      <span class="custom-mask history-mask"></span> 
+      <span class="nav-label">Settled Items</span>
     </a>
 
     <a routerLink="/user-management" routerLinkActive="active" class="nav-item">
-      <span class="custom-mask user-mask"></span> User Management
+      <span class="custom-mask user-mask"></span> 
+      <span class="nav-label">User Management</span>
     </a>
   </nav>
 
   <div class="bottom-links">
-  <a href="#" class="nav-item" (click)="onSignOut($event)">
-    <span class="custom-mask door-mask"></span> Sign Out
-  </a>
-</div>
+    <a href="#" class="nav-item" (click)="onSignOut($event)">
+      <span class="custom-mask door-mask"></span> 
+      <span class="nav-label">Sign Out</span>
+    </a>
+  </div>
 </aside>
 
 @if (showLogoutModal) {

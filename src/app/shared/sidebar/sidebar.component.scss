@@ -54,20 +54,61 @@
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 12px 20px;
+  gap: 10px; /* 1. Reduced from 15px to give text more horizontal space */
+  padding: 12px 15px; /* 2. Reduced side padding slightly from 20px */
   color: white;
   text-decoration: none;
   font-weight: 500;
   border-radius: 8px;
   transition: all 0.2s ease;
-  font-size: 0.95rem;
+  font-size: 0.88rem; /* 3. Reduced slightly from 0.95rem */
+
+  /* Pushes the badge to the far right */
+  .nav-label {
+    flex-grow: 1; 
+    white-space: nowrap; /* 4. CRITICAL: This forces the text to stay on one line no matter what */
+    overflow: hidden; /* Just in case it's still too long, it won't break the layout */
+    text-overflow: ellipsis; /* Adds '...' if the screen is ever too small */
+  }
+
+  /* --- NEW SVG BADGE STYLING --- */
+  .badge-container {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0; /* Ensures the badge never gets squished */
+  }
+
+  .circle-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .badge-number {
+    position: relative;
+    z-index: 1;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #8a0000; 
+  }
 
   /* The active state */
   &.active {
     background-color: white;
     color: #8a0000;
     font-weight: 600;
+
+    .badge-container {
+      .badge-number {
+        color: white; 
+      }
+    }
   }
 
   /* Hover effect */
@@ -83,7 +124,6 @@
 }
 
 /* --- SVG MASKS FOR SIDEBAR --- */
-/* We have to declare these here too so the sidebar can 'see' them */
 .custom-mask {
   width: 20px;
   height: 20px;
@@ -103,7 +143,8 @@
 .plus-mask        { mask-image: url('/assets/icons/post-item-icon.svg'); -webkit-mask-image: url('/assets/icons/post-item-icon.svg'); }
 .user-mask        { mask-image: url('/assets/icons/users-icon.svg'); -webkit-mask-image: url('/assets/icons/users-icon.svg'); }
 .door-mask        { mask-image: url('/assets/icons/logout-icon.svg'); -webkit-mask-image: url('/assets/icons/logout-icon.svg'); }
-.history-mask    { mask-image: url('/assets/icons/settled-items-icon.svg'); -webkit-mask-image: url('/assets/icons/settled-items-icon.svg'); }
+.history-mask     { mask-image: url('/assets/icons/settled-items-icon.svg'); -webkit-mask-image: url('/assets/icons/settled-items-icon.svg'); }
+.circle-mask      { mask-image: url('/assets/icons/circle-icon.svg'); -webkit-mask-image: url('/assets/icons/circle-icon.svg'); }
 
 /* --- CUSTOM LOGOUT MODAL --- */
 .modal-overlay {

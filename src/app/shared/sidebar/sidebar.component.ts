@@ -1,37 +1,46 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router'; 
-import { Router, RouterModule } from '@angular/router'; // 1. Import this
+import { Router, RouterModule } from '@angular/router'; 
 import { Auth } from '../../services/auth.service';
+import { ClaimService } from '../../services/claim.service'; // <-- Import your actual service here
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterModule], // <-- Make sure both are here!
+  imports: [RouterLink, RouterLinkActive, RouterModule], 
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })
-
-export class Sidebar {
-  // 1. New flag to control the modal visibility
+export class Sidebar implements OnInit {
   showLogoutModal: boolean = false;
+  
+  // Start at 0 so the badge stays hidden until the real data loads
+  pendingClaimsCount: number = 0; 
 
-  constructor(private authService: Auth, private router: Router) {}
+  constructor(
+    private authService: Auth, 
+    private router: Router,
+    private claimService: ClaimService // <-- Inject it here
+  ) {}
 
-  // 2. Instead of a browser confirm, just show our custom modal
+  ngOnInit() {
+    this.claimService.getPendingClaimsCount().subscribe((count: number) => {
+      this.pendingClaimsCount = count;
+    });
+  }
+
   onSignOut(event: Event) {
     event.preventDefault(); 
     this.showLogoutModal = true; 
   }
 
-  // 3. If they click Cancel, just hide the modal
   cancelLogout() {
     this.showLogoutModal = false;
   }
 
-  // 4. If they click Sign Out inside the modal, run the actual logout logic
   confirmLogout() {
     this.showLogoutModal = false;
     this.authService.logout();
-        this.router.navigate(['/']); 
+    this.router.navigate(['/']); 
   }
 }
