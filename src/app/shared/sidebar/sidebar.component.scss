@@ -2,23 +2,18 @@
 .sidebar {
   background-color: #8a0000;
   width: 260px;
-  height: 100vh; /* Restored to full height */
+  height: 100vh; 
   display: flex;
   flex-direction: column;
   color: white;
-  
-  /* THIS IS THE MAGIC LINE */
-  /* Values are: Top-Left, Top-Right, Bottom-Right, Bottom-Left */
   border-radius: 0 14px 14px 0; 
-  
   padding: 20px 0;
   box-sizing: border-box;
-
-  /* Keeps it pinned to the left edge of the screen */
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000; 
+  box-shadow: 6px 0 15px rgba(0, 0, 0, 0.25); 
 }
 
 .sidebar-header {
