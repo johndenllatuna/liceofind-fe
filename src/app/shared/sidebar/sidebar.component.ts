@@ -15,7 +15,14 @@ export class Sidebar {
 
   onSignOut(event: Event) {
     event.preventDefault(); // Stop the <a> tag from refreshing the page
-    this.authService.logout(); // Clears the localStorage flag
-    this.router.navigate(['/admin-login']); // Send them back to the start
+
+    // 1. Trigger the browser's built-in confirmation popup
+    const wantsToSignOut = window.confirm('Do you want to sign out?');
+
+    // 2. Only log them out IF they clicked "OK"
+    if (wantsToSignOut) {
+      this.authService.logout(); 
+      this.router.navigate(['/admin-login']); 
+    }
   }
  }
