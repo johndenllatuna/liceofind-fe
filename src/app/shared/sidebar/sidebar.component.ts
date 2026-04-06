@@ -32,6 +32,6 @@ export class Sidebar {
   confirmLogout() {
     this.showLogoutModal = false;
     this.authService.logout();
-        this.router.navigate(['']); 
+        this.router.navigate(['/']); 
   }
 }
