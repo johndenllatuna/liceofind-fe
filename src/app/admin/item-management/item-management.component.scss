@@ -48,7 +48,6 @@
   }
 }
 
-
 /* Smooth opening animation */
 @keyframes slideDown {
   from { opacity: 0; transform: scaleY(0.95); }
@@ -123,8 +122,25 @@
 .meta-info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 12px;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  font-size: 0.9rem;
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .meta-icon {
+      width: 18px; /* Adjust this if your SVGs are too big/small */
+      height: 18px;
+      /* Optional: if your SVGs are black and you want them greyish, uncomment the next line */
+      opacity: 0.7; 
+    }
+  }
 }
 
 .meta-row {
@@ -179,4 +195,169 @@
     border-color: #8a0000;
     color: #8a0000;
   }
+}
+
+/* --- ITEM DETAILS MODAL --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+
+.modal-box {
+  background: white;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 12px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+
+  .close-x {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #888;
+    cursor: pointer;
+    &:hover { color: #333; }
+  }
+}
+
+/* Modal Content Styles */
+.modal-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  background: #f4f4f4;
+}
+
+.desc {
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* ✨ UPDATED: Modal meta-info with masking properties ✨ */
+.meta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  font-size: 0.9rem;
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .meta-icon {
+      /* ✨ Set a fixed bounding box for ALL icons to align the text perfectly ✨ */
+      width: 22px; 
+      height: 22px; 
+      display: flex;
+      justify-content: center;
+      flex-shrink: 0;
+      background-color: #666;
+      
+      &.location-icon {
+         /* Lock the mask size to 18px so it centers within the 22px box without stretching */
+         -webkit-mask: url('/assets/icons/location-icon.svg') no-repeat center / 18px;
+         mask: url('/assets/icons/location-icon.svg') no-repeat center / 18px;
+      }
+
+      &.calendar-icon {
+         /* Lock the mask size to 18px */
+         -webkit-mask: url('/assets/icons/calendar-icon.svg') no-repeat center / 18px;
+         mask: url('/assets/icons/calendar-icon.svg') no-repeat center / 18px;
+      }
+
+      &.label-icon {
+        /* Allow the largest icon to fill the entire 22px space */
+        -webkit-mask: url('/assets/icons/label-icon.svg') no-repeat center / contain;
+        mask: url('/assets/icons/label-icon.svg') no-repeat center / contain;
+      }
+    }
+
+    /* ✨ Ensure text stays vertically and horizontally aligned ✨ */
+    span {
+      display: inline-block;
+      line-height: 1; 
+    }
+  }
+}
+
+/* Edit Form Styles */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+
+  label { font-size: 0.85rem; font-weight: 600; }
+  input, textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+  }
+  textarea { min-height: 80px; }
+}
+
+/* Delete State Styles */
+.delete-state {
+  text-align: center;
+  padding: 20px 0;
+
+  .warning-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 15px;
+    
+    background-color: #d32f2f; /* Exact same red as your button */
+    -webkit-mask: url('/assets/icons/warning-icon.svg') no-repeat center / contain;
+    mask: url('/assets/icons/warning-icon.svg') no-repeat center / contain;
+  }
+
+  p { 
+    color: #666; 
+    margin-bottom: 25px; 
+  }
+}
+
+/* Buttons */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .edit-btn { background: #f1f1f1; color: #333; &:hover { background: #e4e4e4; } }
+  .delete-btn { background: #ffebee; color: #d32f2f; &:hover { background: #ffcdd2; } }
+  .cancel-btn { background: #e0e0e0; color: #333; &:hover { background: #d5d5d5; } }
+  .save-btn { background: #2e7d32; color: white; &:hover { background: #1b5e20; } }
+  .confirm-delete-btn { background: #d32f2f; color: white; &:hover { background: #b71c1c; } }
 }
