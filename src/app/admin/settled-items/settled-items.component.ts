@@ -1,13 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // 👇 ADD THIS IMPORT
+import { FormsModule } from '@angular/forms'; 
 import { Sidebar } from '../../shared/sidebar/sidebar.component';
 import { ClaimService, Claim } from '../../services/claim.service';
 
 @Component({
   selector: 'app-settled-items',
   standalone: true,
-  // 👇 ADD FormsModule HERE
   imports: [CommonModule, FormsModule, Sidebar], 
   templateUrl: './settled-items.component.html',
   styleUrls: ['./settled-items.component.scss']
@@ -15,23 +14,57 @@ import { ClaimService, Claim } from '../../services/claim.service';
 export class SettledItems implements OnInit {
   private claimService = inject(ClaimService);
   
+  // 👇 NEW: The Master List (never modified by search)
   settledClaims: Claim[] = [];
+  
+  // 👇 NEW: The Display List (changes based on what user types)
+  filteredClaims: Claim[] = [];
+  
+  // 👇 NEW: Holds what the user types in the search bar
+  searchTerm: string = '';
+
   selectedItem: Claim | null = null;
   
-  // NEW: State for edit mode
   isEditMode: boolean = false;
-  // NEW: Holds temp value during edit before saving
   tempProofDetails: string = '';
+  
+  selectedFile: File | null = null;
+  tempImageUrl: string | ArrayBuffer | null = null; 
 
   ngOnInit() {
+    // 1. Get the master list
     this.settledClaims = this.claimService.getClaims().filter(claim => claim.status === 'verified');
+    
+    // 2. On initial load, the display list is identical to the master list
+    this.filteredClaims = [...this.settledClaims];
+  }
+
+  // 👇 NEW: Function that runs every time the user types a letter
+  filterItems() {
+    // If the search bar is empty, show everything
+    if (!this.searchTerm.trim()) {
+      this.filteredClaims = [...this.settledClaims];
+      return;
+    }
+
+    // Convert the search term to lowercase for easier matching
+    const term = this.searchTerm.toLowerCase();
+
+    // Filter the master list, and save the results into the display list
+    this.filteredClaims = this.settledClaims.filter(claim => 
+      claim.itemName.toLowerCase().includes(term) || 
+      claim.claimantName.toLowerCase().includes(term) ||
+      claim.id.toString().toLowerCase().includes(term) // Converts ID to string just in case it's a number
+    );
   }
 
   viewDetails(claim: Claim) {
     this.selectedItem = claim;
-    // NEW: Populates the temp field with existing data
     this.tempProofDetails = claim.proofText; 
-    // Always start in read-only mode when opening
+    
+    this.tempImageUrl = claim.itemImageUrl; 
+    this.selectedFile = null;
+
     this.isEditMode = false; 
   }
 
@@ -40,27 +73,42 @@ export class SettledItems implements OnInit {
     this.isEditMode = false;
   }
 
-  // --- NEW: Edit Mode Functions ---
-
   enterEditMode() {
     this.isEditMode = true;
   }
 
   cancelEdit() {
-    // Just reset the flag, temp data will be reset on next viewDetails call
     this.isEditMode = false;
+    if (this.selectedItem) {
+      this.tempImageUrl = this.selectedItem.itemImageUrl;
+    }
+    this.selectedFile = null;
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.tempImageUrl = e.target?.result as string;
+      };
+      reader.readAsDataURL(this.selectedFile);
+    }
   }
 
   saveChanges() {
     if (this.selectedItem) {
-        // Here you would call a service to update the actual database
         console.log("Saving changes for claim:", this.selectedItem.id);
-        console.log("New proof details:", this.tempProofDetails);
         
-        // Mock data update
         this.selectedItem.proofText = this.tempProofDetails;
         
-        // Exits edit mode after successful save
+        if (this.tempImageUrl && this.selectedFile) {
+          this.selectedItem.itemImageUrl = this.tempImageUrl as string;
+          console.log("New image uploaded:", this.selectedFile.name);
+        }
+        
         this.isEditMode = false;
     }
   }
