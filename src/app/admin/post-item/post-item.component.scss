@@ -1,6 +1,6 @@
 /* --- MAIN WRAPPER --- */
 .post-item-container {
-  margin-left: 260px; /* Matches the exact width of your sidebar */
+  margin-left: 260px; 
   padding: 20px 40px;
   box-sizing: border-box;
   width: 80%;
@@ -18,7 +18,8 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 850px; /* Keeps the form from stretching too wide on massive screens */
+  max-width: 700px; /* Constrains the inputs to look more proportional */
+  margin: 0 auto;   /* Centers the form in the page */
 }
 
 /* --- STANDARD INPUTS --- */
@@ -50,21 +51,21 @@
 
   textarea {
     min-height: 120px;
-    resize: vertical; /* Allows the user to drag it taller if needed, but not wider */
+    resize: vertical; 
   }
 }
 
-/* --- SIDE-BY-SIDE ROW (Location & Date) --- */
+/* --- SIDE-BY-SIDE ROW --- */
 .form-row {
   display: flex;
   gap: 20px;
 
   .location-input {
-    flex: 3; /* Takes up 3/4 of the available space */
+    flex: 3; 
   }
 
   .date-input {
-    flex: 1; /* Takes up 1/4 of the available space */
+    flex: 1; 
     
     input {
       text-align: center;
@@ -74,30 +75,29 @@
 
 /* --- CUSTOM UPLOAD DROPZONE --- */
 .upload-dropzone {
-  background-color: #f1f1f1; /* Soft grey background */
+  background-color: #f1f1f1; 
   border: 1px solid #e4e4e4;
   border-radius: 8px;
-  height: 180px; /* 👈 LOCKS the height so the form never stretches */
-  padding: 15px; /* 👈 Reduced padding to give the image more inside room */
-  box-sizing: border-box; /* 👈 Ensures padding doesn't accidentally add to the height */
+  height: 180px; 
+  padding: 15px; 
+  box-sizing: border-box; 
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  overflow: hidden; /* 👈 Prevents the image from spilling out of the box */
+  overflow: hidden; 
   transition: background-color 0.2s;
 
   &:hover {
     background-color: #e9e9e9;
   }
 
-  /* 👈 ADDED: Strict rules for the preview image to fit the locked box */
   img {
-    max-height: 110px; /* Restricts the image height to leave room for the subtext */
+    max-height: 110px; 
     max-width: 100%;
-    object-fit: contain; /* Keeps the aspect ratio perfect without squishing the image */
+    object-fit: contain; 
     border-radius: 6px;
     margin-bottom: 10px;
   }
@@ -112,7 +112,7 @@
     color: #555;
 
     .highlight {
-      color: #8a0000; /* Maroon text */
+      color: #8a0000; 
       font-weight: 600;
     }
   }
@@ -131,7 +131,7 @@
   margin-top: 15px;
 
   .submit-btn {
-    background-color: #7a0000; /* Deep maroon */
+    background-color: #7a0000; 
     color: white;
     border: none;
     padding: 12px 40px;
@@ -147,14 +147,13 @@
   }
 }
 
-/* --- SUCCESS TOAST NOTIFICATION --- */
-.success-toast {
-  position: fixed;       /* 👈 Makes it float above the page */
-  top: 40px;             /* 👈 Distance from the top */
-  right: 40px;           /* 👈 Distance from the right edge */
-  z-index: 2000;         /* 👈 Ensures nothing covers it */
-  
-  background-color: #2e7d32;
+/* --- TOAST NOTIFICATIONS --- */
+.toast {
+  position: fixed;       
+  top: 40px;             
+  left: 50%;             
+  transform: translateX(-50%); 
+  z-index: 2000;         
   color: white;
   padding: 14px 20px;
   border-radius: 8px;
@@ -163,19 +162,25 @@
   align-items: center;
   gap: 12px;
   font-weight: 500;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Deeper shadow for floating effect */
-  
-  /* Slides in from the right side instead of dropping down */
-  animation: slideInRight 0.3s ease-out; 
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); 
+  animation: slideDown 0.3s ease-out; 
 }
 
-@keyframes slideInRight {
+.success-toast {
+  background-color: #2e7d32;
+}
+
+.error-toast {
+  background-color: #c62828; /* A nice visible alert red */
+}
+
+@keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateX(50px);
+    transform: translate(-50%, -20px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate(-50%, 0);
   }
 }

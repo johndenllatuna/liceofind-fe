@@ -2,9 +2,9 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; 
 import { ItemService } from '../../services/item.service'; 
-import { Image } from '../../services/image.service'; // 👈 1. Import your new service
+import { Image } from '../../services/image.service'; 
 import { Sidebar } from '../../shared/sidebar/sidebar.component'; 
-import { Item } from '../../models/item.model'; // 👈 Fixed the typo here!
+import { Item } from '../../models/item.model'; 
 
 @Component({
   selector: 'app-post-item',
@@ -16,15 +16,13 @@ import { Item } from '../../models/item.model'; // 👈 Fixed the typo here!
 export class PostItem {
   postItemForm: FormGroup;
   
-  // 2. New variables to hold our image data
   selectedFile: File | null = null;
   imagePreview: string | null = null;
   isUploading: boolean = false;
   
-  // 👇 Added the new success message flag here
   showSuccessMessage: boolean = false;
+  showErrorMessage: boolean = false; // Add state for the error toast
 
-  // 3. Inject the ImageService
   constructor(
     private fb: FormBuilder, 
     private itemService: ItemService,
@@ -39,38 +37,37 @@ export class PostItem {
     });
   }
 
-  // 4. This method runs when the user picks a file from their computer
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file;
-      
-      // Create a quick local URL just so the user can see a preview
       this.imagePreview = URL.createObjectURL(file);
     }
   }
 
   onSubmit() {
     if (this.postItemForm.valid) {
-      this.isUploading = true; // Changes the button text to "Uploading..."
+      this.isUploading = true; 
 
       const formValues = this.postItemForm.value;
 
-      // 5. If they selected a file, upload it first!
       if (this.selectedFile) {
         this.imageService.uploadImage(this.selectedFile).subscribe((uploadedUrl) => {
           this.finalizeSubmission(formValues, uploadedUrl);
         });
       } else {
-        // If they didn't upload an image, just use the fallback right away
         this.finalizeSubmission(formValues, '/assets/icons/no-img.svg');
       }
     } else {
-      alert('Please fill out all fields.');
+      // Trigger the red error toast instead of an alert
+      this.showErrorMessage = true;
+      setTimeout(() => {
+        this.showErrorMessage = false;
+        this.cdr.detectChanges(); 
+      }, 3000);
     }
   }
 
-  // 6. A helper method to keep our code clean
   private finalizeSubmission(formValues: any, finalImageUrl: string) {
     const newItem: Item = {
       id: 0,
@@ -86,10 +83,9 @@ export class PostItem {
     
     this.showSuccessMessage = true;
     
-    // 3. Update your timeout to explicitly tell Angular to update the screen
     setTimeout(() => {
       this.showSuccessMessage = false;
-      this.cdr.detectChanges(); // 👈 Forces the toast to disappear instantly
+      this.cdr.detectChanges(); 
     }, 3000);
     
     this.postItemForm.reset({ date: '2026-01-16' });
