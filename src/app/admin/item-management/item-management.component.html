@@ -1,9 +1,6 @@
 <div class="dashboard-layout">
-
   <app-sidebar></app-sidebar> 
-
   <main class="main-content">
-
     <header class="page-header">
       <h1>Item Management</h1>
     </header>
@@ -11,13 +8,12 @@
     <div class="controls-section">
       <div class="search-bar">
         <span class="custom-mask search-icon-mask"></span>
-        <input type="text" placeholder="What are you looking for?">
+        <input type="text" placeholder="What are you looking for?" (input)="onSearch($event)">
       </div>
     </div>
 
     <div class="items-grid">
-      
-      @for (item of items; track item.id) {
+      @for (item of filteredItems; track item.id) {
         <div class="item-card">
           <div class="card-image">
             <img [src]="item.imageUrl" (error)="item.imageUrl = '/assets/icons/no-img.svg'" [alt]="item.name">
@@ -41,9 +37,8 @@
           </div>
         </div>
       } @empty {
-        <p>No items found.</p>
+        <p>No items found matching your search.</p>
       }
-      
     </div> 
   </main>
 </div>

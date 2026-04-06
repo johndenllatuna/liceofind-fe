@@ -28,21 +28,33 @@
 
     <div class="form-group">
       <label>Item Image</label>
-      <div class="upload-dropzone">
-        <div class="upload-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-          </svg>
-        </div>
-        <p class="upload-text"><span class="highlight">Upload a file</span> or drag and drop</p>
-        <p class="upload-subtext">PNG, JPG, GIF up to 10MB</p>
+      <div class="upload-dropzone" (click)="fileInput.click()">
+        
+        <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+
+        @if (!imagePreview) {
+          <div class="upload-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <p class="upload-text"><span class="highlight">Click to upload</span></p>
+          <p class="upload-subtext">PNG, JPG, GIF up to 10MB</p>
+        }
+
+        @if (imagePreview) {
+          <img [src]="imagePreview" alt="Preview">
+          <p class="upload-subtext">Click to change image</p>
+        }
       </div>
     </div>
 
     <div class="form-actions">
-      <button type="submit" class="submit-btn">Post Item</button>
+      <button type="submit" class="submit-btn" [disabled]="isUploading">
+        {{ isUploading ? 'Uploading...' : 'Post Item' }}
+      </button>
     </div>
   </form>
 </div>
