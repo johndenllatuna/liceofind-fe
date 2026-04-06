@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { Sidebar } from '../../shared/sidebar/sidebar.component';
@@ -13,48 +13,32 @@ import { ClaimService, Claim } from '../../services/claim.service';
 })
 export class SettledItems implements OnInit {
   private claimService = inject(ClaimService);
+  private cdr = inject(ChangeDetectorRef); // <-- NEW: Forces UI to update
   
-  // 👇 NEW: The Master List (never modified by search)
   settledClaims: Claim[] = [];
-  
-  // 👇 NEW: The Display List (changes based on what user types)
   filteredClaims: Claim[] = [];
-  
-  // 👇 NEW: Holds what the user types in the search bar
   searchTerm: string = '';
-
   selectedItem: Claim | null = null;
-  
   isEditMode: boolean = false;
   tempProofDetails: string = '';
-  
   selectedFile: File | null = null;
   tempImageUrl: string | ArrayBuffer | null = null; 
 
   ngOnInit() {
-    // 1. Get the master list
     this.settledClaims = this.claimService.getClaims().filter(claim => claim.status === 'verified');
-    
-    // 2. On initial load, the display list is identical to the master list
     this.filteredClaims = [...this.settledClaims];
   }
 
-  // 👇 NEW: Function that runs every time the user types a letter
   filterItems() {
-    // If the search bar is empty, show everything
     if (!this.searchTerm.trim()) {
       this.filteredClaims = [...this.settledClaims];
       return;
     }
-
-    // Convert the search term to lowercase for easier matching
     const term = this.searchTerm.toLowerCase();
-
-    // Filter the master list, and save the results into the display list
     this.filteredClaims = this.settledClaims.filter(claim => 
       claim.itemName.toLowerCase().includes(term) || 
       claim.claimantName.toLowerCase().includes(term) ||
-      claim.id.toString().toLowerCase().includes(term) // Converts ID to string just in case it's a number
+      claim.id.toString().toLowerCase().includes(term)
     );
   }
 
@@ -62,9 +46,14 @@ export class SettledItems implements OnInit {
     this.selectedItem = claim;
     this.tempProofDetails = claim.proofText; 
     
-    this.tempImageUrl = claim.itemImageUrl; 
+    // NEW: Prevent broken images by clearing the preview if the data is a PDF
+    if (claim.itemImageUrl && claim.itemImageUrl.endsWith('.pdf')) {
+       this.tempImageUrl = null;
+    } else {
+       this.tempImageUrl = claim.itemImageUrl; 
+    }
+    
     this.selectedFile = null;
-
     this.isEditMode = false; 
   }
 
@@ -74,13 +63,23 @@ export class SettledItems implements OnInit {
   }
 
   enterEditMode() {
+    if (!this.selectedItem) return;
+
     this.isEditMode = true;
+    this.tempProofDetails = this.selectedItem.proofText;
+    
+    // ✨ FIX 1: Preserve the existing image instead of setting it to null
+    this.tempImageUrl = this.selectedItem.itemImageUrl && !this.selectedItem.itemImageUrl.endsWith('.pdf') 
+      ? this.selectedItem.itemImageUrl 
+      : null;
   }
 
   cancelEdit() {
     this.isEditMode = false;
     if (this.selectedItem) {
-      this.tempImageUrl = this.selectedItem.itemImageUrl;
+      this.tempImageUrl = this.selectedItem.itemImageUrl && !this.selectedItem.itemImageUrl.endsWith('.pdf') 
+        ? this.selectedItem.itemImageUrl 
+        : null;
     }
     this.selectedFile = null;
   }
@@ -93,25 +92,26 @@ export class SettledItems implements OnInit {
       const reader = new FileReader();
       reader.onload = (e) => {
         this.tempImageUrl = e.target?.result as string;
+        this.cdr.detectChanges(); 
+        
+        // ✨ FIX 2: Moved this inside the callback! 
+        // Now it safely clears the input ONLY AFTER the image has been read.
+        input.value = ''; 
       };
+      
       reader.readAsDataURL(this.selectedFile);
     }
   }
 
   saveChanges() {
     if (this.selectedItem) {
-        // 1. Update the local object with the new text
         this.selectedItem.proofText = this.tempProofDetails;
         
-        // 2. Update the local object with the new image (if one was uploaded)
         if (this.tempImageUrl && this.selectedFile) {
           this.selectedItem.itemImageUrl = this.tempImageUrl as string;
         }
         
-        // 3. Send the updated item to the service so it updates globally!
         this.claimService.updateClaim(this.selectedItem);
-        
-        // 4. Exit edit mode
         this.isEditMode = false;
     }
   }
