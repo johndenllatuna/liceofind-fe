@@ -32,7 +32,7 @@
             </div>
 
             <div class="card-actions">
-              <button class="details-btn">Details</button>
+              <button class="details-btn" (click)="openDetails(item)">Details</button>
             </div>
           </div>
         </div>
@@ -42,3 +42,81 @@
     </div> 
   </main>
 </div>
+
+@if (selectedItem) {
+  <div class="modal-overlay" (click)="closeModal()">
+    
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      
+      <button class="close-x" (click)="closeModal()">✕</button>
+
+      @if (modalMode === 'view') {
+        <div class="view-state">
+          <img [src]="selectedItem.imageUrl" alt="Item Image" class="modal-img">
+          <h2>{{ selectedItem.name }}</h2>
+          <p class="desc">{{ selectedItem.description }}</p>
+          
+          <div class="meta-info">
+            <div class="meta-item">
+              <span class="meta-icon location-icon"></span>
+              <span><strong>Location:</strong> {{ selectedItem.location }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon calendar-icon"></span>
+              <span><strong>Date:</strong> {{ selectedItem.date }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-icon label-icon"></span>
+              <span><strong>Status:</strong> {{ selectedItem.status }}</span>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button class="edit-btn" (click)="changeMode('edit')">Edit Details</button>
+            <button class="delete-btn" (click)="changeMode('delete')">Delete Item</button>
+          </div>
+        </div>
+      }
+
+      @if (modalMode === 'edit') {
+        <div class="edit-state">
+          <h2>Edit Item</h2>
+          
+          <form [formGroup]="editForm" class="edit-form">
+            <label>Item Title</label>
+            <input type="text" formControlName="name">
+
+            <label>Description</label>
+            <textarea formControlName="description"></textarea>
+
+            <label>Location</label>
+            <input type="text" formControlName="location">
+
+            <label>Date</label>
+            <input type="date" formControlName="date">
+
+            <div class="modal-actions">
+              <button type="button" class="cancel-btn" (click)="changeMode('view')">Cancel</button>
+              <button type="button" class="save-btn" (click)="saveChanges()">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      }
+
+      @if (modalMode === 'delete') {
+        <div class="delete-state">
+          <div class="warning-icon"></div>
+          
+          <h2>Delete {{ selectedItem.name }}?</h2>
+          <p>Are you absolutely sure you want to delete this item? This action cannot be undone.</p>
+          
+          <div class="modal-actions">
+            <button class="cancel-btn" (click)="changeMode('view')">No, Cancel</button>
+            <button class="confirm-delete-btn" (click)="confirmDelete()">Yes, Delete</button>
+          </div>
+        </div>
+      }
+
+    </div>
+  </div>
+}
