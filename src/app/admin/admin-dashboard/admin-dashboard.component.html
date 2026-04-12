@@ -2,52 +2,57 @@
   <app-sidebar></app-sidebar>
 
   <main class="main-content">
-    <header class="dashboard-header">
-      <div class="header-text">
-        <h1>Dashboard Overview</h1>
-        <p class="subtitle">Welcome back, Admin</p>
-      </div>
-    </header>
+    <!-- ── Hardware-Accelerated Page Transition Wrapper ── -->
+    <div id="page-content" class="page-transition-wrapper" [class.is-entering]="!pageEntered" [class.is-entered]="pageEntered">
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-info">
-          <span class="stat-title">Pending Claims</span>
-          <span class="stat-value">{{ dashboardStats.pendingClaims }}</span>
+      <header class="dashboard-header">
+        <div class="header-text">
+          <h1>Dashboard Overview</h1>
+          <p class="subtitle">Welcome back, Admin</p>
         </div>
-        <div class="stat-icon-box yellow-box">
-          <span class="custom-mask exclamation-mask"></span>
+      </header>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-title">Pending Claims</span>
+            <span class="stat-value">{{ dashboardStats.pendingClaims }}</span>
+          </div>
+          <div class="stat-icon-box yellow-box">
+            <span class="custom-mask exclamation-mask"></span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-title">Active Listings</span>
+            <span class="stat-value">{{ dashboardStats.activeListings }}</span>
+          </div>
+          <div class="stat-icon-box blue-box">
+            <span class="custom-mask chart-mask"></span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-title">Settled Items</span>
+            <span class="stat-value">{{ dashboardStats.settledItems }}</span>
+          </div>
+          <div class="stat-icon-box green-box">
+            <span class="custom-mask check-mask"></span>
+          </div>
         </div>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-info">
-          <span class="stat-title">Active Listings</span>
-          <span class="stat-value">{{ dashboardStats.activeListings }}</span>
+      <div class="chart-section-container">
+        <div class="section-header">
+          <h2>Submission Trends</h2>
         </div>
-        <div class="stat-icon-box blue-box">
-          <span class="custom-mask chart-mask"></span>
+        <div class="chart-box">
+          <canvas id="MyChart"></canvas>
         </div>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-info">
-          <span class="stat-title">Settled Items</span>
-          <span class="stat-value">{{ dashboardStats.settledItems }}</span>
-        </div>
-        <div class="stat-icon-box green-box">
-          <span class="custom-mask check-mask"></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="chart-section-container">
-      <div class="section-header">
-        <h2>Submission Trends</h2>
-      </div>
-      <div class="chart-box">
-        <canvas id="MyChart"></canvas>
-      </div>
     </div>
 
   </main>

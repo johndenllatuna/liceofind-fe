@@ -1,8 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../../shared/sidebar/sidebar.component';
-import { UserService, User } from '../../services/user.service';
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-user-management',
@@ -11,8 +11,12 @@ import { UserService, User } from '../../services/user.service';
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss']
 })
-export class UserManagement implements OnInit {
-  private userService = inject(UserService);
+export class UserManagement implements OnInit, AfterViewInit {
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
+
+  // --- ANIMATION STATE ---
+  pageEntered: boolean = false;
 
   allUsers: User[] = [];
   filteredUsers: User[] = [];
@@ -22,8 +26,18 @@ export class UserManagement implements OnInit {
   selectedRole: string = 'All Roles';
 
   ngOnInit() {
-    this.allUsers = this.userService.getUsers();
-    this.applyFilters();
+    this.authService.getAllUsers().subscribe(users => {
+      this.allUsers = users;
+      this.applyFilters();
+    });
+  }
+
+  ngAfterViewInit() {
+    // Trigger entrance animation cleanly
+    setTimeout(() => {
+      this.pageEntered = true;
+      this.cdr.detectChanges(); // Force Angular to evaluate [class.is-entered] immediately
+    }, 50);
   }
 
   applyFilters() {
@@ -40,9 +54,7 @@ export class UserManagement implements OnInit {
   }
 
   toggleStatus(user: User) {
-    // In a real app, you might want a confirmation popup here first!
-    this.userService.toggleUserStatus(user.id);
-    this.applyFilters(); // Refresh the list
+    this.authService.toggleUserStatus(user.id);
   }
 
   isDropdownOpen: boolean = false;
@@ -76,9 +88,7 @@ userToModify: any = null;
 
   confirmAction() {
     if (this.userToModify) {
-      // Toggle the user's status 
-      // (You will eventually call your backend service here)
-      this.userToModify.isActive = !this.userToModify.isActive;
+      this.authService.toggleUserStatus(this.userToModify.id);
     }
     this.closeModal(); // Close the modal after confirming
   }

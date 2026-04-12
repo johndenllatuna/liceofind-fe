@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Add this for @if and @for
 import { Sidebar } from '../../shared/sidebar/sidebar.component';
 import { Chart, registerables } from 'chart.js';
@@ -15,6 +15,12 @@ Chart.register(...registerables);
 })
 export class AdminDashboard implements OnInit, AfterViewInit {
   public chart: any;
+
+  // --- ANIMATION STATE ---
+  pageEntered: boolean = false;
+
+  // 👈 Injected ChangeDetectorRef
+  constructor(private cdr: ChangeDetectorRef) {}
 
   // --- MOCK DATA READY FOR BACKEND ---
   // When you connect to a DB, you'll just overwrite these variables
@@ -38,6 +44,12 @@ export class AdminDashboard implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.createChart();
+
+    // Trigger entrance animation cleanly
+    setTimeout(() => {
+      this.pageEntered = true;
+      this.cdr.detectChanges(); // Force Angular to evaluate [class.is-entered] immediately
+    }, 50);
   }
 
   createChart() {

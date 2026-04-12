@@ -1,80 +1,72 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs'; // 👈 ADDED: Import RxJS utilities
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 export interface Claim {
   id: string;
+  itemId?: number; // Added to enable exact matching
   itemName: string;
   itemImageUrl: string;
   claimantName: string;
+  claimantEmail: string;
   claimDate: string;
   status: 'pending' | 'verified' | 'rejected';
-  proofText: string; 
+  proofText: string;
+  evidenceImageUrl?: string;
+  evidenceFileName?: string; // New field for original file name
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClaimService {
-  
-  // Mock data updated to include proofText
-  private mockClaims: Claim[] = [
-    {
-      id: 'C-1001',
-      itemName: 'Toyota Car Keys',
-      itemImageUrl: 'assets/images/keys.jpg', 
-      claimantName: 'John Doe',
-      claimDate: '2026-04-01',
-      status: 'pending',
-      proofText: 'I left my keys in the library on the 3rd floor near the engineering section.'
-    },
-    {
-      id: 'C-1002',
-      itemName: 'AquaFlask Tumbler',
-      itemImageUrl: 'assets/images/tumbler.jpg',
-      claimantName: 'Maria Santos',
-      claimDate: '2026-04-02',
-      status: 'verified',
-      proofText: 'These AirPods were purchased by me. The device is associated with my personal Apple ID, and I can provide identifying details such as the serial number.'
-    },
-    {
-      id: 'C-1003',
-      itemName: 'Scientific Calculator',
-      itemImageUrl: 'assets/images/calc.jpg',
-      claimantName: 'Mark Reyes',
-      claimDate: '2026-04-03',
-      status: 'rejected',
-      proofText: 'It has my initials "MR" scratched into the back battery cover.'
-    },
-    {
-      id: 'C-1004',
-      itemName: 'MacBook Charger',
-      itemImageUrl: 'assets/images/charger.jpg',
-      claimantName: 'Sarah Lim',
-      claimDate: '2026-04-03',
-      status: 'pending',
-      proofText: 'Standard Apple 61W USB-C Power Adapter. Left it plugged into the wall outlet in Room 302.'
-    }
-  ];
 
-  getClaims() {
-    return this.mockClaims;
+  private STORAGE_KEY = 'ldcufind_claims';
+  private claimsSubject = new BehaviorSubject<Claim[]>(this.loadInitialClaims());
+
+  constructor() { }
+
+  private loadInitialClaims(): Claim[] {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const saved = localStorage.getItem(this.STORAGE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    }
+    // Return an empty array — the table will only populate from real user submissions
+    return [];
   }
 
-  // 👇 ADDED: The method to count pending claims
+  getClaims(): Observable<Claim[]> {
+    return this.claimsSubject.asObservable();
+  }
+
+  submitClaim(claim: Claim) {
+    const currentClaims = this.claimsSubject.getValue();
+    const updatedClaims = [claim, ...currentClaims];
+    this.claimsSubject.next(updatedClaims);
+
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedClaims));
+    }
+  }
+
   getPendingClaimsCount(): Observable<number> {
-    // 1. Filter the array to only get items where status is 'pending'
-    // 2. Get the length of that filtered array
-    const pendingCount = this.mockClaims.filter(claim => claim.status === 'pending').length;
-    
-    // 3. Wrap it in 'of()' to return it as an Observable, which Angular prefers for data streams
+    const pendingCount = this.claimsSubject.getValue().filter(claim => claim.status === 'pending').length;
     return of(pendingCount);
   }
 
   updateClaim(updatedClaim: Claim) {
-    const index = this.mockClaims.findIndex(c => c.id === updatedClaim.id);
+    const currentClaims = this.claimsSubject.getValue();
+    const index = currentClaims.findIndex(c => c.id === updatedClaim.id);
+
     if (index !== -1) {
-      // Overwrite the old claim with the newly edited data
-      this.mockClaims[index] = { ...updatedClaim };
+      const newClaims = [...currentClaims];
+      newClaims[index] = { ...updatedClaim };
+      this.claimsSubject.next(newClaims);
+
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newClaims));
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // 👈 1. Added form imports
 import { Item } from '../../models/item.model'; 
@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './item-management.component.html',
   styleUrls: ['./item-management.component.scss']
 })
-export class ItemManagement implements OnInit {
+export class ItemManagement implements OnInit, AfterViewInit {
   // Keep track of our lists
   allItems: Item[] = [];
   filteredItems: Item[] = []; 
@@ -22,9 +22,18 @@ export class ItemManagement implements OnInit {
   selectedItem: Item | null = null; 
   modalMode: 'view' | 'edit' | 'delete' = 'view'; 
   editForm: FormGroup;
+  uploadedImageBase64: string | undefined = undefined;
+  isDragging: boolean = false; // New state for drag-and-drop feedback
+
+  // --- ANIMATION STATE ---
+  pageEntered: boolean = false;
 
   // 👈 3. Injected FormBuilder into your constructor
-  constructor(private itemService: ItemService, private fb: FormBuilder) {
+  constructor(
+    private itemService: ItemService, 
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef // Inject ChangeDetectorRef
+  ) {
     // Setup the edit form rules
     this.editForm = this.fb.group({
       name: ['', Validators.required],
@@ -42,6 +51,14 @@ export class ItemManagement implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    // setTimeout runs in the next macro-task, ensuring the DOM is fully painted with the 'is-entering' state first.
+    setTimeout(() => {
+      this.pageEntered = true;
+      this.cdr.detectChanges(); // Force Angular to evaluate [class.is-entered] immediately
+    }, 50);
+  }
+
   // The magic filter method!
   onSearch(event: Event): void {
     const searchTerm = (event.target as HTMLInputElement).value.toLowerCase();
@@ -56,6 +73,7 @@ export class ItemManagement implements OnInit {
 
   // Opens the modal and fills the form with the item's current details
   openDetails(item: Item) {
+    this.uploadedImageBase64 = undefined; // Reset image preview for the new selection
     this.selectedItem = item;
     this.modalMode = 'view';
     
@@ -71,6 +89,7 @@ export class ItemManagement implements OnInit {
   // Closes the modal completely
   closeModal() {
     this.selectedItem = null;
+    this.uploadedImageBase64 = undefined;
   }
 
   // Switches the modal between view, edit, and delete screens
@@ -78,11 +97,55 @@ export class ItemManagement implements OnInit {
     this.modalMode = mode;
   }
 
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.processFile(file);
+    }
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+    
+    const file = event.dataTransfer?.files[0];
+    if (file && file.type.startsWith('image/')) {
+      this.processFile(file);
+    }
+  }
+
+  private processFile(file: File) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.uploadedImageBase64 = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
   // Save Edit Logic
   saveChanges() {
     if (this.editForm.valid && this.selectedItem) {
       // Update the local item so the UI reflects changes immediately
       Object.assign(this.selectedItem, this.editForm.value);
+      
+      if (this.uploadedImageBase64) {
+        this.selectedItem.imageUrl = this.uploadedImageBase64;
+      }
+
+      this.itemService.updateItem(this.selectedItem);
       
       // Send the user back to the view screen
       this.changeMode('view');
@@ -92,11 +155,7 @@ export class ItemManagement implements OnInit {
   // Confirm Delete Logic
   confirmDelete() {
     if (this.selectedItem) {
-      // Remove it from the main list
-      this.allItems = this.allItems.filter(i => i.id !== this.selectedItem!.id);
-      
-      // Remove it from the currently displayed list
-      this.filteredItems = this.filteredItems.filter(i => i.id !== this.selectedItem!.id);
+      this.itemService.deleteItem(this.selectedItem.id);
       
       // Close the modal after deleting
       this.closeModal();

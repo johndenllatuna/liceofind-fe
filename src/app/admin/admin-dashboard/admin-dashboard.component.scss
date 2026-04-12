@@ -1,3 +1,31 @@
+/* ── PREMIUM ANIMATIONS ── */
+$easing-premium-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+$transition-duration: 0.4s;
+$maroon: #8a0000;
+
+.page-transition-wrapper {
+  will-change: transform, opacity;
+
+  /* SAFETY NET: Default to fully visible in case JS or Angular fails */
+  opacity: 1;
+  transform: translateY(0) scale(1);
+
+  /* The start state applied dynamically by Angular BEFORE animation */
+  &.is-entering {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+
+  /* The end state applied by JS to trigger the transition */
+  &.is-entered {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition:
+      opacity $transition-duration ease-out,
+      transform $transition-duration $easing-premium-entrance;
+  }
+}
+
 /* --- 1. MAIN LAYOUT --- */
 .dashboard-layout {
   display: flex;
@@ -48,23 +76,35 @@
 }
 
 /* --- 4. MAIN CONTENT AREA --- */
-.main-content { /* Use whatever class wraps your dashboard */
-  margin-left: 260px; /* Matches the exact width of your sidebar */
-  
-  /* Your other existing styles for this container will be here... */
-  padding: 40px; /* Keeps the content from touching the very edge */
-  box-sizing: border-box; 
-  width: calc(100% - 260px); /* Ensures the dashboard doesn't overflow the right side of the screen */
+.main-content {
+  margin-left: 260px;
+  padding: 32px;
+  box-sizing: border-box;
+  width: calc(100% - 260px);
+  background-color: #f4f5f8; /* Matches item-management design system */
+  min-height: 100vh;
 }
 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 
-  h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: #111; }
-  .subtitle { margin: 5px 0 0 0; color: #666; font-size: 0.9rem; }
+  h1 {
+    margin: 0 0 4px 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-weight: 400;
+  }
 }
 
 /* --- 5. STATS GRID --- */
@@ -76,14 +116,20 @@
 }
 
 .stat-card {
-  background-color: white;
-  border: 1px solid #eaeaea; 
-  border-radius: 12px; /* Smooth rounded corners */
+  background-color: #ffffff;
+  border: none;
+  border-radius: 16px;
   padding: 24px;
   display: flex;
-  justify-content: space-between; /* Pushes the info to the left, icon box to the right */
+  justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.02); /* A very soft shadow to lift it off the gray background */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
 }
 
 /* Text inside the card */
@@ -94,27 +140,31 @@
 }
 
 .stat-title {
-  font-size: 0.95rem;
-  color: #777;
-  font-weight: 500;
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #111;
-  line-height: 1; /* Keeps the big number tight against the title */
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+  letter-spacing: -1px;
 }
 
 /* --- ICON BOXES --- */
 .stat-icon-box {
-  width: 55px;
-  height: 55px;
-  border-radius: 10px; /* Matches the square look from your reference */
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
+  flex-shrink: 0;
 }
 
 /* Pastel background colors based on your image */
@@ -238,25 +288,34 @@
   &.claimed { background-color: #f2e1e1; color: #8a0000; }
 }
 
-/* --- CHART SECTION --- */
 .chart-section-container {
   display: flex;
   flex-direction: column;
-  margin-top: 40px; 
-  flex-grow: 1; 
-  width: 100%; 
+  margin-top: 32px;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.section-header {
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.2px;
+  }
 }
 
 .chart-box {
-  background-color: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.02); /* Matched this to your stat cards! */
-  
-  /* These next three lines are the magic that makes the chart visible */
-  position: relative; 
-  flex-grow: 1; 
-  min-height: 400px; /* Forces the box to be 400px tall */
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  position: relative;
+  flex-grow: 1;
+  min-height: 400px;
 }
 
 

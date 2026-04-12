@@ -1,45 +1,54 @@
 /* --- SIDEBAR CONTAINER --- */
 .sidebar {
-  background-color: #8a0000;
+  /* Subtle depth gradient: warm dark red top → richer darker base */
+  background: linear-gradient(180deg, #8b0000 0%, #5a0000 60%, #4a0000 100%);
   width: 260px;
-  height: 100vh; 
+  height: 100vh;
   display: flex;
   flex-direction: column;
   color: white;
-  border-radius: 0 14px 14px 0; 
+  border-radius: 0 14px 14px 0;
   padding: 20px 0;
   box-sizing: border-box;
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1000; 
-  box-shadow: 6px 0 15px rgba(0, 0, 0, 0.25); 
+  z-index: 1000;
+  /* Right-edge separator: compound shadow creates a natural boundary */
+  box-shadow:
+    4px 0 0 0 rgba(0, 0, 0, 0.06),
+    8px 0 24px rgba(0, 0, 0, 0.18);
 }
 
 .sidebar-header {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 0 20px 30px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 14px;
+  padding: 8px 20px 24px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 
   .admin-avatar {
-    width: 40px;
-    height: 40px;
-    background-color: white;
+    width: 42px;
+    height: 42px;
+    background-color: rgba(255, 255, 255, 0.95);
     color: #8a0000;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-weight: 700;
-    font-size: 1.2rem;
+    font-weight: 800;
+    font-size: 1.15rem;
+    /* Soft inner glow to lift the avatar off the sidebar */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
   }
 
   .admin-name {
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    opacity: 0.95;
   }
 }
 
@@ -47,31 +56,47 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 0 15px;
+  gap: 4px;
+  padding: 0 14px;
+  overflow-y: auto;
+  /* Hide scrollbar while still scrollable if many items */
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 10px; /* 1. Reduced from 15px to give text more horizontal space */
-  padding: 12px 15px; /* 2. Reduced side padding slightly from 20px */
-  color: white;
+  gap: 11px;
+  padding: 11px 14px;
+  color: rgba(255, 255, 255, 0.88);
   text-decoration: none;
   font-weight: 500;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  font-size: 0.88rem; /* 3. Reduced slightly from 0.95rem */
+  border-radius: 10px;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  /* Premium easing: fast start, gentle deceleration */
+  transition:
+    background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    transform       0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    color           0.2s ease,
+    box-shadow      0.25s ease;
 
-  /* Pushes the badge to the far right */
-  .nav-label {
-    flex-grow: 1; 
-    white-space: nowrap; /* 4. CRITICAL: This forces the text to stay on one line no matter what */
-    overflow: hidden; /* Just in case it's still too long, it won't break the layout */
-    text-overflow: ellipsis; /* Adds '...' if the screen is ever too small */
+  /* Inactive hover: fade in translucent fill + satisfying slide right */
+  &:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.10);
+    transform: translateX(4px);
+    color: rgba(255, 255, 255, 1);
   }
 
-  /* --- NEW SVG BADGE STYLING --- */
+  .nav-label {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* --- BADGE --- */
   .badge-container {
     position: relative;
     width: 24px;
@@ -79,7 +104,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-shrink: 0; /* Ensures the badge never gets squished */
+    flex-shrink: 0;
+    animation: badgePulse 2s infinite;
+    border-radius: 50%;
   }
 
   .circle-mask {
@@ -95,32 +122,61 @@
     z-index: 1;
     font-size: 0.75rem;
     font-weight: 700;
-    color: #8a0000; 
+    color: #8a0000;
   }
 
-  /* The active state */
+  /* --- FLOATING WHITE PILL (Active state) --- */
   &.active {
-    background-color: white;
+    background-color: #ffffff;
     color: #8a0000;
-    font-weight: 600;
+    font-weight: 700;
+    /* Floating elevation: looks like pressed glass on the red background */
+    box-shadow:
+      0 4px 10px rgba(0, 0, 0, 0.18),
+      0 1px 3px  rgba(0, 0, 0, 0.12);
+    /* Stays put — no translateX on active */
+    transform: translateX(0);
+
+    .custom-mask {
+      /* Force the icon to inherit the maroon color when active */
+      background-color: #8a0000;
+    }
 
     .badge-container {
-      .badge-number {
-        color: white; 
-      }
+      animation: none;
+      .badge-number { color: white; }
     }
-  }
-
-  /* Hover effect */
-  &:hover:not(.active) {
-    background-color: rgba(255, 255, 255, 0.1);
   }
 }
 
 .bottom-links {
-  padding: 0 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding-top: 20px;
+  padding: 0 14px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 12px;
+
+  /* Custom hover for the sign-out action: warmer/darker shift to signal danger */
+  .nav-item {
+    color: rgba(255, 255, 255, 0.75);
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.20);
+      transform: translateX(4px);
+      color: rgba(255, 255, 255, 0.95);
+    }
+  }
+}
+
+@keyframes badgePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
 }
 
 /* --- SVG MASKS FOR SIDEBAR --- */
@@ -128,7 +184,7 @@
   width: 20px;
   height: 20px;
   display: inline-block;
-  background-color: currentColor; 
+  background-color: currentColor;
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
@@ -137,76 +193,130 @@
   -webkit-mask-position: center;
 }
 
-.dashboard-mask   { mask-image: url('/assets/icons/dashboard-icon.svg'); -webkit-mask-image: url('/assets/icons/dashboard-icon.svg'); }
-.box-mask         { mask-image: url('/assets/icons/item-management-icon.svg'); -webkit-mask-image: url('/assets/icons/item-management-icon.svg'); }
-.check-mask       { mask-image: url('/assets/icons/claim-verification-icon.svg'); -webkit-mask-image: url('/assets/icons/claim-verification-icon.svg'); }
-.plus-mask        { mask-image: url('/assets/icons/post-item-icon.svg'); -webkit-mask-image: url('/assets/icons/post-item-icon.svg'); }
-.user-mask        { mask-image: url('/assets/icons/users-icon.svg'); -webkit-mask-image: url('/assets/icons/users-icon.svg'); }
-.door-mask        { mask-image: url('/assets/icons/logout-icon.svg'); -webkit-mask-image: url('/assets/icons/logout-icon.svg'); }
-.history-mask     { mask-image: url('/assets/icons/settled-items-icon.svg'); -webkit-mask-image: url('/assets/icons/settled-items-icon.svg'); }
-.circle-mask      { mask-image: url('/assets/icons/circle-icon.svg'); -webkit-mask-image: url('/assets/icons/circle-icon.svg'); }
+.dashboard-mask {
+  mask-image: url('/assets/icons/dashboard-icon.svg');
+  -webkit-mask-image: url('/assets/icons/dashboard-icon.svg');
+}
+
+.box-mask {
+  mask-image: url('/assets/icons/item-management-icon.svg');
+  -webkit-mask-image: url('/assets/icons/item-management-icon.svg');
+}
+
+.check-mask {
+  mask-image: url('/assets/icons/claim-verification-icon.svg');
+  -webkit-mask-image: url('/assets/icons/claim-verification-icon.svg');
+}
+
+.plus-mask {
+  mask-image: url('/assets/icons/post-item-icon.svg');
+  -webkit-mask-image: url('/assets/icons/post-item-icon.svg');
+}
+
+.user-mask {
+  mask-image: url('/assets/icons/users-icon.svg');
+  -webkit-mask-image: url('/assets/icons/users-icon.svg');
+}
+
+.door-mask {
+  mask-image: url('/assets/icons/logout-icon.svg');
+  -webkit-mask-image: url('/assets/icons/logout-icon.svg');
+}
+
+.history-mask {
+  mask-image: url('/assets/icons/settled-items-icon.svg');
+  -webkit-mask-image: url('/assets/icons/settled-items-icon.svg');
+}
+
+.circle-mask {
+  mask-image: url('/assets/icons/circle-icon.svg');
+  -webkit-mask-image: url('/assets/icons/circle-icon.svg');
+}
 
 /* --- CUSTOM LOGOUT MODAL --- */
-.modal-overlay {
+.signout-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
+  background-color: rgba(15, 23, 42, 0.65); /* Sleek dark slate overlay, no blur */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000; /* Higher than the sidebar's 1000 */
+  z-index: 2000;
+  animation: fadeIn 0.2s ease-out;
 }
 
-.modal-content {
+.signout-card {
   background-color: white;
-  padding: 30px;
+  padding: 24px;
   border-radius: 12px;
-  width: 320px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  color: #333;
-
-  h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #8a0000;
-  }
-
-  p {
-    margin-bottom: 25px;
-    font-size: 0.95rem;
-    color: #555;
-  }
+  width: 340px; /* Slightly smaller and punchier */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  animation: modalScaleIn 0.2s ease-out;
+  text-align: left;
 }
 
-.modal-actions {
+.signout-title {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a; /* Dark sleek color */
+}
+
+.signout-subtext {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.signout-actions {
   display: flex;
-  gap: 10px;
+  justify-content: flex-end; /* Right-align the buttons */
+  gap: 12px;
 
   button {
-    flex: 1;
-    padding: 10px;
-    border-radius: 6px;
-    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
   }
 
-  .cancel-btn {
-    background-color: #f1f1f1;
-    color: #333;
+  .signout-btn-cancel {
+    background-color: transparent;
+    color: #475569;
+    border: none;
 
-    &:hover { background-color: #e4e4e4; }
+    &:hover {
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
   }
 
-  .confirm-btn {
-    background-color: #8a0000;
+  .signout-btn-confirm {
+    background-color: #8a0000; /* Primary brand maroon */
     color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(138, 0, 0, 0.2);
 
-    &:hover { background-color: #6a0000; }
+    &:hover {
+      background-color: #6a0000;
+    }
   }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }

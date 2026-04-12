@@ -1,122 +1,189 @@
 <div class="dashboard-layout">
-  <app-sidebar></app-sidebar> 
+  <app-sidebar></app-sidebar>
   <main class="main-content">
-    <header class="page-header">
-      <h1>Item Management</h1>
-    </header>
+    
+    <!-- ── Hardware-Accelerated Page Transition Wrapper ── -->
+    <div id="page-content" class="page-transition-wrapper" [class.is-entering]="!pageEntered" [class.is-entered]="pageEntered">
 
-    <div class="controls-section">
-      <div class="search-bar">
-        <span class="custom-mask search-icon-mask"></span>
-        <input type="text" placeholder="What are you looking for?" (input)="onSearch($event)">
-      </div>
-    </div>
+      <header class="page-header">
+        <h1>Item Management</h1>
+        <p class="page-subtitle">Browse, inspect and manage all reported found items.</p>
+      </header>
 
-    <div class="items-grid">
-      @for (item of filteredItems; track item.id) {
-        <div class="item-card">
-          <div class="card-image">
-            <img [src]="item.imageUrl" (error)="item.imageUrl = '/assets/icons/no-img.svg'" [alt]="item.name">
-          </div>
-          <div class="card-content">
-            <h3>{{ item.name }}</h3>
-            <p class="description">{{ item.description }}</p>
-            
-            <div class="meta-info">
-              <div class="meta-row">
-                <span class="custom-mask location-icon-mask"></span> <span>{{ item.location }}</span>
-              </div>
-              <div class="meta-row">
-                <span class="custom-mask calendar-icon-mask"></span> <span>{{ item.date }}</span>
-              </div>
-            </div>
-
-            <div class="card-actions">
-              <button class="details-btn" (click)="openDetails(item)">Details</button>
-            </div>
-          </div>
+      <div class="controls-section">
+        <div class="search-bar">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" placeholder="What are you looking for?" (input)="onSearch($event)">
         </div>
-      } @empty {
-        <p>No items found matching your search.</p>
-      }
-    </div> 
+      </div>
+
+      <!-- ── Premium Grid View (Replaces List View) ── -->
+      <div class="admin-grid-container">
+        @for (item of filteredItems; track item.id) {
+          <div class="admin-item-card">
+            
+            <!-- Top: 16:9 Thumbnail -->
+            <div class="admin-item-card__image-wrap">
+              <img [src]="item.imageUrl" (error)="item.imageUrl = '/assets/icons/no-img.svg'" [alt]="item.name" class="admin-item-card__image" >
+            </div>
+
+            <!-- Bottom: Primary Info & Actions -->
+            <div class="admin-item-card__content">
+              <div class="admin-item-card__info">
+                <h3 class="admin-item-card__title">{{ item.name }}</h3>
+                <div class="admin-item-card__meta">
+                  <div class="meta-item">
+                    <svg class="icon-small" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span>{{ item.location }}</span>
+                  </div>
+                  <div class="meta-item">
+                    <svg class="icon-small" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <span>{{ item.date }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="admin-item-card__actions">
+                <button class="btn-compact btn-compact--primary" (click)="openDetails(item)">Details</button>
+              </div>
+            </div>
+            
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <p>No posted items yet.</p>
+          </div>
+        }
+      </div>
+
+    </div>
   </main>
 </div>
 
+<!-- ── Existing Modal Logic Remains Untouched ── -->
 @if (selectedItem) {
-  <div class="modal-overlay" (click)="closeModal()">
-    
-    <div class="modal-box" (click)="$event.stopPropagation()">
-      
-      <button class="close-x" (click)="closeModal()">✕</button>
+<div class="modal-backdrop" (click)="closeModal()">
 
-      @if (modalMode === 'view') {
-        <div class="view-state">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+
+    @if (modalMode === 'view') {
+      <div class="modal-header">
+        <h2>Item Details</h2>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
+
+      <div class="modal-body view-state">
+        <div class="item-summary">
           <img [src]="selectedItem.imageUrl" alt="Item Image" class="modal-img">
-          <h2>{{ selectedItem.name }}</h2>
+          <div class="item-text">
+            <h3>{{ selectedItem.name }}</h3>
+            <div class="meta-info">
+              <div class="meta-item">
+                <span class="meta-icon location-icon"></span>
+                <span><strong>Location:</strong> {{ selectedItem.location }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-icon calendar-icon"></span>
+                <span><strong>Date:</strong> {{ selectedItem.date }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-icon label-icon"></span>
+                <span><strong>Status:</strong> {{ selectedItem.status }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="description-section">
+          <h4>Description</h4>
           <p class="desc">{{ selectedItem.description }}</p>
-          
-          <div class="meta-info">
-            <div class="meta-item">
-              <span class="meta-icon location-icon"></span>
-              <span><strong>Location:</strong> {{ selectedItem.location }}</span>
+        </div>
+      </div>
+
+      <div class="modal-footer modal-actions">
+        <button class="edit-btn" (click)="changeMode('edit')">Edit Details</button>
+        <button class="delete-btn" (click)="changeMode('delete')">Delete Item</button>
+      </div>
+    }
+
+    @if (modalMode === 'edit') {
+      <div class="modal-header">
+        <h2>Edit Item</h2>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
+
+      <div class="modal-body edit-state">
+        <form [formGroup]="editForm" class="edit-form">
+          <label>Item Title</label>
+          <input type="text" formControlName="name">
+
+          <label>Description</label>
+          <textarea formControlName="description"></textarea>
+
+          <label>Location</label>
+          <input type="text" formControlName="location">
+
+          <label>Date</label>
+          <input type="date" formControlName="date">
+
+          <div class="image-upload-section">
+            @if (uploadedImageBase64) {
+            <div class="image-preview-wrapper">
+              <img [src]="uploadedImageBase64" alt="Item Preview" class="preview-img">
             </div>
-            <div class="meta-item">
-              <span class="meta-icon calendar-icon"></span>
-              <span><strong>Date:</strong> {{ selectedItem.date }}</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-icon label-icon"></span>
-              <span><strong>Status:</strong> {{ selectedItem.status }}</span>
+            }
+
+            <div class="upload-zone" [class.upload-zone--active]="isDragging" (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
+              <span class="material-symbols-outlined upload-icon">cloud_upload</span>
+              <p class="upload-text">
+                <span class="highlight">Click to browse</span> or drag and drop
+              </p>
+              <p class="upload-subtext">PNG, JPG, or JPEG (Max 10MB)</p>
+
+              <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
             </div>
           </div>
+        </form>
+      </div>
 
-          <div class="modal-actions">
-            <button class="edit-btn" (click)="changeMode('edit')">Edit Details</button>
-            <button class="delete-btn" (click)="changeMode('delete')">Delete Item</button>
-          </div>
-        </div>
-      }
+      <div class="modal-footer modal-actions">
+        <button type="button" class="cancel-btn" (click)="changeMode('view')">Cancel</button>
+        <button type="button" class="save-btn" (click)="saveChanges()">Save Changes</button>
+      </div>
+    }
 
-      @if (modalMode === 'edit') {
-        <div class="edit-state">
-          <h2>Edit Item</h2>
-          
-          <form [formGroup]="editForm" class="edit-form">
-            <label>Item Title</label>
-            <input type="text" formControlName="name">
+    @if (modalMode === 'delete') {
+      <div class="modal-header">
+        <h2>Delete Item?</h2>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
+      </div>
 
-            <label>Description</label>
-            <textarea formControlName="description"></textarea>
+      <div class="modal-body delete-state">
+        <div class="warning-icon"></div>
+        <p>Are you absolutely sure you want to delete <strong>{{ selectedItem.name }}</strong>? This action cannot be undone.</p>
+      </div>
 
-            <label>Location</label>
-            <input type="text" formControlName="location">
+      <div class="modal-footer modal-actions">
+        <button class="cancel-btn" (click)="changeMode('view')">No, Cancel</button>
+        <button class="confirm-delete-btn" (click)="confirmDelete()">Yes, Delete</button>
+      </div>
+    }
 
-            <label>Date</label>
-            <input type="date" formControlName="date">
-
-            <div class="modal-actions">
-              <button type="button" class="cancel-btn" (click)="changeMode('view')">Cancel</button>
-              <button type="button" class="save-btn" (click)="saveChanges()">Save Changes</button>
-            </div>
-          </form>
-        </div>
-      }
-
-      @if (modalMode === 'delete') {
-        <div class="delete-state">
-          <div class="warning-icon"></div>
-          
-          <h2>Delete {{ selectedItem.name }}?</h2>
-          <p>Are you absolutely sure you want to delete this item? This action cannot be undone.</p>
-          
-          <div class="modal-actions">
-            <button class="cancel-btn" (click)="changeMode('view')">No, Cancel</button>
-            <button class="confirm-delete-btn" (click)="confirmDelete()">Yes, Delete</button>
-          </div>
-        </div>
-      }
-
-    </div>
   </div>
+</div>
 }

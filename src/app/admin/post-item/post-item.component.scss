@@ -1,169 +1,273 @@
-/* --- MAIN WRAPPER --- */
-.post-item-container {
-  margin-left: 260px; 
-  padding: 20px 40px;
-  box-sizing: border-box;
-  width: 80%;
+/* ── PREMIUM ANIMATIONS ── */
+$easing-premium-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+$transition-duration: 0.4s;
+$maroon: #8a0000;
+
+.page-transition-wrapper {
+  will-change: transform, opacity;
+
+  /* SAFETY NET: Default to fully visible in case JS or Angular fails */
+  opacity: 1;
+  transform: translateY(0) scale(1);
+
+  /* The start state applied dynamically by Angular BEFORE animation */
+  &.is-entering {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+
+  /* The end state applied by JS to trigger the transition */
+  &.is-entered {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition:
+      opacity $transition-duration ease-out,
+      transform $transition-duration $easing-premium-entrance;
+  }
 }
 
-.page-title {
-  font-size: 1.8rem;
-  margin-top: 20px;
-  margin-bottom: 40px;
-  color: #000;
+/* --- PAGE WRAPPER --- */
+.post-item-page {
+  margin-left: 260px;
+  padding: 32px;
+  box-sizing: border-box;
+  width: calc(100% - 260px);
+  background-color: #f4f5f8; /* Shared cool-gray system background */
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* --- PAGE HEADER --- */
+.page-header {
+  margin-bottom: 28px;
+
+  h1 {
+    margin: 0 0 4px 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+  }
+
+  .page-subtitle {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+}
+
+/* --- FORM CARD --- */
+.form-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  padding: 32px;
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
 }
 
 /* --- FORM LAYOUT --- */
 .post-item-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  max-width: 700px; /* Constrains the inputs to look more proportional */
-  margin: 0 auto;   /* Centers the form in the page */
+  gap: 22px;
 }
 
-/* --- STANDARD INPUTS --- */
+/* --- FORM GROUPS & INPUTS --- */
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 
   label {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    color: #333;
+    color: #334155;
+    letter-spacing: 0.01em;
   }
 
-  input, textarea {
-    padding: 14px 15px;
-    border: 1px solid #e4e4e4;
-    border-radius: 6px;
-    font-size: 0.95rem;
+  input,
+  textarea {
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.9rem;
     font-family: inherit;
+    color: #0f172a;
+    background-color: #ffffff;
     outline: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-    transition: border-color 0.2s;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+
+    &::placeholder {
+      color: #94a3b8;
+    }
 
     &:focus {
       border-color: #8a0000;
+      box-shadow: 0 0 0 3px rgba(138, 0, 0, 0.08);
     }
   }
 
   textarea {
-    min-height: 120px;
-    resize: vertical; 
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.55;
   }
 }
 
 /* --- SIDE-BY-SIDE ROW --- */
 .form-row {
   display: flex;
-  gap: 20px;
+  gap: 16px;
 
   .location-input {
-    flex: 3; 
+    flex: 3;
   }
 
   .date-input {
-    flex: 1; 
-    
+    flex: 1;
+
     input {
-      text-align: center;
+      text-align: left;
     }
   }
 }
 
-/* --- CUSTOM UPLOAD DROPZONE --- */
-.upload-dropzone {
-  background-color: #f1f1f1; 
-  border: 1px solid #e4e4e4;
-  border-radius: 8px;
-  height: 180px; 
-  padding: 15px; 
-  box-sizing: border-box; 
+/* --- DRAG-AND-DROP UPLOAD ZONE --- */
+.post-upload-zone {
+  background-color: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  min-height: 140px;
+  padding: 20px;
+  box-sizing: border-box;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  overflow: hidden; 
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  gap: 10px;
 
   &:hover {
-    background-color: #e9e9e9;
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
   }
 
-  img {
-    max-height: 110px; 
-    max-width: 100%;
-    object-fit: contain; 
-    border-radius: 6px;
-    margin-bottom: 10px;
+  &--active {
+    background-color: #fff5f5;
+    border-color: #8a0000;
+    box-shadow: 0 4px 15px rgba(138, 0, 0, 0.08);
   }
 
   .upload-icon {
-    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+
+    .material-symbols-outlined {
+      font-size: 48px;
+      color: #8a0000;
+    }
   }
 
   .upload-text {
-    margin: 0 0 5px 0;
+    margin: 0;
     font-size: 0.9rem;
-    color: #555;
+    font-weight: 500;
+    color: #475569;
 
     .highlight {
-      color: #8a0000; 
-      font-weight: 600;
+      color: #8a0000;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 2px;
     }
   }
 
   .upload-subtext {
     margin: 0;
-    font-size: 0.75rem;
-    color: #999;
+    font-size: 0.78rem;
+    color: #94a3b8;
   }
+
+  .image-preview-container {
+    margin-bottom: 8px;
+
+    img {
+      max-height: 100px;
+      max-width: 100%;
+      border-radius: 10px;
+      object-fit: contain;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+      animation: fadeIn 0.4s ease forwards;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* --- SUBMIT BUTTON --- */
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 15px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
 
   .submit-btn {
-    background-color: #7a0000; 
-    color: white;
+    background-color: #7f0000;
+    color: #ffffff;
     border: none;
-    padding: 12px 40px;
-    border-radius: 6px;
+    padding: 12px 36px;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
     cursor: pointer;
-    transition: background-color 0.2s;
+    box-shadow: 0 4px 10px rgba(127, 0, 0, 0.15);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
 
-    &:hover {
-      background-color: #5c0000;
+    &:hover:not(:disabled) {
+      background-color: #600000;
+      box-shadow: 0 6px 16px rgba(127, 0, 0, 0.22);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   }
 }
 
 /* --- TOAST NOTIFICATIONS --- */
 .toast {
-  position: fixed;       
-  top: 40px;             
-  left: 50%;             
-  transform: translateX(-50%); 
-  z-index: 2000;         
+  position: fixed;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
   color: white;
   padding: 14px 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   min-width: 320px;
   display: flex;
   align-items: center;
   gap: 12px;
   font-weight: 500;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); 
-  animation: slideDown 0.3s ease-out; 
+  font-size: 0.9rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.3s ease-out;
 }
 
 .success-toast {
@@ -171,16 +275,10 @@
 }
 
 .error-toast {
-  background-color: #c62828; /* A nice visible alert red */
+  background-color: #c62828;
 }
 
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -20px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
+  from { opacity: 0; transform: translate(-50%, -16px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
 }

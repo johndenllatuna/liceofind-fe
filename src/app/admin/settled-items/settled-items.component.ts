@@ -1,8 +1,10 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { Sidebar } from '../../shared/sidebar/sidebar.component';
 import { ClaimService, Claim } from '../../services/claim.service';
+import { Subscription } from 'rxjs';
+import { Image } from '../../services/image.service';
 
 @Component({
   selector: 'app-settled-items',
@@ -11,10 +13,13 @@ import { ClaimService, Claim } from '../../services/claim.service';
   templateUrl: './settled-items.component.html',
   styleUrls: ['./settled-items.component.scss']
 })
-export class SettledItems implements OnInit {
+export class SettledItems implements OnInit, OnDestroy, AfterViewInit {
   private claimService = inject(ClaimService);
-  private cdr = inject(ChangeDetectorRef); // <-- NEW: Forces UI to update
+  private imageService = inject(Image);
+  private cdr = inject(ChangeDetectorRef);
+  private claimSub: Subscription | null = null;
   
+  pageEntered: boolean = false;
   settledClaims: Claim[] = [];
   filteredClaims: Claim[] = [];
   searchTerm: string = '';
@@ -23,10 +28,26 @@ export class SettledItems implements OnInit {
   tempProofDetails: string = '';
   selectedFile: File | null = null;
   tempImageUrl: string | ArrayBuffer | null = null; 
-
+  isDragging: boolean = false; // New state for Drag & Drop feedback
   ngOnInit() {
-    this.settledClaims = this.claimService.getClaims().filter(claim => claim.status === 'verified');
-    this.filteredClaims = [...this.settledClaims];
+    this.claimSub = this.claimService.getClaims().subscribe((claims: Claim[]) => {
+      this.settledClaims = claims.filter((claim: Claim) => claim.status === 'verified');
+      this.filterItems(); // Ensure search filters persist if data hot-reloads
+    });
+  }
+
+  ngAfterViewInit() {
+    // Trigger entrance animation cleanly
+    setTimeout(() => {
+      this.pageEntered = true;
+      this.cdr.detectChanges(); // Force Angular to evaluate [class.is-entered] immediately
+    }, 50);
+  }
+
+  ngOnDestroy() {
+    if (this.claimSub) {
+      this.claimSub.unsubscribe();
+    }
   }
 
   filterItems() {
@@ -87,20 +108,42 @@ export class SettledItems implements OnInit {
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.tempImageUrl = e.target?.result as string;
-        this.cdr.detectChanges(); 
-        
-        // ✨ FIX 2: Moved this inside the callback! 
-        // Now it safely clears the input ONLY AFTER the image has been read.
-        input.value = ''; 
-      };
-      
-      reader.readAsDataURL(this.selectedFile);
+      this.processFile(input.files[0]);
+      input.value = ''; // Safely clear for future selections
     }
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+    
+    const file = event.dataTransfer?.files[0];
+    if (file && file.type.startsWith('image/')) {
+      this.processFile(file);
+    }
+  }
+
+  private processFile(file: File) {
+    this.selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.tempImageUrl = e.target?.result as string;
+      this.cdr.detectChanges(); 
+    };
+    reader.readAsDataURL(file);
   }
 
   saveChanges() {

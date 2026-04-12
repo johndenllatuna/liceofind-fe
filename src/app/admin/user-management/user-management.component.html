@@ -2,110 +2,134 @@
   <app-sidebar></app-sidebar>
 
   <main class="main-content">
-    <header class="page-header">
-      <h1>User Management</h1>
-    </header>
+    
+    <!-- ── Hardware-Accelerated Page Transition Wrapper ── -->
+    <div id="page-content" class="page-transition-wrapper" [class.is-entering]="!pageEntered" [class.is-entered]="pageEntered">
 
-    <div class="controls-row">
-      <div class="search-bar">
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input 
-          type="text" 
-          placeholder="Who are you looking for?" 
-          [(ngModel)]="searchTerm" 
-          (input)="applyFilters()">
-      </div>
+      <header class="page-header">
+        <h1>User Management</h1>
+        <p class="page-subtitle">View, filter, and manage all registered platform users.</p>
+      </header>
 
-      <div class="custom-dropdown" [class.open]="isDropdownOpen">
-        <button class="dropdown-toggle" (click)="toggleDropdown()">
-          <div class="selected-content">
-            <span class="role-dot" [ngClass]="{'dot-gold': selectedRole === 'All Roles', 'dot-green': selectedRole === 'Student', 'dot-maroon': selectedRole === 'Admin'}"></span>
-            <span class="selected-text" [ngClass]="{'text-gold': selectedRole === 'All Roles', 'text-green': selectedRole === 'Student', 'text-maroon': selectedRole === 'Admin'}">
-              {{ selectedRole }}
-            </span>
-          </div>
-          <span class="chevron">▼</span>
-        </button>
-        
-        @if (isDropdownOpen) {
-          <ul class="dropdown-menu">
-            <li (click)="selectRole('All Roles')" class="text-gold" [class.active]="selectedRole === 'All Roles'">
-              <span class="role-dot dot-gold"></span> All Roles
-            </li>
-            <li (click)="selectRole('Student')" class="text-green" [class.active]="selectedRole === 'Student'">
-              <span class="role-dot dot-green"></span> Student
-            </li>
-            <li (click)="selectRole('Admin')" class="text-maroon" [class.active]="selectedRole === 'Admin'">
-              <span class="role-dot dot-maroon"></span> Admin
-            </li>
-          </ul>
-        }
-      </div>
-    </div>
+      <div class="controls-row">
+        <div class="search-bar">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            placeholder="Who are you looking for?" 
+            [(ngModel)]="searchTerm" 
+            (input)="applyFilters()">
+        </div>
 
-    <div class="table-container">
-      <table class="user-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>University Email</th>
-            <th>Role</th>
-            <th class="center-align">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (user of filteredUsers; track user.id) {
-            <tr>
-              <td class="fw-bold">{{ user.name }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.role }}</td>
-              <td class="center-align">
-                <button 
-                  class="action-btn" 
-                  [class.deactivate]="user.isActive"
-                  [class.activate]="!user.isActive"
-                  (click)="openConfirmModal(user)"> {{ user.isActive ? 'Deactivate' : 'Activate' }}
-                </button>
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="4" class="empty-state">No users found.</td>
-            </tr>
+        <div class="custom-dropdown" [class.open]="isDropdownOpen">
+          <button class="dropdown-toggle" (click)="toggleDropdown()">
+            <div class="selected-content">
+              <span class="role-dot" [ngClass]="{'dot-grey': selectedRole === 'All Roles', 'dot-blue': selectedRole === 'Student', 'dot-maroon': selectedRole === 'Admin'}"></span>
+              <span class="selected-text" [ngClass]="{'text-grey': selectedRole === 'All Roles', 'text-blue': selectedRole === 'Student', 'text-maroon': selectedRole === 'Admin'}">
+                {{ selectedRole }}
+              </span>
+            </div>
+            <span class="chevron">▼</span>
+          </button>
+          
+          @if (isDropdownOpen) {
+            <ul class="dropdown-menu">
+              <li (click)="selectRole('All Roles')" class="text-grey" [class.active]="selectedRole === 'All Roles'">
+                <span class="role-dot dot-grey"></span> All Roles
+              </li>
+              <li (click)="selectRole('Student')" class="text-blue" [class.active]="selectedRole === 'Student'">
+                <span class="role-dot dot-blue"></span> Student
+              </li>
+              <li (click)="selectRole('Admin')" class="text-maroon" [class.active]="selectedRole === 'Admin'">
+                <span class="role-dot dot-maroon"></span> Admin
+              </li>
+            </ul>
           }
-        </tbody>
-      </table>
-    </div>
+        </div>
+      </div>
 
-    <div class="pagination-container">
-      <button class="page-btn">Previous</button>
-      <button class="page-num active">1</button>
-      <button class="page-num">2</button>
-      <button class="page-num">3</button>
-      <button class="page-num">4</button>
-      <button class="page-num">5</button>
-      <button class="page-btn">Next</button>
+      <div class="table-container">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>University Email</th>
+              <th>Role</th>
+              <th class="center-align">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of filteredUsers; track user.id) {
+              <tr>
+                <td class="fw-bold">{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td class="center-align">
+                  <button 
+                    class="action-btn" 
+                    [class.deactivate]="user.isActive"
+                    [class.activate]="!user.isActive"
+                    (click)="openConfirmModal(user)"> {{ user.isActive ? 'Deactivate' : 'Activate' }}
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="empty-state">
+                  <div class="empty-state-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                  </div>
+                  <p class="empty-state-text">No users found.</p>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-container">
+        <button class="page-btn">Previous</button>
+        <button class="page-num active">1</button>
+        <button class="page-num">2</button>
+        <button class="page-num">3</button>
+        <button class="page-num">4</button>
+        <button class="page-num">5</button>
+        <button class="page-btn">Next</button>
+      </div>
+
     </div>
   </main>
 </div>
 
 @if (showConfirmModal) {
   <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h2>Confirm {{ userToModify?.isActive ? 'Deactivation' : 'Activation' }} of account</h2>
+    <div class="deactivate-modal-card" (click)="$event.stopPropagation()">
+      <div class="deactivate-modal-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
       </div>
-      <div class="modal-body">
-        <p>Are you sure you want to {{ userToModify?.isActive ? 'Deactivate' : 'Activate' }} this account?</p>
-        <div class="modal-actions">
-          <button class="btn-close" (click)="closeModal()">Close</button>
-          <button class="btn-confirm" (click)="confirmAction()">
-            {{ userToModify?.isActive ? 'Deactivate' : 'Activate' }}
-          </button>
-        </div>
+      <h2 class="deactivate-modal-title">
+        {{ userToModify?.isActive ? 'Deactivate' : 'Activate' }} Account?
+      </h2>
+      <p class="deactivate-modal-subtext">
+        Are you sure you want to {{ userToModify?.isActive ? 'deactivate' : 'activate' }} this account? This action can be undone later.
+      </p>
+      <div class="deactivate-modal-actions">
+        <button class="modal-btn cancel-btn" (click)="closeModal()">Cancel</button>
+        <button class="modal-btn action-btn danger-btn" [class.success-btn]="!userToModify?.isActive" (click)="confirmAction()">
+          {{ userToModify?.isActive ? 'Deactivate' : 'Activate' }}
+        </button>
       </div>
     </div>
   </div>

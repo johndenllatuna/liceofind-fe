@@ -52,14 +52,14 @@
 </aside>
 
 @if (showLogoutModal) {
-  <div class="modal-overlay">
-    <div class="modal-content">
-      <h3>Sign Out</h3>
-      <p>Are you sure you want to leave the admin dashboard?</p>
+  <div class="signout-overlay">
+    <div class="signout-card">
+      <h3 class="signout-title">Sign Out</h3>
+      <p class="signout-subtext">Are you sure you want to end your session?</p>
       
-      <div class="modal-actions">
-        <button class="cancel-btn" (click)="cancelLogout()">Cancel</button>
-        <button class="confirm-btn" (click)="confirmLogout()">Sign Out</button>
+      <div class="signout-actions">
+        <button class="signout-btn-cancel" (click)="cancelLogout()">Cancel</button>
+        <button class="signout-btn-confirm" (click)="confirmLogout()">Sign Out</button>
       </div>
     </div>
   </div>

@@ -1,0 +1,94 @@
+<!-- Parallax background layers (controlled by TS) -->
+<div class="bg-parallax" [style.transform]="bgTransform"></div>
+<div class="bg-overlay"></div>
+
+<!-- Bokeh ambient particles -->
+<div class="bokeh-layer" aria-hidden="true">
+  <span class="bokeh b1"></span>
+  <span class="bokeh b2"></span>
+  <span class="bokeh b3"></span>
+  <span class="bokeh b4"></span>
+  <span class="bokeh b5"></span>
+  <span class="bokeh b6"></span>
+</div>
+
+<!-- Page wrapper -->
+<div class="login-wrapper" [style.transform]="cardTransform">
+
+  <!-- ── Frosted Glass OTP Card ─────────── -->
+  <main class="login-card">
+
+    <!-- ── Brand Header ──────────────────────── -->
+    <header class="login-header">
+      <div class="login-header__logo-wrap">
+        <!-- SVG Envelope / Verify Icon -->
+        <svg class="login-header__compass" xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+          <path d="M12 18h.01"></path>
+        </svg>
+      </div>
+      <div class="login-header__text">
+        <h1 class="login-header__title">Verify Email</h1>
+        <p class="login-header__sub">We sent a 6-digit code to your email.</p>
+      </div>
+    </header>
+
+    <form class="login-form" (ngSubmit)="handleConfirm()">
+
+      <!-- OTP Field -->
+      <div class="field-group">
+        <label class="field-label" for="verify-code">6-Digit Code</label>
+        <div class="field-input-wrap">
+          <!-- Key / Pin Icon -->
+          <svg class="field-icon" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <input
+            id="verify-code"
+            class="field-input"
+            type="text"
+            placeholder="000000"
+            maxlength="6"
+            autocomplete="one-time-code"
+            [(ngModel)]="code"
+            name="code"
+            style="letter-spacing: 0.25em; font-size: 1.25rem; font-weight: 700; text-align: center; padding-left: 16px;"
+          />
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="login-form__actions">
+        <button
+          class="btn-login"
+          type="submit"
+          [class.btn-login--loading]="isLoading()"
+          [disabled]="isLoading()"
+        >
+          @if (isLoading()) {
+            <span class="spinner"></span>
+            <span>Verifying...</span>
+          } @else {
+            <span class="btn-login__text">Confirm Code</span>
+            <svg class="btn-login__arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          }
+        </button>
+      </div>
+
+      <div class="login-form__row" style="justify-content: center; padding-top: 8px;">
+        <a class="forgot-link" href="#" (click)="resendCode($event)">Resend Code</a>
+      </div>
+
+    </form>
+  </main>
+</div>

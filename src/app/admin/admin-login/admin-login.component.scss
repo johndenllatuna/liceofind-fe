@@ -1,118 +1,451 @@
-/* The import MUST be at the very top of the file */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
+/* ═══════════════════════════════════════
+   DESIGN TOKENS (Light Maroon Theme)
+═══════════════════════════════════════ */
+$maroon:       #8a0000;
+$maroon-light: #a31515;
+$maroon-dark:  #630000;
+$slate-dark:   #0f172a;
+$slate-mid:    #475569;
+$slate-light:  #94a3b8;
+$glass-bg:     rgba(255, 255, 255, 0.85);
+$glass-border: rgba(255, 255, 255, 0.4);
+
+/* ═══════════════════════════════════════
+   WRAPPER + PARALLAX BACKGROUND
+═══════════════════════════════════════ */
 .login-wrapper {
+  position: relative;
   min-height: 100vh;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Inter', sans-serif; 
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
 
-  /* --- APPLY THE WASHED-OUT BACKGROUND EFFECT --- */
-
-  /* We achieve this by layering multiple background elements.
-     The FIRST item listed is on TOP of the stack. */
-  background-image: 
-    /* LAYER 1: The 'Hint of White' (a linear-gradient that is solid white) */
-    /* The 0.7 creates 70% opacity, letting some image through */
-    linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
-    
-    /* LAYER 2: The Base Image */
-    url('../../../assets/landingpage-bg.jpg'); // (Assuming correct path)
-
-  /* Standard background properties that apply to both layers */
+/* The actual background image in its own layer so we can transform it */
+.bg-parallax {
+  position: absolute;
+  inset: -6%;        /* overshoot edges so the parallax never reveals gaps */
+  background-image:
+    url('../../../assets/landingpage-bg.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  will-change: transform;
+  /* Smooth out each mouse-move tick */
+  transition: transform 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 0;
 }
 
+/* Light, warm daytime overlay to add contrast for the white frosted card */
+.bg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    /* Slight vignette to draw focus to the center */
+    radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.15) 100%),
+    /* Very subtle maroon tint just to warm the image and tie in the brand */
+    rgba(138, 0, 0, 0.05);
+  mix-blend-mode: normal;
+}
+
+/* ═══════════════════════════════════════
+   BOKEH PARTICLE LAYER (Daytime)
+═══════════════════════════════════════ */
+.bokeh-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bokeh {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  /* Soft white/warm particles for daytime glow */
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+  animation: bokeFloat linear infinite;
+  filter: blur(2px);
+}
+
+/* Size and position each bokeh circle individually */
+.b1 { width: 120px; height: 120px; left: 8%;  top: 70%; animation-duration: 18s; animation-delay:  0s;  }
+.b2 { width:  60px; height:  60px; left: 20%; top: 15%; animation-duration: 22s; animation-delay: -6s;  }
+.b3 { width:  90px; height:  90px; left: 45%; top: 80%; animation-duration: 25s; animation-delay: -3s;  }
+.b4 { width:  40px; height:  40px; left: 65%; top: 20%; animation-duration: 20s; animation-delay: -10s; }
+.b5 { width: 150px; height: 150px; left: 75%; top: 60%; animation-duration: 30s; animation-delay: -8s;  }
+.b6 { width:  50px; height:  50px; left: 90%; top: 40%; animation-duration: 16s; animation-delay: -4s;  }
+.b7 { width:  70px; height:  70px; left: 30%; top: 50%; animation-duration: 24s; animation-delay: -14s; }
+.b8 { width:  35px; height:  35px; left: 55%; top:  5%; animation-duration: 19s; animation-delay: -2s;  }
+
+@keyframes bokeFloat {
+  0%   { transform: translateY(0)   translateX(0);   opacity: 0;    }
+  10%  { opacity: 0.8; }
+  50%  { transform: translateY(-60px) translateX(20px); opacity: 0.5; }
+  90%  { opacity: 0.8; }
+  100% { transform: translateY(-120px) translateX(-10px); opacity: 0; }
+}
+
+/* ═══════════════════════════════════════
+   GLASSMORPHISM LOGIN CARD (Frosted White)
+═══════════════════════════════════════ */
 .login-card {
-  background-color: white;
-  padding: 80px; 
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  width: 500px;
-  max-width: 40vw; 
-  display: flex;
-  flex-direction: column;
-  align-items: center; 
+  position: relative;
+  z-index: 10;
+  width: 440px;
+  max-width: 92vw;
+  padding: 44px 44px 36px;
+  background: $glass-bg;
+  border: 1px solid $glass-border;
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px   rgba(0, 0, 0, 0.08); /* Soft dark shadow to lift the white card */
+  /* Smooth card entrance */
+  animation: cardFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Style the title and subtitles */
-/* Note: I removed the font-family lines here because they now inherit it from .login-wrapper */
-h1 { margin: 0; font-weight: 800; font-size: 2.2rem; } /* Changed to 800 to match your image */
-h2 { margin: 0; font-size: 1rem; color: #666; font-weight: 500; } /* Upped to 500 so it's not too thin */
-.admin-portal { margin: 0 0 20px 0; font-size: 0.9rem; color: #666; }
-
-/* Style the form and form groups */
-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px; 
+@keyframes cardFadeUp {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
 }
 
-.form-group {
+/* ═══════════════════════════════════════
+   BRAND HEADER
+═══════════════════════════════════════ */
+.brand-header {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  width: 100%;
+  align-items: center;
+  margin-bottom: 32px;
 }
 
-label {
+.compass-icon {
+  width: 32px;
+  height: 32px;
+  color: $maroon;
+  margin-bottom: 10px;
+}
+
+.brand-title {
+  margin: 0 0 6px;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: $maroon;
+}
+
+.brand-sub {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: $slate-mid;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.brand-portal-badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
   font-weight: 600;
-  font-size: 0.9rem;
-  color: #333;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $maroon;
+  border: 1px solid rgba($maroon, 0.2);
+  background: rgba($maroon, 0.05);
 }
 
-input[type="email"], input[type="password"] {
-  padding: 12px 15px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-  /* 2. Force inputs to inherit the Inter font instead of using Arial/Times */
-  font-family: inherit; 
+/* ═══════════════════════════════════════
+   FORM FIELDS
+═══════════════════════════════════════ */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
 }
 
-/* Style the Remember Me/Forgot group */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+
+  label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: $slate-mid;
+  }
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .field-icon {
+    position: absolute;
+    left: 14px;
+    width: 16px;
+    height: 16px;
+    color: $slate-light;
+    pointer-events: none;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+  }
+
+  input {
+    width: 100%;
+    padding: 13px 16px 13px 42px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    font-weight: 500;
+    color: $slate-dark;
+    outline: none;
+    transition:
+      border-color 0.22s ease,
+      box-shadow   0.22s ease,
+      background   0.22s ease;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: $slate-light;
+      font-weight: 400;
+    }
+
+    &:focus {
+      border-color: rgba($maroon, 0.5);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba($maroon, 0.1);
+    }
+
+    /* Focus brightens the companion icon */
+    &:focus ~ .field-icon { color: $maroon; }
+  }
+
+  /* Re-target icon when input is focused */
+  &:focus-within .field-icon {
+    color: $maroon;
+  }
+}
+
+.field-error {
+  font-size: 0.75rem;
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   OPTIONS ROW (Remember me / Forgot)
+═══════════════════════════════════════ */
 .options-group {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  font-size: 0.85rem;
 }
 
-.remember-me {
+.remember-label {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 7px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: $slate-mid;
+  cursor: pointer;
+  user-select: none;
+
+  input[type="checkbox"] {
+    accent-color: $maroon;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+  }
 }
 
-.forgot-password {
-  color: #8a0000; 
+.forgot-link {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $maroon;
   text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-bottom-color 0.2s ease;
+
+  &:hover {
+    color: $maroon-light;
+    border-bottom-color: $maroon-light;
+  }
+}
+
+/* ═══════════════════════════════════════
+   LOGIN ERROR
+═══════════════════════════════════════ */
+.login-error {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #d32f2f;
+  text-align: center;
+  background: rgba(211, 47, 47, 0.08);
+  border: 1px solid rgba(211, 47, 47, 0.15);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+/* ═══════════════════════════════════════
+   SIGN IN BUTTON — Maroon Solid + Arrow
+═══════════════════════════════════════ */
+.sign-in-btn {
+  position: relative;
+  width: 100%;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  cursor: pointer;
+  background: $maroon;
+  box-shadow: 0 4px 14px rgba($maroon, 0.25);
+  transition:
+    transform    0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow   0.2s ease,
+    background   0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
+
+  .btn-text {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.22s ease;
+  }
+
+  .btn-arrow {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    z-index: 1;
+    /* Start hidden to the left */
+    transform: translateX(-4px);
+    opacity: 0;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+  }
+
+  &:hover:not(.disabled) {
+    transform: scale(1.02) translateY(-1px);
+    box-shadow: 0 6px 20px rgba($maroon, 0.35);
+    background: $maroon-light;
+
+    .btn-text  { transform: translateX(-6px); }
+    .btn-arrow { transform: translateX(0);    opacity: 1; }
+  }
+
+  &:active:not(.disabled) {
+    transform: scale(0.98) translateY(0);
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* ═══════════════════════════════════════
+   FORGOT PASSWORD PANEL
+═══════════════════════════════════════ */
+.forgot-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.forgot-prompt {
+  margin: 0;
+  font-size: 0.88rem;
+  color: $slate-mid;
+  text-align: center;
+  line-height: 1.55;
   font-weight: 500;
 }
 
-/* Style the Sign In button */
-.sign-in-btn {
-  background-color: #660000; 
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 15px 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-  /* 3. Force the button to inherit the Inter font as well */
-  font-family: inherit; 
+.reset-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 10px;
+  background: rgba(30, 80, 50, 0.08);
+  border: 1px solid rgba(30, 80, 50, 0.15);
+
+  svg {
+    width: 32px;
+    height: 32px;
+    color: #2e7d32;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #1b5e20;
+    text-align: center;
+    line-height: 1.5;
+  }
 }
 
-/* Style the bottom text */
-.bottom-text {
-  margin-top: 30px;
-  font-size: 0.8rem;
-  color: #777;
+.back-link {
+  background: none;
+  border: none;
+  color: $slate-mid;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 6px 0;
+  text-align: left;
+  transition: color 0.2s ease, border-bottom-color 0.2s ease;
+  border-bottom: 1px solid transparent;
+  width: fit-content;
+
+  &:hover {
+    color: $maroon;
+    border-bottom-color: $maroon;
+  }
+}
+
+/* ═══════════════════════════════════════
+   FOOTER TEXT
+═══════════════════════════════════════ */
+.footer-text {
+  margin: 28px 0 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: $slate-light;
+  text-align: center;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }

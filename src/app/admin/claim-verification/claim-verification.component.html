@@ -2,68 +2,87 @@
   <app-sidebar></app-sidebar> 
 
   <main class="main-content">
-    <header class="page-header">
-      <h1>Claim Verification</h1>
-    </header>
+    <!-- ── Hardware-Accelerated Page Transition Wrapper ── -->
+    <div id="page-content" class="page-transition-wrapper" [class.is-entering]="!pageEntered" [class.is-entered]="pageEntered">
 
-    <div class="status-tabs">
-      <button [class.active]="activeTab === 'all'" (click)="setTab('all')">All</button>
-      <button [class.active]="activeTab === 'pending'" (click)="setTab('pending')">Pending</button>
-      <button [class.active]="activeTab === 'verified'" (click)="setTab('verified')">Verified</button>
-      <button [class.active]="activeTab === 'rejected'" (click)="setTab('rejected')">Rejected</button>
-    </div>
+      <header class="page-header">
+        <h1>Claim Verification</h1>
+        <p class="page-subtitle">Review, approve, and manage all incoming item claims.</p>
+      </header>
 
-    <div class="table-container">
-      <table class="claims-table">
-        
-        <thead>
-          <tr>
-            <th>Claim ID</th>
-            <th>Item Details</th>
-            <th>Claimant Name</th>
-            <th>Date Submitted</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        
-        <tbody>
-          @for (claim of filteredClaims; track claim.id) {
+      <div class="status-tabs">
+        <button [class.active]="activeTab === 'all'" (click)="setTab('all')">All</button>
+        <button [class.active]="activeTab === 'pending'" (click)="setTab('pending')">Pending</button>
+        <button [class.active]="activeTab === 'verified'" (click)="setTab('verified')">Verified</button>
+        <button [class.active]="activeTab === 'rejected'" (click)="setTab('rejected')">Rejected</button>
+      </div>
+
+      <div class="table-container">
+        <table class="claims-table">
+          
+          <thead>
             <tr>
-              <td class="id-column">{{ claim.id }}</td>
-              
-              <td class="item-column">
-                <div class="item-cell">
-                  <img [src]="claim.itemImageUrl" onerror="this.src='https://placehold.co/40x40?text=No+Img'" alt="Item">
-                  <span>{{ claim.itemName }}</span>
-                </div>
-              </td>
-              
-              <td>{{ claim.claimantName }}</td>
-              <td>{{ claim.claimDate }}</td>
-              
-              <td>
-                <span class="status-badge" [ngClass]="claim.status">{{ claim.status }}</span>
-              </td>
-              
-              <td class="action-column">
-                @if (claim.status === 'pending') {
-                    <button class="review-btn" (click)="openReviewModal(claim)">Review</button>
-                        } @else {
-                    <button class="view-btn" (click)="openReviewModal(claim)">View</button>
-                                                    }
-            </td>
+              <th>Claim ID</th>
+              <th>Item Details</th>
+              <th>Claimant Name</th>
+              <th>Date Submitted</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
-          } @empty {
-            <tr>
-              <td colspan="6" class="empty-state">
-                No claims found for this status.
+          </thead>
+          
+          <tbody>
+            @for (claim of filteredClaims; track claim.id) {
+              <tr>
+                <td class="id-column">{{ claim.id }}</td>
+                
+                <td class="item-column">
+                  <div class="item-cell">
+                    <img [src]="claim.itemImageUrl" onerror="this.src='https://placehold.co/40x40?text=No+Img'" alt="Item">
+                    <span>{{ claim.itemName }}</span>
+                  </div>
+                </td>
+                
+                <td>
+                  <div class="claimant-info">
+                    <span class="name">{{ claim.claimantName }}</span>
+                    <span class="email">{{ claim.claimantEmail }}</span>
+                  </div>
+                </td>
+                <td>{{ claim.claimDate }}</td>
+                
+                <td>
+                  <span class="status-badge" [ngClass]="claim.status">{{ claim.status }}</span>
+                </td>
+                
+                <td class="action-column">
+                  @if (claim.status === 'pending') {
+                      <button class="review-btn" (click)="openReviewModal(claim)">Review</button>
+                          } @else {
+                      <button class="view-btn" (click)="openReviewModal(claim)">View</button>
+                                                      }
               </td>
-            </tr>
-          }
-        </tbody>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="empty-state">
+                  <div class="empty-state-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      <line x1="11" y1="8" x2="11" y2="14"></line>
+                      <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                  </div>
+                  <p class="empty-state-text">No claims found for this status.</p>
+                </td>
+              </tr>
+            }
+          </tbody>
 
-      </table>
+        </table>
+      </div>
+
     </div>
 
   </main>
@@ -80,29 +99,55 @@
       </div>
 
       <div class="modal-body">
-        <div class="item-summary">
-          <img [src]="selectedClaim.itemImageUrl" onerror="this.src='https://placehold.co/100x100?text=No+Img'" alt="Item">
-          <div class="item-text">
-            <h3>{{ selectedClaim.itemName }}</h3>
-            <p><strong>Claimant:</strong> {{ selectedClaim.claimantName }}</p>
-            <p><strong>Date Submitted:</strong> {{ selectedClaim.claimDate }}</p>
-          </div>
-        </div>
-
-        <div class="proof-section">
-          <h4>Submitted Evidence</h4>
-          <div class="proof-box">
-            <p>"{{ selectedClaim.proofText }}"</p>
-            
-            <div class="proof-attachment">
-              <span class="attachment-icon">📄</span> 
-              Evidence_Document.pdf
+        @if (!isViewingImage) {
+          <!-- Standard Details View -->
+          <div class="item-summary">
+            <img [src]="selectedClaim.itemImageUrl" onerror="this.src='https://placehold.co/100x100?text=No+Img'" alt="Item">
+            <div class="item-text">
+              <h3>{{ selectedClaim.itemName }}</h3>
+              <p><strong>Claimant:</strong> {{ selectedClaim.claimantName }}</p>
+              <p><strong>Date Submitted:</strong> {{ selectedClaim.claimDate }}</p>
             </div>
           </div>
-        </div>
+
+          <div class="proof-section">
+            <h4>Submitted Evidence</h4>
+            <div class="proof-box">
+              <p>"{{ selectedClaim.proofText }}"</p>
+              
+              <div class="proof-attachment">
+                @if (selectedClaim.evidenceImageUrl) {
+                  <button class="evidence-attachment-btn" (click)="toggleImageView(true)" title="Click to view evidence">
+                    <span class="attachment-icon">🖼️</span>
+                    <div class="attachment-info">
+                      <span class="file-name">{{ selectedClaim.evidenceFileName || 'Attached_Image.png' }}</span>
+                      <span class="click-hint">Click to view</span>
+                    </div>
+                  </button>
+                } @else {
+                  <div class="no-evidence-state">
+                    <span class="attachment-icon">🚫</span>
+                    <span>No evidence attached</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        } @else {
+          <!-- Full Image View -->
+          <div class="image-viewer">
+            <button class="back-btn" (click)="toggleImageView(false)">
+              <span class="material-symbols-outlined">arrow_back</span>
+              Back to Details
+            </button>
+            <div class="full-image-container">
+              <img [src]="selectedClaim.evidenceImageUrl" alt="Full Evidence Image">
+            </div>
+          </div>
+        }
       </div>
 
-      <div class="modal-footer">
+      <div class="modal-footer" [hidden]="isViewingImage">
         @if (selectedClaim.status === 'pending') {
             <button class="reject-btn" (click)="rejectClaim()">Reject Claim</button>
             <button class="approve-btn" (click)="approveClaim()">Approve & Verify</button>

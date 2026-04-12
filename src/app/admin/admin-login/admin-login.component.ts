@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Auth } from '../../services/auth.service'; // Adjust path if needed
+import { AuthService } from '../../services/auth.service'; // Adjust path if needed
 
 @Component({
   selector: 'app-admin-login',
@@ -12,15 +12,17 @@ import { Auth } from '../../services/auth.service'; // Adjust path if needed
 })
 export class AdminLogin {
   loginForm: FormGroup;
-  loginError: boolean = false; // Tracks if they typed the wrong password
+  loginError: boolean = false;
 
-  // --- NEW VARIABLES FOR FORGOT PASSWORD ---
   isForgotPasswordMode: boolean = false;
   resetLinkSent: boolean = false;
 
+  /** Parallax: CSS transform string applied to .bg-parallax */
+  bgTransform: string = 'translate(0%, 0%)';
+
   constructor(
     private fb: FormBuilder,
-    private authService: Auth,
+    private authService: AuthService,
     private router: Router
   ) {
     // Initialize your form with validation
@@ -30,14 +32,28 @@ export class AdminLogin {
     });
   }
 
+  /** Parallax mouse handler: moves bg in the opposite direction of the cursor
+   *  at 2% intensity for a subtle, sophisticated depth effect. */
+  onMouseMove(event: MouseEvent): void {
+    const { clientX, clientY, currentTarget } = event;
+    const el = currentTarget as HTMLElement;
+    const { width, height } = el.getBoundingClientRect();
+    // Map [0, width/height] → [-1, 1]
+    const x = (clientX / width - 0.5) * 2;
+    const y = (clientY / height - 0.5) * 2;
+    // 2% max translate — enough to feel alive, not distracting
+    const intensity = 2;
+    this.bgTransform = `translate(${-x * intensity}%, ${-y * intensity}%)`;
+  }
+
   // --- NEW METHODS FOR FORGOT PASSWORD ---
-  
+
   // Toggles the UI between the Login screen and Forgot Password screen
   toggleForgotPassword() {
     this.isForgotPasswordMode = !this.isForgotPasswordMode;
     this.resetLinkSent = false; // Reset the success message
     this.loginError = false;    // Clear any login errors
-    
+
     // If we are entering forgot password mode, we don't require the password field anymore
     if (this.isForgotPasswordMode) {
       this.loginForm.get('password')?.clearValidators();
@@ -63,18 +79,21 @@ export class AdminLogin {
 
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-      
-      // Pass the typed values to our auth service
-      const isSuccess = this.authService.login(email, password);
 
-      if (isSuccess) {
+      // Pass the typed values to our auth service
+      const loggedInUser = this.authService.login(email, password);
+
+      // We must check if the login was successful AND if they are an Admin
+      if (loggedInUser && loggedInUser.role === 'Admin') {
         this.loginError = false;
-        // Logged in! Send them to the dashboard.
-        this.router.navigate(['/admin-dashboard']); 
+        this.router.navigate(['/admin-dashboard']);
       } else {
-        // Show error text if credentials don't match
+        // Show error text if credentials don't match OR if a Student tries to log in here
         this.loginError = true;
       }
+    } else {
+      // If the form is invalid (e.g., empty fields), force it to show errors
+      this.loginForm.markAllAsTouched();
     }
   }
 }

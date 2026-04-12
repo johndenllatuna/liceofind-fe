@@ -1,16 +1,90 @@
-/* --- MAIN LAYOUT & TABS (Keep these exactly as they were) --- */
-.dashboard-layout { display: flex; height: 100vh; background-color: #fafafa; margin: 0; }
-.main-content { margin-left: 260px; padding: 40px; box-sizing: border-box; width: calc(100% - 260px); }
-.page-header { margin-bottom: 30px; h1 { margin: 0; font-size: 1.8rem; font-weight: 700; color: #111; } }
+/* ──  ANIMATIONS ── */
+$easing-premium-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+$transition-duration: 0.4s;
+$maroon: #8a0000;
+
+.page-transition-wrapper {
+  will-change: transform, opacity;
+
+  opacity: 1;
+  transform: translateY(0) scale(1);
+
+  &.is-entering {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+
+  &.is-entered {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition:
+      opacity $transition-duration ease-out,
+      transform $transition-duration $easing-premium-entrance;
+  }
+}
+
+/* --- MAIN LAYOUT & TABS --- */
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+  background-color: #f4f5f8;
+  margin: 0;
+}
+
+.main-content {
+  margin-left: 260px;
+  padding: 32px;
+  box-sizing: border-box;
+  width: calc(100% - 260px);
+  background-color: #f4f5f8;
+  min-height: 100vh;
+}
+
+.page-header {
+  margin-bottom: 28px;
+
+  h1 {
+    margin: 0 0 4px 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+  }
+
+  .page-subtitle {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+}
 
 .status-tabs {
-  display: flex; gap: 10px; margin-bottom: 30px;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+
   button {
-    padding: 8px 20px; border-radius: 50px; border: 1px solid #dcdcdc;
-    background-color: white; color: #666; font-weight: 500; font-size: 0.9rem;
-    cursor: pointer; transition: all 0.2s;
-    &:hover { border-color: #bbb; }
-    &.active { background-color: #8a0000; color: white; border-color: #8a0000; }
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: none;
+    background-color: #e9ecef;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+
+    &:hover:not(.active) {
+      background-color: #dde1e7;
+      color: #334155;
+    }
+
+    &.active {
+      background-color: #8a0000;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(138, 0, 0, 0.2);
+    }
   }
 }
 
@@ -18,70 +92,76 @@
   margin-top: 15px;
   margin-right: 140px;
 }
-/* --- THE NEW TABLE STYLES --- */
+
+/* --- THE TABLE CARD CONTAINER --- */
 .table-container {
-  background-color: white;
-  border: 1px solid #eaeaea;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-  
-  /* Hides the sharp table corners so they respect the rounded border radius */
-  overflow: hidden; 
-  
-  /* Internal scroll magic */
+  background-color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
   max-height: calc(100vh - 220px);
   overflow-y: auto;
-  
-  &::-webkit-scrollbar { width: 6px; }
-  &::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 10px; }
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #e2e8f0;
+    border-radius: 10px;
+  }
 }
 
 .claims-table {
   width: 100%;
-  border-collapse: collapse; /* Essential to make borders look seamless */
+  border-collapse: collapse;
   text-align: left;
-  
-  /* Sticky Header */
+
   thead {
     position: sticky;
     top: 0;
-    background-color: #f8f9fa;
-    z-index: 1; /* Keeps header above scrolling rows */
-    
+    background-color: #f8fafc;
+    z-index: 1;
+
     th {
-      padding: 16px 24px;
-      font-size: 0.85rem;
+      padding: 14px 24px;
+      font-size: 0.72rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #777;
-      font-weight: 600;
-      border-bottom: 1px solid #eaeaea;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      font-weight: 700;
+      border-bottom: 1px solid #e8ecf0;
     }
   }
 
   tbody {
     tr {
-      border-bottom: 1px solid #f0f0f0;
-      transition: background-color 0.2s ease;
-      
-      /* Subtle highlight when hovering over a row */
-      &:hover { background-color: #fafafa; }
-      &:last-child { border-bottom: none; }
+      border-bottom: 1px solid #f1f5f9;
+      transition: background-color 0.15s ease;
+
+      &:hover {
+        background-color: #f8fafc;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
     }
 
     td {
       padding: 16px 24px;
-      font-size: 0.95rem;
-      color: #333;
+      font-size: 0.9rem;
+      color: #334155;
       vertical-align: middle;
     }
   }
 }
 
 /* --- SPECIFIC COLUMN TWEAKS --- */
-.id-column { 
-  font-weight: 600; 
-  color: #555; 
+.id-column {
+  font-weight: 600;
+  color: #555;
 }
 
 /* Makes the image and text sit side-by-side cleanly */
@@ -89,7 +169,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  
+
   img {
     width: 40px;
     height: 40px;
@@ -97,27 +177,41 @@
     object-fit: cover;
     background-color: #eee;
   }
-  
-  span { font-weight: 500; }
+
+  span {
+    font-weight: 500;
+  }
 }
 
 /* Status Badges - Made perfectly rounded for the table layout */
 .status-badge {
   padding: 6px 14px;
-  border-radius: 50px; 
+  border-radius: 50px;
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: capitalize;
   display: inline-block;
 
-  &.pending { background-color: #fff9e6; color: #d4a017; }
-  &.verified { background-color: #e8f5e9; color: #2e7d32; }
-  &.rejected { background-color: #f2e1e1; color: #8a0000; }
+  &.pending {
+    background-color: #fff9e6;
+    color: #d4a017;
+  }
+
+  &.verified {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.rejected {
+    background-color: #f2e1e1;
+    color: #8a0000;
+  }
 }
 
 /* Review Button Action */
 .action-column {
-  width: 100px; /* Keeps the button column from stretching too wide */
+  width: 100px;
+  /* Keeps the button column from stretching too wide */
 }
 
 .review-btn {
@@ -139,8 +233,50 @@
 
 .empty-state {
   text-align: center !important;
-  padding: 60px !important;
-  color: #888;
+  padding: 64px 24px !important;
+
+  .empty-state-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background-color: #f1f5f9;
+
+    svg {
+      width: 26px;
+      height: 26px;
+      color: #94a3b8;
+      stroke: currentColor;
+    }
+  }
+
+  .empty-state-text {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    font-weight: 500;
+    margin: 0;
+  }
+}
+
+.claimant-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .name {
+    font-weight: 600;
+    color: #111;
+    font-size: 0.95rem;
+  }
+
+  .email {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: 400;
+  }
 }
 
 /* --- VIEW & CLOSE BUTTON --- */
@@ -190,11 +326,13 @@
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(3px); /* Gives a premium frosted glass effect */
+  backdrop-filter: blur(3px);
+  /* Gives a premium frosted glass effect */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensures it sits on top of the sidebar and table */
+  z-index: 1000;
+  /* Ensures it sits on top of the sidebar and table */
 }
 
 .modal-container {
@@ -206,12 +344,20 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: slideUp 0.3s ease-out; /* Smooth entrance animation */
+  animation: slideUp 0.3s ease-out;
+  /* Smooth entrance animation */
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modal-header {
@@ -221,7 +367,11 @@
   justify-content: space-between;
   align-items: center;
 
-  h2 { margin: 0; font-size: 1.2rem; color: #111; }
+  h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #111;
+  }
 
   .close-btn {
     background: none;
@@ -231,7 +381,10 @@
     cursor: pointer;
     line-height: 1;
     transition: color 0.2s;
-    &:hover { color: #111; }
+
+    &:hover {
+      color: #111;
+    }
   }
 }
 
@@ -258,21 +411,39 @@
     flex-direction: column;
     justify-content: center;
 
-    h3 { margin: 0 0 8px 0; font-size: 1.1rem; color: #111; }
-    p { margin: 0 0 4px 0; font-size: 0.9rem; color: #555; }
+    h3 {
+      margin: 0 0 8px 0;
+      font-size: 1.1rem;
+      color: #111;
+    }
+
+    p {
+      margin: 0 0 4px 0;
+      font-size: 0.9rem;
+      color: #555;
+    }
   }
 }
 
 .proof-section {
-  h4 { margin: 0 0 10px 0; font-size: 0.95rem; color: #333; }
-  
+  h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.95rem;
+    color: #333;
+  }
+
   .proof-box {
     background-color: #f8f9fa;
     border: 1px dashed #ccc;
     padding: 16px;
     border-radius: 8px;
 
-    p { margin: 0 0 12px 0; font-size: 0.9rem; color: #444; font-style: italic; }
+    p {
+      margin: 0 0 12px 0;
+      font-size: 0.9rem;
+      color: #444;
+      font-style: italic;
+    }
 
     .proof-attachment {
       display: inline-flex;
@@ -286,7 +457,9 @@
       color: #333;
       cursor: pointer;
 
-      &:hover { border-color: #bbb; }
+      &:hover {
+        border-color: #bbb;
+      }
     }
   }
 }
@@ -310,11 +483,14 @@
   cursor: pointer;
   transition: all 0.2s;
 
-  &:hover { background-color: #fff0f0; }
+  &:hover {
+    background-color: #fff0f0;
+  }
 }
 
 .approve-btn {
-  background-color: #2e7d32; /* Standard Success Green */
+  background-color: #2e7d32;
+  /* Standard Success Green */
   border: 1px solid #2e7d32;
   color: white;
   padding: 10px 20px;
@@ -323,5 +499,134 @@
   cursor: pointer;
   transition: all 0.2s;
 
-  &:hover { background-color: #246428; }
+  &:hover {
+    background-color: #246428;
+  }
+}
+
+/* --- IMAGE EVIDENCE STYLING --- */
+
+.evidence-attachment-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  background-color: white;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+
+  &:hover {
+    background-color: #f8f9fa;
+    border-color: #bbb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .attachment-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .attachment-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Critical for ellipsis */
+    flex-grow: 1;
+
+    .file-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    .click-hint {
+      font-size: 0.75rem;
+      color: #888;
+      font-weight: 400;
+    }
+  }
+}
+
+.no-evidence-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #888;
+  font-size: 0.85rem;
+  font-style: italic;
+
+  .attachment-icon {
+    font-style: normal;
+  }
+}
+
+
+.image-viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 0.3s ease;
+
+  .back-btn {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: #8a0000;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #fff0f0;
+    }
+
+    .material-symbols-outlined {
+      font-size: 18px;
+    }
+  }
+}
+
+.full-image-container {
+  width: 100%;
+  max-height: 450px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+
+  img {
+    max-width: 100%;
+    max-height: 450px;
+    object-fit: contain;
+    display: block;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }

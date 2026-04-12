@@ -1,81 +1,101 @@
 <app-sidebar></app-sidebar>
 
-<div class="post-item-container">
-  <h2 class="page-title">Post Item</h2>
+<div class="post-item-page">
 
-  @if (showSuccessMessage) {
-    <div class="toast success-toast">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-      </svg>
-      <span>Item successfully posted in the item management!</span>
-    </div>
-  }
+  <!-- ── Hardware-Accelerated Page Transition Wrapper ── -->
+  <div id="page-content" class="page-transition-wrapper" [class.is-entering]="!pageEntered" [class.is-entered]="pageEntered">
 
-  @if (showErrorMessage) {
-    <div class="toast error-toast">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-        <line x1="12" y1="9" x2="12" y2="13"></line>
-        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-      </svg>
-      <span>Please fill out all fields.</span>
-    </div>
-  }
+    <header class="page-header">
+      <h1>Post Item</h1>
+      <p class="page-subtitle">Fill in the details below to report a new found item.</p>
+    </header>
 
-  <form class="post-item-form" [formGroup]="postItemForm" (ngSubmit)="onSubmit()">
-    
-    <div class="form-group">
-      <label>Item Title</label>
-      <input type="text" formControlName="name" />
-    </div>
-
-    <div class="form-group">
-      <label>Description</label>
-      <textarea formControlName="description"></textarea>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group location-input">
-        <label>Location</label>
-        <input type="text" formControlName="location" />
+    @if (showSuccessMessage) {
+      <div class="toast success-toast">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>Item successfully posted in the item management!</span>
       </div>
-      <div class="form-group date-input">
-        <label>Date</label>
-        <input type="date" formControlName="date" />
+    }
+
+    @if (showErrorMessage) {
+      <div class="toast error-toast">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span>Please fill out all fields.</span>
       </div>
-    </div>
+    }
 
-    <div class="form-group">
-      <label>Item Image</label>
-      <div class="upload-dropzone" (click)="fileInput.click()">
-        
-        <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+    <div class="form-card">
+      <form class="post-item-form" [formGroup]="postItemForm" (ngSubmit)="onSubmit()">
 
-        @if (!imagePreview) {
-          <div class="upload-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
+        <div class="form-group">
+          <label>Item Title</label>
+          <input type="text" formControlName="name" placeholder="e.g. Apple AirPods Pro" />
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea formControlName="description" placeholder="Describe the item, its condition, and any distinguishing features…"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group location-input">
+            <label>Location</label>
+            <input type="text" formControlName="location" placeholder="e.g. LDCU Library, 2nd Floor" />
           </div>
-          <p class="upload-text"><span class="highlight">Click to upload</span></p>
-          <p class="upload-subtext">PNG, JPG, GIF up to 10MB</p>
-        }
+          <div class="form-group date-input">
+            <label>Date Found</label>
+            <input type="date" formControlName="date" />
+          </div>
+        </div>
 
-        @if (imagePreview) {
-          <img [src]="imagePreview" alt="Preview">
-          <p class="upload-subtext">Click to change image</p>
-        }
-      </div>
+        <div class="form-group">
+          <label>Item Image</label>
+          <div
+            class="post-upload-zone"
+            [class.post-upload-zone--active]="isDragging"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)"
+            (click)="fileInput.click()"
+          >
+            <input
+              type="file"
+              #fileInput
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              style="display: none;"
+            >
+
+            @if (imagePreview) {
+              <div class="image-preview-container">
+                <img [src]="imagePreview" alt="Item Preview">
+              </div>
+              <p class="upload-subtext">Click or drag to change image</p>
+            } @else {
+              <div class="upload-icon">
+                <span class="material-symbols-outlined">cloud_upload</span>
+              </div>
+              <p class="upload-text"><span class="highlight">Click to browse</span> or drag and drop</p>
+              <p class="upload-subtext">PNG, JPG, or GIF (Max 10MB)</p>
+            }
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="submit-btn" [disabled]="isUploading">
+            {{ isUploading ? 'Uploading…' : 'Post Item' }}
+          </button>
+        </div>
+      </form>
     </div>
 
-    <div class="form-actions">
-      <button type="submit" class="submit-btn" [disabled]="isUploading">
-        {{ isUploading ? 'Uploading...' : 'Post Item' }}
-      </button>
-    </div>
-  </form>
+  </div>
+
 </div>

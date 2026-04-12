@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; 
 import { ItemService } from '../../services/item.service'; 
@@ -13,12 +13,16 @@ import { Item } from '../../models/item.model';
   templateUrl: './post-item.component.html',
   styleUrl: './post-item.component.scss'
 })
-export class PostItem {
+export class PostItem implements OnInit, AfterViewInit {
   postItemForm: FormGroup;
+  
+  // --- ANIMATION STATE ---
+  pageEntered: boolean = false;
   
   selectedFile: File | null = null;
   imagePreview: string | null = null;
   isUploading: boolean = false;
+  isDragging: boolean = false; // New state for Drag & Drop feedback
   
   showSuccessMessage: boolean = false;
   showErrorMessage: boolean = false; // Add state for the error toast
@@ -37,12 +41,54 @@ export class PostItem {
     });
   }
 
+  ngOnInit() {}
+
+  ngAfterViewInit() {
+    // Trigger entrance animation cleanly
+    setTimeout(() => {
+      this.pageEntered = true;
+      this.cdr.detectChanges(); // Force Angular to evaluate [class.is-entered] immediately
+    }, 50);
+  }
+
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.selectedFile = file;
-      this.imagePreview = URL.createObjectURL(file);
+      this.processFile(file);
     }
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+    
+    const file = event.dataTransfer?.files[0];
+    if (file && file.type.startsWith('image/')) {
+      this.processFile(file);
+    }
+  }
+
+  private processFile(file: File) {
+    this.selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
   }
 
   onSubmit() {

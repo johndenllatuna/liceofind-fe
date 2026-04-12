@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router'; 
 import { Router, RouterModule } from '@angular/router'; 
-import { Auth } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { ClaimService } from '../../services/claim.service'; // <-- Import your actual service here
 
 @Component({
@@ -18,7 +18,7 @@ export class Sidebar implements OnInit {
   pendingClaimsCount: number = 0; 
 
   constructor(
-    private authService: Auth, 
+    private authService: AuthService, 
     private router: Router,
     private claimService: ClaimService // <-- Inject it here
   ) {}
@@ -40,7 +40,7 @@ export class Sidebar implements OnInit {
 
   confirmLogout() {
     this.showLogoutModal = false;
-    this.authService.logout();
-    this.router.navigate(['/']); 
+    // Call role-aware logout (true for Admin)
+    this.authService.logout(true);
   }
 }
