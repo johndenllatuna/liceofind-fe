@@ -53,7 +53,7 @@
             type="email"
             placeholder="name@example.com"
             autocomplete="email"
-            [(ngModel)]="email"
+            [(ngModel)]="emailStr"
             name="email"
           />
         </div>
@@ -75,7 +75,7 @@
             [type]="showPassword() ? 'text' : 'password'"
             placeholder="••••••••"
             autocomplete="current-password"
-            [(ngModel)]="password"
+            [(ngModel)]="passwordStr"
             name="password"
           />
           <button

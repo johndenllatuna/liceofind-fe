@@ -12,7 +12,29 @@
   <div class="topbar-placeholder"></div>
 </nav>
 
-@if (item) {
+@if (isLoading) {
+  <main class="detail-main detail-main--loading">
+    <div class="loading-spinner-wrap">
+      <div class="spinner"></div>
+      <p>Fetching item details...</p>
+    </div>
+  </main>
+} @else if (errorMessage) {
+  <main class="detail-main detail-main--error">
+    <div class="error-view">
+      <div class="error-view__icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h3>Oops!</h3>
+      <p>{{ errorMessage }}</p>
+      <button class="modal-btn modal-btn--confirm" [routerLink]="['/user/home']">Back to Home</button>
+    </div>
+  </main>
+} @else if (item) {
 <main class="detail-main">
 
   <!-- ── Hero Image ───────────────────── -->

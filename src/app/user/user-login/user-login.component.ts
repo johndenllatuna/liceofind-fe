@@ -21,8 +21,8 @@ export class UserLogin implements OnInit, OnDestroy {
 
   private _motionHandler = (e: DeviceOrientationEvent) => this._onDeviceMotion(e);
 
-  email = signal('');
-  password = signal('');
+  emailStr = '';
+  passwordStr = '';
   rememberMe = signal(false);
   showPassword = signal(false);
   isLoading = signal(false);
@@ -67,28 +67,28 @@ export class UserLogin implements OnInit, OnDestroy {
   }
 
   handleLogin() {
-    if (!this.email() || !this.password()) {
+    if (!this.emailStr || !this.passwordStr) {
       this.triggerToast();
       return;
     }
 
     this.isLoading.set(true);
 
-    setTimeout(() => {
-      const user = this.authService.login(this.email(), this.password());
-      
-      this.isLoading.set(false);
-      
-      if (user) {
+    this.authService.login(this.emailStr, this.passwordStr).subscribe({
+      next: (user) => {
+        this.isLoading.set(false);
         if (user.role === 'Admin') {
           this.router.navigate(['/admin-dashboard']);
         } else {
           this.router.navigate(['/user/home']);
         }
-      } else {
+      },
+      error: (err) => {
+        this.isLoading.set(false);
         this.triggerToast();
+        console.error('Login failed:', err);
       }
-    }, 1200);
+    });
   }
 
   private triggerToast() {

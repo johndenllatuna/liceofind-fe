@@ -1,76 +1,51 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Item } from '../models/item.model'; // Make sure this file exists in your models folder!
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Item } from '../models/item.model';
 
 @Injectable({
-  providedIn: 'root' // This makes the service accessible anywhere in the app
+  providedIn: 'root'
 })
 export class ItemService {
+  private http = inject(HttpClient);
+  private API_URL = 'http://localhost:3000/api/items';
   
-  private STORAGE_KEY = 'ldcufind_items';
-  
-  // 1. Start with data from LocalStorage, or an empty dataset if nothing exists
-  private itemsSubject = new BehaviorSubject<Item[]>(this.loadInitialItems());
+  private itemsSubject = new BehaviorSubject<Item[]>([]);
 
-  constructor() { }
-
-  private loadInitialItems(): Item[] {
-    const saved = localStorage.getItem(this.STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
+  constructor() {
+    this.refreshItems();
   }
 
-  // 3. READ: Components call this to listen for the item list
+  // Refresh the local subject from the backend
+  refreshItems() {
+    this.http.get<Item[]>(this.API_URL).subscribe(items => {
+      this.itemsSubject.next(items);
+    });
+  }
+
   getItems(): Observable<Item[]> {
     return this.itemsSubject.asObservable();
   }
 
-  getItemById(id: number): Observable<Item | undefined> {
-    const currentItems = this.itemsSubject.getValue();
-    const item = currentItems.find(i => i.id === id);
-    return new BehaviorSubject<Item | undefined>(item).asObservable();
+  getItemById(id: number): Observable<Item> {
+    return this.http.get<Item>(`${this.API_URL}/${id}`);
   }
 
-  // 4. WRITE: We will use this method later in the "Post Item" page
-  addItem(newItem: Item) {
-    console.log('Service receiving image with length:', newItem.imageUrl?.length);
-    // Get the current list
-    const currentItems = this.itemsSubject.getValue();
-    
-    // Auto-generate a new ID (find the highest current ID and add 1)
-    newItem.id = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.id)) + 1 : 1;
-    
-    // Broadcast the new list (spread operator puts the new item at the top)
-    const updatedItems = [newItem, ...currentItems];
-    this.itemsSubject.next(updatedItems);
-    
-    // Save the updated list to local storage
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedItems));
+  addItem(newItem: Item): Observable<any> {
+    return this.http.post(this.API_URL, newItem).pipe(
+      tap(() => this.refreshItems())
+    );
   }
 
-  updateItem(updatedItem: Item) {
-    const currentItems = this.itemsSubject.getValue();
-    const index = currentItems.findIndex(i => i.id === updatedItem.id);
-    
-    if (index !== -1) {
-      const updatedArray = [...currentItems];
-      updatedArray[index] = { ...updatedItem };
-      
-      this.itemsSubject.next(updatedArray);
-      
-      if (typeof window !== 'undefined' && window.localStorage) {
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedArray));
-      }
-    }
+  updateItem(updatedItem: Item): Observable<any> {
+    return this.http.put(`${this.API_URL}/${updatedItem.id}`, updatedItem).pipe(
+      tap(() => this.refreshItems())
+    );
   }
 
-  deleteItem(itemId: number) {
-    const currentItems = this.itemsSubject.getValue();
-    const updatedArray = currentItems.filter(i => i.id !== itemId);
-    
-    this.itemsSubject.next(updatedArray);
-    
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedArray));
-    }
+  deleteItem(itemId: number): Observable<any> {
+    return this.http.delete(`${this.API_URL}/${itemId}`).pipe(
+      tap(() => this.refreshItems())
+    );
   }
 }

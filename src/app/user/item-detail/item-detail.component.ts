@@ -4,11 +4,9 @@ import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ClaimService, Claim } from '../../services/claim.service';
 import { ItemService } from '../../services/item.service';
-import { AuthService } from '../../services/auth.service'; // Added Missing Import
+import { AuthService } from '../../services/auth.service';
 import { Item } from '../../models/item.model';
 import { Subscription } from 'rxjs';
-
-
 
 @Component({
   selector: 'app-item-detail',
@@ -20,7 +18,7 @@ import { Subscription } from 'rxjs';
 export class ItemDetail implements OnInit, OnDestroy {
   private claimService = inject(ClaimService);
   private itemService = inject(ItemService);
-  private authService = inject(AuthService); // New Injection
+  private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -32,7 +30,11 @@ export class ItemDetail implements OnInit, OnDestroy {
   imagePreview: string | undefined = undefined;
   selectedFile: File | undefined = undefined;
 
+  // Reverted back to simple properties as requested
   item: Item | undefined = undefined;
+  isLoading = true;
+  errorMessage: string | null = null;
+
   userHasPendingClaim = false;
   isItemUnderReview = false;
   userHasRejectedClaim = false;
@@ -43,42 +45,64 @@ export class ItemDetail implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.params.subscribe(params => {
       const id = +params['id'];
-      if (id) {
-        this.sub = this.itemService.getItemById(id).subscribe(data => {
-          this.item = data;
-          
-          // Watch claims for state updates
-          this.claimSub = this.claimService.getClaims().subscribe(claims => {
-            if (!this.item) return;
-            const currentUser = this.authService.getCurrentUser();
-            
-            // Filter claims for exactly this item that are still pending
-            const itemClaims = claims.filter(c => 
-              (c.itemId === this.item?.id || c.itemName === this.item?.name) && c.status === 'pending'
-            );
-            
-            this.isItemUnderReview = itemClaims.length > 0;
-            this.userHasPendingClaim = itemClaims.some(c => c.claimantEmail === currentUser.email);
+      
+      console.log('ItemDetail: Fetching ID =', id);
 
-            // Anti-spam: check if this user had a claim rejected for this specific item
-            this.userHasRejectedClaim = claims.some(c =>
-              (c.itemId === this.item?.id || c.itemName === this.item?.name) &&
-              c.status === 'rejected' &&
-              c.claimantEmail === currentUser.email
-            );
-          });
+      if (id) {
+        this.isLoading = true;
+        this.errorMessage = null;
+
+        this.sub = this.itemService.getItemById(id).subscribe({
+          next: (data) => {
+            console.log('ItemDetail: Received data =', data);
+            
+            if (!data) {
+              this.errorMessage = 'Item not found in database.';
+              this.isLoading = false;
+              return;
+            }
+
+            // Simple property mapping
+            this.item = {
+              ...data,
+              imageUrl: data.imageUrl || (data as any).image_url 
+            };
+            
+            this.isLoading = false;
+
+            // Watch claims
+            this.claimSub = this.claimService.getClaims().subscribe(claims => {
+              if (!this.item) return;
+              const currentUser = this.authService.getCurrentUser();
+              
+              if (currentUser && currentUser.email) {
+                const itemClaims = claims.filter(c => (c.itemId === this.item?.id) && c.status === 'pending');
+                this.isItemUnderReview = itemClaims.length > 0;
+                this.userHasPendingClaim = itemClaims.some(c => c.claimantEmail === currentUser.email);
+                this.userHasRejectedClaim = claims.some(c =>
+                  (c.itemId === this.item?.id) &&
+                  c.status === 'rejected' &&
+                  c.claimantEmail === currentUser.email
+                );
+              }
+            });
+          },
+          error: (err) => {
+            console.error('ItemDetail: API Error =', err);
+            this.errorMessage = 'Failed to load item. Please ensure the backend is running.';
+            this.isLoading = false;
+          }
         });
+      } else {
+        this.errorMessage = 'Invalid Item ID.';
+        this.isLoading = false;
       }
     });
   }
 
   ngOnDestroy() {
-    if (this.sub) {
-      this.sub.unsubscribe();
-    }
-    if (this.claimSub) {
-      this.claimSub.unsubscribe();
-    }
+    if (this.sub) this.sub.unsubscribe();
+    if (this.claimSub) this.claimSub.unsubscribe();
   }
 
   onImageError(event: Event) {
@@ -88,9 +112,7 @@ export class ItemDetail implements OnInit, OnDestroy {
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      this.processFile(file);
-    }
+    if (file) this.processFile(file);
   }
 
   onDragOver(event: DragEvent) {
@@ -109,7 +131,6 @@ export class ItemDetail implements OnInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
     this.isDragging = false;
-    
     const file = event.dataTransfer?.files[0];
     if (file && file.type.startsWith('image/')) {
       this.processFile(file);
@@ -128,36 +149,37 @@ export class ItemDetail implements OnInit, OnDestroy {
   submitClaim() {
     if (!this.item || !this.proofText.trim()) return;
 
-    const user = this.authService.getCurrentUser(); // Fetch mock user
+    const user = this.authService.getCurrentUser();
+    if (!user) {
+      alert('Please log in to submit an inquiry.');
+      return;
+    }
 
-    const newClaim: Claim = {
-      id: 'C-' + Math.floor(1000 + Math.random() * 9000).toString(),
+    const newClaim: any = {
       itemId: this.item.id,
       itemName: this.item.name,
       itemImageUrl: this.item.imageUrl || '',
-      claimantName: user.name, // Real name from Auth
-      claimantEmail: user.email, // Real email from Auth
-      claimDate: new Date().toISOString().split('T')[0],
-      status: 'pending',
-      proofText: this.proofText,
-      // Persist the Base64 image and original filename if the user uploaded evidence
-      evidenceImageUrl: this.imagePreview || undefined,
-      evidenceFileName: this.selectedFile?.name || undefined
+      claimantName: user.name,
+      claimantEmail: user.email,
+      proofText: this.proofText
     };
 
-    this.claimService.submitClaim(newClaim);
-    
-    this.showClaimModal = false;
-    this.proofText = '';
-    this.imagePreview = undefined;
-    this.selectedFile = undefined;
-    
-    // Switch to Success Modal instead of Alert
-    this.showSuccessModal = true;
+    this.claimService.submitClaim(newClaim).subscribe({
+      next: () => {
+        this.showClaimModal = false;
+        this.proofText = '';
+        this.imagePreview = undefined;
+        this.selectedFile = undefined;
+        this.showSuccessModal = true;
+      },
+      error: (err) => {
+        console.error('Failed to submit claim:', err);
+        alert('Failed to submit inquiry. Please try again.');
+      }
+    });
   }
 
   closeSuccessModal() {
     this.showSuccessModal = false;
-    // Removed this.router.navigate(['/user/profile']); so user stays on the page
   }
 }
