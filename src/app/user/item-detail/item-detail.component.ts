@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +6,17 @@ import { ClaimService, Claim } from '../../services/claim.service';
 import { ItemService } from '../../services/item.service';
 import { AuthService } from '../../services/auth.service';
 import { Item } from '../../models/item.model';
-import { Subscription } from 'rxjs';
+import { Observable, of, combineLatest } from 'rxjs';
+import { switchMap, catchError, map, startWith } from 'rxjs/operators';
+
+interface ItemDetailVm {
+  isLoading: boolean;
+  errorMessage: string | null;
+  item: Item | null;
+  isItemUnderReview: boolean;
+  userHasPendingClaim: boolean;
+  userHasRejectedClaim: boolean;
+}
 
 @Component({
   selector: 'app-item-detail',
@@ -15,11 +25,10 @@ import { Subscription } from 'rxjs';
   templateUrl: './item-detail.component.html',
   styleUrls: ['./item-detail.component.scss'],
 })
-export class ItemDetail implements OnInit, OnDestroy {
+export class ItemDetail {
   private claimService = inject(ClaimService);
   private itemService = inject(ItemService);
   private authService = inject(AuthService);
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   showClaimModal = false;
@@ -30,80 +39,95 @@ export class ItemDetail implements OnInit, OnDestroy {
   imagePreview: string | undefined = undefined;
   selectedFile: File | undefined = undefined;
 
-  // Reverted back to simple properties as requested
-  item: Item | undefined = undefined;
-  isLoading = true;
-  errorMessage: string | null = null;
-
-  userHasPendingClaim = false;
-  isItemUnderReview = false;
-  userHasRejectedClaim = false;
-
-  private sub: Subscription | null = null;
-  private claimSub: Subscription | null = null;
-
-  ngOnInit() {
-    this.route.params.subscribe(params => {
-      const id = +params['id'];
-      
-      console.log('ItemDetail: Fetching ID =', id);
-
-      if (id) {
-        this.isLoading = true;
-        this.errorMessage = null;
-
-        this.sub = this.itemService.getItemById(id).subscribe({
-          next: (data) => {
-            console.log('ItemDetail: Received data =', data);
-            
-            if (!data) {
-              this.errorMessage = 'Item not found in database.';
-              this.isLoading = false;
-              return;
-            }
-
-            // Simple property mapping
-            this.item = {
-              ...data,
-              imageUrl: data.imageUrl || (data as any).image_url 
-            };
-            
-            this.isLoading = false;
-
-            // Watch claims
-            this.claimSub = this.claimService.getClaims().subscribe(claims => {
-              if (!this.item) return;
-              const currentUser = this.authService.getCurrentUser();
-              
-              if (currentUser && currentUser.email) {
-                const itemClaims = claims.filter(c => (c.itemId === this.item?.id) && c.status === 'pending');
-                this.isItemUnderReview = itemClaims.length > 0;
-                this.userHasPendingClaim = itemClaims.some(c => c.claimantEmail === currentUser.email);
-                this.userHasRejectedClaim = claims.some(c =>
-                  (c.itemId === this.item?.id) &&
-                  c.status === 'rejected' &&
-                  c.claimantEmail === currentUser.email
-                );
-              }
-            });
-          },
-          error: (err) => {
-            console.error('ItemDetail: API Error =', err);
-            this.errorMessage = 'Failed to load item. Please ensure the backend is running.';
-            this.isLoading = false;
-          }
+  vm$: Observable<ItemDetailVm> = this.route.params.pipe(
+    map(params => +params['id']),
+    switchMap(id => {
+      // Validate ID
+      if (!id) {
+        return of({
+          isLoading: false,
+          errorMessage: 'Invalid Item ID.',
+          item: null,
+          isItemUnderReview: false,
+          userHasPendingClaim: false,
+          userHasRejectedClaim: false
         });
-      } else {
-        this.errorMessage = 'Invalid Item ID.';
-        this.isLoading = false;
       }
-    });
-  }
 
-  ngOnDestroy() {
-    if (this.sub) this.sub.unsubscribe();
-    if (this.claimSub) this.claimSub.unsubscribe();
-  }
+      // Fetch Item
+      const item$ = this.itemService.getItemById(id).pipe(
+        map((data: any) => {
+          const itemObj = data?.data ? data.data : data;
+          if (!itemObj || typeof itemObj !== 'object' || Object.keys(itemObj).length === 0) {
+            throw new Error('Item not found in database.');
+          }
+          return {
+            ...itemObj,
+            id: Number(itemObj.id),
+            imageUrl: itemObj.imageUrl || itemObj.image_url || '/assets/icons/no-img.svg'
+          } as Item;
+        }),
+        catchError(err => {
+          console.error('ItemDetail: API Error =', err);
+          return of(null);
+        })
+      );
+
+      // Fetch Claims
+      const claims$ = this.claimService.getClaims().pipe(
+        catchError(() => of([] as Claim[]))
+      );
+
+      // Combine streams
+      return combineLatest([item$, claims$]).pipe(
+        map(([item, claims]) => {
+          if (!item) {
+            return {
+              isLoading: false,
+              errorMessage: 'Failed to load item or item not found.',
+              item: null,
+              isItemUnderReview: false,
+              userHasPendingClaim: false,
+              userHasRejectedClaim: false
+            };
+          }
+
+          let isItemUnderReview = false;
+          let userHasPendingClaim = false;
+          let userHasRejectedClaim = false;
+
+          const currentUser = this.authService.getCurrentUser();
+          if (currentUser && currentUser.email) {
+            const itemClaims = claims.filter(c => (c.itemId === item.id) && c.status === 'pending');
+            isItemUnderReview = itemClaims.length > 0;
+            userHasPendingClaim = itemClaims.some(c => c.claimantEmail === currentUser.email);
+            userHasRejectedClaim = claims.some(c =>
+              (c.itemId === item.id) &&
+              c.status === 'rejected' &&
+              c.claimantEmail === currentUser.email
+            );
+          }
+
+          return {
+            isLoading: false,
+            errorMessage: null,
+            item,
+            isItemUnderReview,
+            userHasPendingClaim,
+            userHasRejectedClaim
+          };
+        }),
+        startWith({
+          isLoading: true,
+          errorMessage: null,
+          item: null,
+          isItemUnderReview: false,
+          userHasPendingClaim: false,
+          userHasRejectedClaim: false
+        })
+      );
+    })
+  );
 
   onImageError(event: Event) {
     const img = event.target as HTMLImageElement;
@@ -146,8 +170,8 @@ export class ItemDetail implements OnInit, OnDestroy {
     reader.readAsDataURL(file);
   }
 
-  submitClaim() {
-    if (!this.item || !this.proofText.trim()) return;
+  submitClaim(item: Item) {
+    if (!item || !this.proofText.trim()) return;
 
     const user = this.authService.getCurrentUser();
     if (!user) {
@@ -156,9 +180,9 @@ export class ItemDetail implements OnInit, OnDestroy {
     }
 
     const newClaim: any = {
-      itemId: this.item.id,
-      itemName: this.item.name,
-      itemImageUrl: this.item.imageUrl || '',
+      itemId: item.id,
+      itemName: item.name,
+      itemImageUrl: item.imageUrl || '',
       claimantName: user.name,
       claimantEmail: user.email,
       proofText: this.proofText

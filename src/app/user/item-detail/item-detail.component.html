@@ -12,225 +12,227 @@
   <div class="topbar-placeholder"></div>
 </nav>
 
-@if (isLoading) {
-  <main class="detail-main detail-main--loading">
-    <div class="loading-spinner-wrap">
-      <div class="spinner"></div>
-      <p>Fetching item details...</p>
-    </div>
-  </main>
-} @else if (errorMessage) {
-  <main class="detail-main detail-main--error">
-    <div class="error-view">
-      <div class="error-view__icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
+@if (vm$ | async; as vm) {
+  @if (vm.isLoading) {
+    <main class="detail-main detail-main--loading">
+      <div class="loading-spinner-wrap">
+        <div class="spinner"></div>
+        <p>Fetching item details...</p>
       </div>
-      <h3>Oops!</h3>
-      <p>{{ errorMessage }}</p>
-      <button class="modal-btn modal-btn--confirm" [routerLink]="['/user/home']">Back to Home</button>
-    </div>
-  </main>
-} @else if (item) {
-<main class="detail-main">
-
-  <!-- ── Hero Image ───────────────────── -->
-  <section class="detail-hero">
-    <div class="detail-hero__image-wrap">
-      <!-- Shimmer layer -->
-      <div class="detail-hero__shimmer" aria-hidden="true"></div>
-
-      @if (item.imageUrl) {
-        <img
-          [src]="item.imageUrl"
-          [alt]="item.name"
-          class="detail-hero__image"
-          (error)="onImageError($event)"
-        />
-      } @else {
-        <div class="detail-hero__fallback" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-            <polyline points="21 15 16 10 5 21"></polyline>
+    </main>
+  } @else if (vm.errorMessage) {
+    <main class="detail-main detail-main--error">
+      <div class="error-view">
+        <div class="error-view__icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
         </div>
-      }
-
-      <!-- Status overlay badge -->
-      @if (isItemUnderReview && !userHasPendingClaim) {
-        <div class="detail-hero__status-badge">
-          <span class="detail-hero__status-dot"></span>
-          Under Review
-        </div>
-      }
-    </div>
-  </section>
-
-  <!-- ── Item Info ─────────────────────── -->
-  <section class="detail-info">
-
-    <!-- Item Title -->
-    <h2 class="detail-info__title">{{ item.name }}</h2>
-
-    <!-- Meta chips -->
-    <div class="detail-info__chips">
-      <div class="meta-chip">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="16" y1="2" x2="16" y2="6"></line>
-          <line x1="8" y1="2" x2="8" y2="6"></line>
-          <line x1="3" y1="10" x2="21" y2="10"></line>
-        </svg>
-        <span>{{ item.date }}</span>
+        <h3>Oops!</h3>
+        <p>{{ vm.errorMessage }}</p>
+        <button class="modal-btn modal-btn--confirm" [routerLink]="['/user/home']">Back to Home</button>
       </div>
-      <div class="meta-chip">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-          <circle cx="12" cy="10" r="3"></circle>
-        </svg>
-        <span>{{ item.location }}</span>
-      </div>
-    </div>
+    </main>
+  } @else if (vm.item) {
+  <main class="detail-main">
 
-    <!-- Description Card -->
-    <div class="detail-card">
-      <div class="detail-card__header">
-        <div class="detail-card__icon-wrap">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="8" y1="6" x2="21" y2="6"></line>
-            <line x1="8" y1="12" x2="21" y2="12"></line>
-            <line x1="8" y1="18" x2="21" y2="18"></line>
-            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-            <line x1="3" y1="18" x2="3.01" y2="18"></line>
-          </svg>
-        </div>
-        <h3 class="detail-card__label">Description</h3>
-      </div>
-      <p class="detail-card__text">{{ item.description }}</p>
-    </div>
+    <!-- ── Hero Image ───────────────────── -->
+    <section class="detail-hero">
+      <div class="detail-hero__image-wrap">
+        <!-- Shimmer layer -->
+        <div class="detail-hero__shimmer" aria-hidden="true"></div>
 
-  </section>
-
-</main>
-
-<!-- ── Sticky Action Footer ──────────── -->
-<div class="detail-actions">
-  <button
-    class="btn-inquire"
-    (click)="!userHasPendingClaim && !userHasRejectedClaim && (showClaimModal = true)"
-    [disabled]="userHasPendingClaim || userHasRejectedClaim"
-    [class.btn-inquire--pending]="userHasPendingClaim"
-    [class.btn-inquire--rejected]="userHasRejectedClaim"
-  >
-    <!-- Icon changes by state -->
-    @if (userHasRejectedClaim) {
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="15" y1="9" x2="9" y2="15"></line>
-        <line x1="9" y1="9" x2="15" y2="15"></line>
-      </svg>
-      Claim Rejected
-    } @else if (userHasPendingClaim) {
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12 6 12 12 16 14"></polyline>
-      </svg>
-      Your Claim is Pending
-    } @else {
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-        <polyline points="22,6 12,13 2,6"></polyline>
-      </svg>
-      <span class="btn-inquire__text">Inquire Now</span>
-      <svg class="btn-inquire__arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-        <polyline points="12 5 19 12 12 19"></polyline>
-      </svg>
-    }
-  </button>
-</div>
-}
-
-<!-- ── Claim Modal ───────────────────────── -->
-@if (showClaimModal && item) {
-<div class="modal-overlay" (click)="showClaimModal = false">
-  <div class="modal-sheet" (click)="$event.stopPropagation()">
-
-    <div class="modal-sheet__handle" aria-hidden="true"></div>
-
-    <div class="modal-sheet__icon-wrap">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-        <line x1="16" y1="13" x2="8" y2="13"></line>
-        <line x1="16" y1="17" x2="8" y2="17"></line>
-      </svg>
-    </div>
-    <h2 class="modal-sheet__title">Submit Claim</h2>
-    <p class="modal-sheet__desc">Provide specific details to prove your ownership of this item (e.g., serial numbers, unique marks, contents).</p>
-
-    <!-- Optional Image Attachment -->
-    <div class="modal-field">
-      <label class="modal-field__label">Attach Image (Optional)</label>
-      <div class="inquiry-upload-zone"
-        [class.inquiry-upload-zone--active]="isDragging"
-        (dragover)="onDragOver($event)"
-        (dragleave)="onDragLeave($event)"
-        (drop)="onDrop($event)"
-        (click)="fileInput.click()">
-        <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
-
-        @if (imagePreview) {
-          <div class="inquiry-preview-container">
-            <img [src]="imagePreview" alt="Proof preview">
-          </div>
-          <p class="upload-subtext">Click or drag to change</p>
+        @if (vm.item.imageUrl) {
+          <img
+            [src]="vm.item.imageUrl"
+            [alt]="vm.item.name"
+            class="detail-hero__image"
+            (error)="onImageError($event)"
+          />
         } @else {
-          <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-            <polyline points="21 15 16 10 5 21"></polyline>
-            <line x1="12" y1="12" x2="12" y2="18"></line>
-            <line x1="9" y1="15" x2="15" y2="15"></line>
-          </svg>
-          <p class="upload-text">Drag & Drop or <span class="upload-browse">browse</span></p>
+          <div class="detail-hero__fallback" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+        }
+
+        <!-- Status overlay badge -->
+        @if (vm.isItemUnderReview && !vm.userHasPendingClaim) {
+          <div class="detail-hero__status-badge">
+            <span class="detail-hero__status-dot"></span>
+            Under Review
+          </div>
         }
       </div>
-    </div>
+    </section>
 
-    <!-- Proof of Ownership -->
-    <div class="modal-field">
-      <label class="modal-field__label">Proof of Ownership</label>
-      <textarea
-        class="modal-textarea"
-        placeholder="Describe unique marks, serial numbers, or inner contents…"
-        rows="4"
-        [(ngModel)]="proofText">
-      </textarea>
-    </div>
+    <!-- ── Item Info ─────────────────────── -->
+    <section class="detail-info">
 
-    <div class="modal-sheet__actions">
-      <button class="modal-btn modal-btn--cancel" (click)="showClaimModal = false">Cancel</button>
-      <button class="modal-btn modal-btn--confirm" (click)="submitClaim()">Submit Inquiry</button>
-    </div>
+      <!-- Item Title -->
+      <h2 class="detail-info__title">{{ vm.item.name }}</h2>
 
+      <!-- Meta chips -->
+      <div class="detail-info__chips">
+        <div class="meta-chip">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>{{ vm.item.date }}</span>
+        </div>
+        <div class="meta-chip">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span>{{ vm.item.location }}</span>
+        </div>
+      </div>
+
+      <!-- Description Card -->
+      <div class="detail-card">
+        <div class="detail-card__header">
+          <div class="detail-card__icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+          </div>
+          <h3 class="detail-card__label">Description</h3>
+        </div>
+        <p class="detail-card__text">{{ vm.item.description }}</p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ── Sticky Action Footer ──────────── -->
+  <div class="detail-actions">
+    <button
+      class="btn-inquire"
+      (click)="!vm.userHasPendingClaim && !vm.userHasRejectedClaim && (showClaimModal = true)"
+      [disabled]="vm.userHasPendingClaim || vm.userHasRejectedClaim"
+      [class.btn-inquire--pending]="vm.userHasPendingClaim"
+      [class.btn-inquire--rejected]="vm.userHasRejectedClaim"
+    >
+      <!-- Icon changes by state -->
+      @if (vm.userHasRejectedClaim) {
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+        Claim Rejected
+      } @else if (vm.userHasPendingClaim) {
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        Your Claim is Pending
+      } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        <span class="btn-inquire__text">Inquire Now</span>
+        <svg class="btn-inquire__arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      }
+    </button>
   </div>
-</div>
+
+  <!-- ── Claim Modal ───────────────────────── -->
+  @if (showClaimModal && vm.item) {
+  <div class="modal-overlay" (click)="showClaimModal = false">
+    <div class="modal-sheet" (click)="$event.stopPropagation()">
+
+      <div class="modal-sheet__handle" aria-hidden="true"></div>
+
+      <div class="modal-sheet__icon-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+      </div>
+      <h2 class="modal-sheet__title">Submit Claim</h2>
+      <p class="modal-sheet__desc">Provide specific details to prove your ownership of this item (e.g., serial numbers, unique marks, contents).</p>
+
+      <!-- Optional Image Attachment -->
+      <div class="modal-field">
+        <label class="modal-field__label">Attach Image (Optional)</label>
+        <div class="inquiry-upload-zone"
+          [class.inquiry-upload-zone--active]="isDragging"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          (click)="fileInput.click()">
+          <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+
+          @if (imagePreview) {
+            <div class="inquiry-preview-container">
+              <img [src]="imagePreview" alt="Proof preview">
+            </div>
+            <p class="upload-subtext">Click or drag to change</p>
+          } @else {
+            <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+              <line x1="12" y1="12" x2="12" y2="18"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+            <p class="upload-text">Drag & Drop or <span class="upload-browse">browse</span></p>
+          }
+        </div>
+      </div>
+
+      <!-- Proof of Ownership -->
+      <div class="modal-field">
+        <label class="modal-field__label">Proof of Ownership</label>
+        <textarea
+          class="modal-textarea"
+          placeholder="Describe unique marks, serial numbers, or inner contents…"
+          rows="4"
+          [(ngModel)]="proofText">
+        </textarea>
+      </div>
+
+      <div class="modal-sheet__actions">
+        <button class="modal-btn modal-btn--cancel" (click)="showClaimModal = false">Cancel</button>
+        <button class="modal-btn modal-btn--confirm" (click)="submitClaim(vm.item)">Submit Inquiry</button>
+      </div>
+
+    </div>
+  </div>
+  }
+  }
 }
 
 <!-- ── Success Modal ─────────────────────── -->
