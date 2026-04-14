@@ -21,10 +21,11 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
 
   private _motionHandler = (e: DeviceOrientationEvent) => this._onDeviceMotion(e);
 
-  fullName = signal('');
-  email = signal('');
-  password = signal('');
-  confirmPassword = signal('');
+  fullNameStr = '';
+  emailStr = '';
+  passwordStr = '';
+  confirmPasswordStr = '';
+  
   showPassword = signal(false);
   showConfirmPassword = signal(false);
   isLoading = signal(false);
@@ -66,21 +67,41 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
   }
 
   handleRegister() {
-    if (!this.fullName() || !this.email() || !this.password()) return;
+    console.log('handleRegister called with:', { name: this.fullNameStr, email: this.emailStr });
+    
+    if (!this.fullNameStr || !this.emailStr || !this.passwordStr || !this.confirmPasswordStr) {
+      console.warn('Registration form is incomplete');
+      return;
+    }
+
+    if (this.passwordStr !== this.confirmPasswordStr) {
+      alert('Passwords do not match');
+      return;
+    }
     
     this.isLoading.set(true);
     
-    // Mock registration using persistent AuthService
-    setTimeout(() => {
-      this.authService.register({
-        name: this.fullName(),
-        email: this.email(),
-        password: this.password(),
-        role: 'Student'
-      });
-      
-      this.isLoading.set(false);
-      this.router.navigate(['/verify-otp']);
-    }, 1200);
+    this.authService.register({
+      name: this.fullNameStr,
+      email: this.emailStr,
+      password: this.passwordStr
+    }).subscribe({
+      next: (response) => {
+        this.isLoading.set(false);
+        // Pass data to verify-otp page
+        this.router.navigate(['/verify-otp'], { 
+          state: { 
+            name: this.fullNameStr, 
+            email: this.emailStr, 
+            password: this.passwordStr 
+          } 
+        });
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        console.error('Registration failed:', err);
+        // Add toast or alert here if needed
+      }
+    });
   }
 }

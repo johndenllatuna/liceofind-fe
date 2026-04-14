@@ -77,33 +77,34 @@ export class ClaimVerification implements OnInit, OnDestroy, AfterViewInit {
 
   approveClaim() {
     if (this.selectedClaim) {
-      // 1. Update the claim status to verified and persist to localStorage
-      const updatedClaim: Claim = { ...this.selectedClaim, status: 'verified' };
-      this.claimService.updateClaim(updatedClaim);
-
-      // 2. Find the associated item and mark it as Settled
-      const allItems = this.itemService['itemsSubject'].getValue();
-      const item = allItems.find(i =>
-        (this.selectedClaim?.itemId && i.id === this.selectedClaim.itemId) ||
-        i.name === this.selectedClaim?.itemName
-      );
-      if (item) {
-        this.itemService.updateItem({ ...item, status: 'Settled' });
-      }
-
-      this.closeModal();
-      this.setTab(this.activeTab);
+      // 1. Update the claim status
+      this.claimService.updateClaimStatus(this.selectedClaim.id, 'verified').subscribe({
+        next: () => {
+          // 2. Mark the associated item as Settled
+          if (this.selectedClaim?.itemId) {
+            this.itemService.getItemById(this.selectedClaim.itemId).subscribe(item => {
+              if (item) {
+                this.itemService.updateItem({ ...item, status: 'Settled' }).subscribe();
+              }
+            });
+          }
+          this.closeModal();
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Failed to approve claim:', err)
+      });
     }
   }
 
   rejectClaim() {
     if (this.selectedClaim) {
-      // Update the claim status to rejected and persist to localStorage
-      const updatedClaim: Claim = { ...this.selectedClaim, status: 'rejected' };
-      this.claimService.updateClaim(updatedClaim);
-      // Item status remains unchanged — still active for others to claim
-      this.closeModal();
-      this.setTab(this.activeTab);
+      this.claimService.updateClaimStatus(this.selectedClaim.id, 'rejected').subscribe({
+        next: () => {
+          this.closeModal();
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Failed to reject claim:', err)
+      });
     }
   }
 }

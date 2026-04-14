@@ -29,9 +29,9 @@ export class UserProfile implements OnInit {
   // Initialize with real data from AuthService
   currentUser = this.authService.getCurrentUser();
   user = {
-    name: this.currentUser.name,
-    email: this.currentUser.email,
-    avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${this.currentUser.name}&backgroundColor=8A0000&fontFamily=Inter,sans-serif&fontWeight=700`,
+    name: this.currentUser?.name || 'Guest',
+    email: this.currentUser?.email || '',
+    avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${this.currentUser?.name || 'Guest'}&backgroundColor=8A0000&fontFamily=Inter,sans-serif&fontWeight=700`,
     memberStatus: 'Active Member',
     memberId: '88219',
   };

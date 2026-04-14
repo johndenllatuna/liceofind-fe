@@ -28,12 +28,11 @@ export class ItemManagement implements OnInit, AfterViewInit {
   // --- ANIMATION STATE ---
   pageEntered: boolean = false;
 
-  // 👈 3. Injected FormBuilder into your constructor
-  constructor(
-    private itemService: ItemService, 
-    private fb: FormBuilder,
-    private cdr: ChangeDetectorRef // Inject ChangeDetectorRef
-  ) {
+  private itemService = inject(ItemService);
+  private fb = inject(FormBuilder);
+  private cdr = inject(ChangeDetectorRef);
+
+  constructor() {
     // Setup the edit form rules
     this.editForm = this.fb.group({
       name: ['', Validators.required],
@@ -138,27 +137,35 @@ export class ItemManagement implements OnInit, AfterViewInit {
   // Save Edit Logic
   saveChanges() {
     if (this.editForm.valid && this.selectedItem) {
-      // Update the local item so the UI reflects changes immediately
-      Object.assign(this.selectedItem, this.editForm.value);
+      const updatedData = {
+        ...this.selectedItem,
+        ...this.editForm.value
+      };
       
       if (this.uploadedImageBase64) {
-        this.selectedItem.imageUrl = this.uploadedImageBase64;
+        updatedData.imageUrl = this.uploadedImageBase64;
       }
 
-      this.itemService.updateItem(this.selectedItem);
-      
-      // Send the user back to the view screen
-      this.changeMode('view');
+      this.itemService.updateItem(updatedData).subscribe({
+        next: () => {
+          this.changeMode('view');
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Failed to update item:', err)
+      });
     }
   }
 
   // Confirm Delete Logic
   confirmDelete() {
     if (this.selectedItem) {
-      this.itemService.deleteItem(this.selectedItem.id);
-      
-      // Close the modal after deleting
-      this.closeModal();
+      this.itemService.deleteItem(this.selectedItem.id).subscribe({
+        next: () => {
+          this.closeModal();
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Failed to delete item:', err)
+      });
     }
   }
   

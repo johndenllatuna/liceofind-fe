@@ -1,24 +1,25 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Image {
-
-  constructor() { }
+  private http = inject(HttpClient);
+  private API_URL = 'http://localhost:3000/api/upload';
 
   /**
-   * Fakes an image upload to a server.
+   * Uploads an image file to the server.
    * @param file The physical image file uploaded by the user
-   * @returns An Observable containing the string URL of the "uploaded" image
+   * @returns An Observable containing the string URL of the uploaded image
    */
   uploadImage(file: File): Observable<string> {
-    // 1. Create a temporary local URL so we can actually see the image on screen
-    const mockCloudUrl = URL.createObjectURL(file);
+    const formData = new FormData();
+    formData.append('image', file);
     
-    // 2. Return the URL, but force a 2-second delay to simulate network traffic!
-    return of(mockCloudUrl).pipe(delay(2000));
+    return this.http.post<{ url: string }>(this.API_URL, formData).pipe(
+      map(response => response.url)
+    );
   }
 }

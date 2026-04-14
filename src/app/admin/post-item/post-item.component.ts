@@ -1,6 +1,7 @@
-import { Component, ChangeDetectorRef, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; 
+import { Router } from '@angular/router';
 import { ItemService } from '../../services/item.service'; 
 import { Image } from '../../services/image.service'; 
 import { Sidebar } from '../../shared/sidebar/sidebar.component'; 
@@ -14,6 +15,12 @@ import { Item } from '../../models/item.model';
   styleUrl: './post-item.component.scss'
 })
 export class PostItem implements OnInit, AfterViewInit {
+  private fb = inject(FormBuilder);
+  private itemService = inject(ItemService);
+  private imageService = inject(Image);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+
   postItemForm: FormGroup;
   
   // --- ANIMATION STATE ---
@@ -27,12 +34,7 @@ export class PostItem implements OnInit, AfterViewInit {
   showSuccessMessage: boolean = false;
   showErrorMessage: boolean = false; // Add state for the error toast
 
-  constructor(
-    private fb: FormBuilder, 
-    private itemService: ItemService,
-    private imageService: Image,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor() {
     this.postItemForm = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
@@ -125,18 +127,32 @@ export class PostItem implements OnInit, AfterViewInit {
       status: 'Available' 
     };
 
-    this.itemService.addItem(newItem);
-    
-    this.showSuccessMessage = true;
-    
-    setTimeout(() => {
-      this.showSuccessMessage = false;
-      this.cdr.detectChanges(); 
-    }, 3000);
-    
-    this.postItemForm.reset({ date: '2026-01-16' });
-    this.selectedFile = null;
-    this.imagePreview = null;
-    this.isUploading = false;
+    this.itemService.addItem(newItem).subscribe({
+      next: () => {
+        this.showSuccessMessage = true;
+        this.isUploading = false;
+        
+        // Reset form
+        this.postItemForm.reset({ date: '2026-01-16' });
+        this.selectedFile = null;
+        this.imagePreview = null;
+        
+        setTimeout(() => {
+          this.showSuccessMessage = false;
+          // Redirect to item management as requested by the user flow ("reflected on item management")
+          this.router.navigate(['/item-management']);
+          this.cdr.detectChanges(); 
+        }, 2000);
+      },
+      error: (err) => {
+        this.isUploading = false;
+        this.showErrorMessage = true;
+        console.error('Failed to post item:', err);
+        setTimeout(() => {
+          this.showErrorMessage = false;
+          this.cdr.detectChanges();
+        }, 3000);
+      }
+    });
   }
 }

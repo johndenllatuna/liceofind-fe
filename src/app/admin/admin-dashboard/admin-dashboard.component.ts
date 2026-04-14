@@ -1,46 +1,52 @@
-import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Add this for @if and @for
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Sidebar } from '../../shared/sidebar/sidebar.component';
 import { Chart, registerables } from 'chart.js';
 import { DashboardStats } from '../../models/dashboard.model';
+import { DashboardService } from '../../services/dashboard.service';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [Sidebar, CommonModule], // Added CommonModule
+  imports: [Sidebar, CommonModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
 export class AdminDashboard implements OnInit, AfterViewInit {
+  private cdr = inject(ChangeDetectorRef);
+  private dashboardService = inject(DashboardService);
+
   public chart: any;
 
   // --- ANIMATION STATE ---
   pageEntered: boolean = false;
 
-  // 👈 Injected ChangeDetectorRef
-  constructor(private cdr: ChangeDetectorRef) {}
-
-  // --- MOCK DATA READY FOR BACKEND ---
-  // When you connect to a DB, you'll just overwrite these variables
   dashboardStats: DashboardStats = {
-  pendingClaims: 36,
-  activeListings: 67,
-  settledItems: 23,
+    pendingClaims: 0,
+    activeListings: 0,
+    settledItems: 0,
   };
 
-  submissionTrends = [
-    { day: 'Mon', count: 12 },
-    { day: 'Tue', count: 18 },
-    { day: 'Wed', count: 25 },
-    { day: 'Thu', count: 20 },
-    { day: 'Fri', count: 30 },
-    { day: 'Sat', count: 8 },
-    { day: 'Sun', count: 4 }
-  ];
+  submissionTrends: any[] = [];
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.fetchData();
+  }
+
+  fetchData() {
+    this.dashboardService.getStats().subscribe((stats: DashboardStats) => {
+      this.dashboardStats = stats;
+      this.cdr.detectChanges();
+    });
+
+    this.dashboardService.getTrends().subscribe((trends: any[]) => {
+      this.submissionTrends = trends;
+      this.createChart();
+      this.cdr.detectChanges();
+    });
+  }
 
   ngAfterViewInit() {
     this.createChart();
@@ -53,7 +59,15 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   }
 
   createChart() {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+    
+    if (this.submissionTrends.length === 0) return;
+
     const canvas = document.getElementById('MyChart') as HTMLCanvasElement;
+    if (!canvas) return;
+    
     const ctx = canvas.getContext('2d');
     let gradient;
 

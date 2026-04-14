@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
+import { AuthService } from '../../services/auth.service';
+
 @Component({
   selector: 'app-user-verify-otp',
   standalone: true,
@@ -12,6 +14,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class UserVerifyOtpComponent implements OnInit, OnDestroy {
   private router = inject(Router);
+  private authService = inject(AuthService);
+  
+  registrationData: any = null;
 
   // ── Parallax strings bound to the template ──
   bgTransform   = 'translate(0%, 0%)';
@@ -20,10 +25,18 @@ export class UserVerifyOtpComponent implements OnInit, OnDestroy {
   private _motionHandler = (e: DeviceOrientationEvent) => this._onDeviceMotion(e);
 
 
-  code = signal('');
+  codeStr = '';
   isLoading = signal(false);
 
   ngOnInit(): void {
+    const navigation = this.router.getCurrentNavigation();
+    if (history.state && history.state.email) {
+      this.registrationData = history.state;
+    } else {
+      // If no data, redirect back to register
+      this.router.navigate(['/user/register']);
+    }
+
     if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
       (DeviceOrientationEvent as any).requestPermission()
         .then((state: string) => {
@@ -52,11 +65,26 @@ export class UserVerifyOtpComponent implements OnInit, OnDestroy {
   }
 
   handleConfirm() {
+    if (!this.codeStr || !this.registrationData) return;
+
     this.isLoading.set(true);
-    setTimeout(() => {
-      this.isLoading.set(false);
-      this.router.navigate(['/']); // Route to default login path
-    }, 1000);
+    
+    this.authService.verifyOtp({
+      ...this.registrationData,
+      code: this.codeStr
+    }).pipe(
+      // Optional: hide loading on complete/error
+    ).subscribe({
+      next: (response) => {
+        this.isLoading.set(false);
+        this.router.navigate(['/']); // Redirect to login
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        console.error('OTP verification failed:', err);
+        // Show error message to user
+      }
+    });
   }
 
   resendCode(e: Event) {

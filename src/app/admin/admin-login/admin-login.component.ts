@@ -80,17 +80,16 @@ export class AdminLogin {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
 
-      // Pass the typed values to our auth service
-      const loggedInUser = this.authService.login(email, password);
-
-      // We must check if the login was successful AND if they are an Admin
-      if (loggedInUser && loggedInUser.role === 'Admin') {
-        this.loginError = false;
-        this.router.navigate(['/admin-dashboard']);
-      } else {
-        // Show error text if credentials don't match OR if a Student tries to log in here
-        this.loginError = true;
-      }
+      this.authService.login(email, password, 'Admin').subscribe({
+        next: (response) => {
+          this.loginError = false;
+          this.router.navigate(['/admin-dashboard']);
+        },
+        error: (err) => {
+          this.loginError = true;
+          console.error('Login failed:', err);
+        }
+      });
     } else {
       // If the form is invalid (e.g., empty fields), force it to show errors
       this.loginForm.markAllAsTouched();

@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, map, tap, of } from 'rxjs';
 
 export interface Claim {
-  id: string;
-  itemId?: number; // Added to enable exact matching
+  id: string | number;
+  itemId?: number;
   itemName: string;
   itemImageUrl: string;
   claimantName: string;
@@ -12,61 +13,77 @@ export interface Claim {
   status: 'pending' | 'verified' | 'rejected';
   proofText: string;
   evidenceImageUrl?: string;
-  evidenceFileName?: string; // New field for original file name
+  evidenceFileName?: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClaimService {
+  private http = inject(HttpClient);
+  private API_URL = 'http://localhost:3000/api/claims';
+  
+  private claimsSubject = new BehaviorSubject<Claim[]>([]);
 
-  private STORAGE_KEY = 'ldcufind_claims';
-  private claimsSubject = new BehaviorSubject<Claim[]>(this.loadInitialClaims());
+  constructor() {
+    this.refreshClaims();
+  }
 
-  constructor() { }
+  refreshClaims() {
+    this.http.get<any[]>(this.API_URL).pipe(
+      map(rows => rows.map(row => this.mapToClaim(row)))
+    ).subscribe(claims => {
+      this.claimsSubject.next(claims);
+    });
+  }
 
-  private loadInitialClaims(): Claim[] {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const saved = localStorage.getItem(this.STORAGE_KEY);
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    }
-    // Return an empty array — the table will only populate from real user submissions
-    return [];
+  private mapToClaim(row: any): Claim {
+    return {
+      id: row.id,
+      itemId: row.item_id,
+      itemName: row.item_name || 'Unknown Item',
+      itemImageUrl: row.item_image_url || '',
+      claimantName: row.claimant_name,
+      claimantEmail: row.claimant_email,
+      claimDate: row.created_at,
+      status: row.status,
+      proofText: row.proof_text,
+      evidenceImageUrl: row.evidence_image_url,
+      evidenceFileName: row.evidence_file_name
+    };
   }
 
   getClaims(): Observable<Claim[]> {
     return this.claimsSubject.asObservable();
   }
 
-  submitClaim(claim: Claim) {
-    const currentClaims = this.claimsSubject.getValue();
-    const updatedClaims = [claim, ...currentClaims];
-    this.claimsSubject.next(updatedClaims);
+  submitClaim(claim: any): Observable<any> {
+    const payload = {
+      item_id: claim.itemId,
+      claimant_name: claim.claimantName,
+      claimant_email: claim.claimantEmail,
+      proof_text: claim.proofText
+    };
+    return this.http.post(this.API_URL, payload).pipe(
+      tap(() => this.refreshClaims())
+    );
+  }
 
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedClaims));
-    }
+  updateClaim(updatedClaim: Claim): Observable<any> {
+    return this.http.put(`${this.API_URL}/${updatedClaim.id}`, updatedClaim).pipe(
+      tap(() => this.refreshClaims())
+    );
+  }
+
+  updateClaimStatus(claimId: string | number, status: string): Observable<any> {
+    return this.http.patch(`${this.API_URL}/${claimId}/status`, { status }).pipe(
+      tap(() => this.refreshClaims())
+    );
   }
 
   getPendingClaimsCount(): Observable<number> {
-    const pendingCount = this.claimsSubject.getValue().filter(claim => claim.status === 'pending').length;
-    return of(pendingCount);
-  }
-
-  updateClaim(updatedClaim: Claim) {
-    const currentClaims = this.claimsSubject.getValue();
-    const index = currentClaims.findIndex(c => c.id === updatedClaim.id);
-
-    if (index !== -1) {
-      const newClaims = [...currentClaims];
-      newClaims[index] = { ...updatedClaim };
-      this.claimsSubject.next(newClaims);
-
-      if (typeof window !== 'undefined' && window.localStorage) {
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newClaims));
-      }
-    }
+    return this.getClaims().pipe(
+      map(claims => claims.filter(c => c.status === 'pending').length)
+    );
   }
 }

@@ -55,7 +55,7 @@
             type="text"
             placeholder="John Doe"
             autocomplete="name"
-            [(ngModel)]="fullName"
+            [(ngModel)]="fullNameStr"
             name="fullName"
           />
         </div>
@@ -77,7 +77,7 @@
             type="email"
             placeholder="name@example.com"
             autocomplete="email"
-            [(ngModel)]="email"
+            [(ngModel)]="emailStr"
             name="email"
           />
         </div>
@@ -99,7 +99,7 @@
             [type]="showPassword() ? 'text' : 'password'"
             placeholder="••••••••"
             autocomplete="new-password"
-            [(ngModel)]="password"
+            [(ngModel)]="passwordStr"
             name="password"
           />
           <button
@@ -139,7 +139,7 @@
             [type]="showConfirmPassword() ? 'text' : 'password'"
             placeholder="••••••••"
             autocomplete="new-password"
-            [(ngModel)]="confirmPassword"
+            [(ngModel)]="confirmPasswordStr"
             name="confirmPassword"
           />
           <button
