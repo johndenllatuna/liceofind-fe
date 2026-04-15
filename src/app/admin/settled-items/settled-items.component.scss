@@ -58,49 +58,6 @@ $maroon: #8a0000;
   }
 }
 
-/* --- SEARCH BAR --- */
-.search-bar {
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background-color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  padding: 0 18px;
-  width: 100%;
-  box-sizing: border-box;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.2s ease;
-
-  &:focus-within {
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-  }
-
-  input {
-    flex-grow: 1;
-    border: none;
-    outline: none;
-    padding: 16px 0;
-    font-size: 0.9rem;
-    font-family: inherit;
-    color: #0f172a;
-    background: transparent;
-
-    &::placeholder { color: #94a3b8; }
-  }
-
-  .search-mask-icon {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    background-color: #94a3b8;
-    -webkit-mask: url('../../../assets/icons/search-icon.svg') no-repeat center / contain;
-    mask: url('../../../assets/icons/search-icon.svg') no-repeat center / contain;
-  }
-}
-
 /* --- TABLE CARD CONTAINER --- */
 .table-container {
   background-color: #ffffff;

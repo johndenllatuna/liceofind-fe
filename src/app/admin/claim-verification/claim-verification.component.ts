@@ -18,7 +18,6 @@ export class ClaimVerification implements OnInit, OnDestroy, AfterViewInit {
   
   allClaims: Claim[] = [];
   filteredClaims: Claim[] = [];
-  activeTab: string = 'all';
 
   // --- ANIMATION STATE ---
   pageEntered: boolean = false;
@@ -31,8 +30,8 @@ export class ClaimVerification implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.claimSub = this.claimService.getClaims().subscribe((claims: Claim[]) => {
-      this.allClaims = claims;
-      this.setTab(this.activeTab); 
+      this.allClaims = claims.filter(c => c.status === 'pending');
+      this.filteredClaims = [...this.allClaims];
     });
   }
 
@@ -50,12 +49,17 @@ export class ClaimVerification implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  setTab(tab: string) {
-    this.activeTab = tab;
-    if (tab === 'all') {
+  onSearch(event: Event) {
+    const query = (event.target as HTMLInputElement).value.toLowerCase().trim();
+    if (!query) {
       this.filteredClaims = [...this.allClaims];
     } else {
-      this.filteredClaims = this.allClaims.filter((claim: Claim) => claim.status === tab);
+      this.filteredClaims = this.allClaims.filter(claim => 
+        String(claim.id || '').toLowerCase().includes(query) ||
+        String(claim.itemName || '').toLowerCase().includes(query) ||
+        String(claim.claimantName || '').toLowerCase().includes(query) ||
+        String(claim.claimantEmail || '').toLowerCase().includes(query)
+      );
     }
   }
 
