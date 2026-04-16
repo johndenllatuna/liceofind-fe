@@ -99,4 +99,15 @@ export class AuthService {
   toggleUserStatus(userId: string): Observable<any> {
     return this.http.patch(`${this.USER_API_URL}/${userId}/status`, {});
   }
-}
+
+  updateProfile(userId: string, data: any): Observable<any> {
+    return this.http.patch(`${this.USER_API_URL}/${userId}`, data).pipe(
+      tap((response: any) => {
+        if (response.user) {
+          localStorage.setItem(this.SESSION_KEY, JSON.stringify(response.user));
+          this.currentUser.set(response.user);
+        }
+      })
+    );
+  }
+}

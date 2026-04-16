@@ -62,7 +62,8 @@ export class ClaimService {
       item_id: claim.itemId,
       claimant_name: claim.claimantName,
       claimant_email: claim.claimantEmail,
-      proof_text: claim.proofText
+      proof_text: claim.proofText,
+      evidence_image_url: claim.evidenceImageUrl
     };
     return this.http.post(this.API_URL, payload).pipe(
       tap(() => this.refreshClaims())

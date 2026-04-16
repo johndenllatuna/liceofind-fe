@@ -1,199 +1,189 @@
 <div class="dashboard-layout">
-  <app-sidebar></app-sidebar> 
+  <app-sidebar></app-sidebar>
 
   <main class="main-content">
-    
+
     <!-- ── Hardware-Accelerated Page Transition Wrapper ── -->
-    <div id="page-content" class="page-transition-wrapper" [class.is-entering]="!pageEntered" [class.is-entered]="pageEntered">
+    <div id="page-content" class="page-transition-wrapper" [class.is-entering]="!pageEntered"
+      [class.is-entered]="pageEntered">
 
       @if (!selectedItem) {
-        <header class="page-header">
-          <h1>Settled Items</h1>
-          <p class="page-subtitle">A record of all successfully verified and resolved claims.</p>
-        </header>
+      <header class="page-header">
+        <h1>Settled Items</h1>
+        <p class="page-subtitle">A record of all successfully verified and resolved claims.</p>
+      </header>
 
-        <div class="status-tabs">
-          <button [class.active]="activeTab === 'all'" (click)="setTab('all')">All</button>
-          <button [class.active]="activeTab === 'verified'" (click)="setTab('verified')">Verified</button>
-          <button [class.active]="activeTab === 'rejected'" (click)="setTab('rejected')">Rejected</button>
-        </div>
+      <div class="status-tabs">
+        <button [class.active]="activeTab === 'all'" (click)="setTab('all')">All</button>
+        <button [class.active]="activeTab === 'verified'" (click)="setTab('verified')">Verified</button>
+        <button [class.active]="activeTab === 'rejected'" (click)="setTab('rejected')">Rejected</button>
+      </div>
 
-        <div class="search-bar">
-            <i class="search-mask-icon"></i>
-            <input 
-              type="text" 
-              placeholder="What are you looking for?"
-              [(ngModel)]="searchTerm"
-              (ngModelChange)="filterItems()">
-        </div>
+      <div class="search-bar">
+        <i class="search-mask-icon"></i>
+        <input type="text" placeholder="What are you looking for?" [(ngModel)]="searchTerm"
+          (ngModelChange)="filterItems()">
+      </div>
 
-        <div class="table-container">
-          <table class="claims-table">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Claimant</th>
-                <th>Proof</th>
-                <th class="status-header">Status</th>
-                <th class="date-header">Date of claim</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (claim of filteredClaims; track claim.id) {
-                <tr (click)="viewDetails(claim)" class="clickable-row">
-                  
-                  <td>
-                    <div class="cell-flex-wrapper">
-                      <img [src]="claim.itemImageUrl" 
-                           onerror="this.src='https://placehold.co/40x40?text=No+Img'" 
-                           alt="Item"
-                           style="width: 45px; height: 45px; min-width: 45px; object-fit: cover; border-radius: 6px;">
-                      <div class="item-info">
-                        <span class="item-name">{{ claim.itemName }}</span>
-                        <span class="item-desc">Item ID: {{ claim.id }}</span>
-                      </div>
-                    </div>
-                  </td>
-                  
-                  <td>
-                    <div class="cell-flex-wrapper">
-                      <div class="avatar-circle">👤</div>
-                      <div class="claimant-info">
-                        <span class="name">{{ claim.claimantName }}</span>
-                        <span class="email">{{ claim.claimantName.split(' ')[0].toLowerCase() }}@liceo.edu.ph</span>
-                      </div>
-                    </div>
-                  </td>
+      <div class="table-container">
+        <table class="claims-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Claimant</th>
+              <th>Proof</th>
+              <th class="status-header">Status</th>
+              <th class="date-header">Date of claim</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (claim of filteredClaims; track claim.id) {
+            <tr (click)="viewDetails(claim)" class="clickable-row">
 
-                  <td class="proof-cell">
-                    <p class="proof-text">{{ claim.proofText }}</p>
-                  </td>
+              <td>
+                <div class="cell-flex-wrapper">
+                  <img [src]="claim.itemImageUrl" onerror="this.src='https://placehold.co/40x40?text=No+Img'" alt="Item"
+                    style="width: 45px; height: 45px; min-width: 45px; object-fit: cover; border-radius: 6px;">
+                  <div class="item-info">
+                    <span class="item-name">{{ claim.itemName }}</span>
+                    <span class="item-desc">Item ID: {{ claim.id }}</span>
+                  </div>
+                </div>
+              </td>
 
-                  <td>
-                    <span class="status-badge" [ngClass]="claim.status">{{ claim.status }}</span>
-                  </td>
-                  
-                  <td>{{ claim.claimDate }}</td>
-                  
-                  <td class="arrow-cell">
-                    <span class="arrow-icon">▶</span>
-                  </td>
+              <td>
+                <div class="cell-flex-wrapper">
+                  <div class="avatar-circle">👤</div>
+                  <div class="claimant-info">
+                    <span class="name">{{ claim.claimantName }}</span>
+                    <span class="email">{{ claim.claimantName.split(' ')[0].toLowerCase() }}@liceo.edu.ph</span>
+                  </div>
+                </div>
+              </td>
 
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="6" class="empty-state">
-                    <div class="empty-state-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="21 8 21 21 3 21 3 8"></polyline>
-                        <rect x="1" y="3" width="22" height="5"></rect>
-                        <line x1="10" y1="12" x2="14" y2="12"></line>
-                      </svg>
-                    </div>
-                    <p class="empty-state-text">No settled items yet.</p>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+              <td class="proof-cell">
+                <p class="proof-text">{{ claim.proofText }}</p>
+              </td>
+
+              <td>
+                <span class="status-badge" [ngClass]="claim.status">{{ claim.status }}</span>
+              </td>
+
+              <td>{{ claim.claimDate | date: 'MMM d, y, h:mm a' }}</td>
+
+              <td class="arrow-cell">
+                <span class="arrow-icon">▶</span>
+              </td>
+
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="6" class="empty-state">
+                <div class="empty-state-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                    <rect x="1" y="3" width="22" height="5"></rect>
+                    <line x1="10" y1="12" x2="14" y2="12"></line>
+                  </svg>
+                </div>
+                <p class="empty-state-text">No settled items yet.</p>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
 
       } @else {
-        <div class="detail-view">
-          <div class="back-nav" (click)="goBack()">
-            <span class="back-arrow">←</span> <h2>Settled Items</h2>
-          </div>
+      <div class="detail-view">
+        <div class="back-nav" (click)="goBack()">
+          <span class="back-arrow">←</span>
+          <h2>Settled Items</h2>
+        </div>
 
-          <div class="detail-content">
-            <div class="top-section">
-              <div class="left-info">
-                @if (isEditMode) {
-                  <h3 class="edit-mode-title">Editing Proof Details for Item:</h3>
-                } @else {
-                  <h3>Item Details</h3>
-                }
-                <h1>{{ selectedItem.itemName }}</h1>
-                <p class="subtitle">Item ID: {{ selectedItem.id }}</p>
-                
-                <div class="meta-info">
-                  <p><i class="location-icon"></i> Nac Building, Room 302</p>
-                  <p><i class="calendar-icon"></i> {{ selectedItem.claimDate }}</p>
-                </div>
-              </div>
-              
-              <div class="right-image">
-                <img [src]="selectedItem.itemImageUrl" onerror="this.src='https://placehold.co/400x300?text=No+Image'" alt="Item" style="max-height: 200px; object-fit: cover; border-radius: 8px;">
+        <div class="detail-content">
+          <div class="top-section">
+            <div class="left-info">
+              @if (isEditMode) {
+              <h3 class="edit-mode-title">Editing Proof Details for Item:</h3>
+              } @else {
+              <h3>Item Details</h3>
+              }
+              <h1>{{ selectedItem.itemName }}</h1>
+              <p class="subtitle">Item ID: {{ selectedItem.id }}</p>
+
+              <div class="meta-info">
+                <p><i class="location-icon"></i> Nac Building, Room 302</p>
+                <p><i class="calendar-icon"></i> {{ selectedItem.claimDate | date: 'MMM d, y, h:mm a' }}</p>
               </div>
             </div>
 
-            <div class="bottom-section">
-              <div class="form-group">
-                <label>Proof Details</label>
-                @if (isEditMode) {
-                  <textarea [(ngModel)]="tempProofDetails" placeholder="Enter new proof details here..."></textarea>
+            <div class="right-image">
+              <img [src]="selectedItem.itemImageUrl" onerror="this.src='https://placehold.co/400x300?text=No+Image'"
+                alt="Item" style="max-height: 200px; object-fit: cover; border-radius: 8px;">
+            </div>
+          </div>
+
+          <div class="bottom-section">
+            <div class="form-group">
+              <label>Proof Details</label>
+              @if (isEditMode) {
+              <textarea [(ngModel)]="tempProofDetails" placeholder="Enter new proof details here..."></textarea>
+              } @else {
+              <textarea readonly>{{ selectedItem.proofText }}</textarea>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Image proof of ownership</label>
+
+              @if (isEditMode) {
+              <div class="proof-box settled-modal-upload-zone" [class.settled-modal-upload-zone--active]="isDragging"
+                (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
+                (click)="fileInput.click()">
+                <input #fileInput type="file" accept="image/png, image/jpeg, image/gif"
+                  (change)="onFileSelected($event)" style="display: none;">
+
+                @if (tempImageUrl) {
+                <div class="image-preview-container">
+                  <img [src]="tempImageUrl" alt="Preview">
+                </div>
+                <p class="upload-subtext">Click or drag to replace image</p>
                 } @else {
-                  <textarea readonly>{{ selectedItem.proofText }}</textarea>
+                <span class="material-symbols-outlined upload-icon">cloud_upload</span>
+                <p class="upload-text"><span class="highlight">Click to browse</span> or drag and drop</p>
+                <p class="upload-subtext">PNG, JPG, or GIF (Max 10MB)</p>
                 }
               </div>
-
-              <div class="form-group">
-                <label>Image proof of ownership</label>
-                
-                @if (isEditMode) {
-                  <div 
-                    class="proof-box settled-modal-upload-zone" 
-                    [class.settled-modal-upload-zone--active]="isDragging"
-                    (dragover)="onDragOver($event)"
-                    (dragleave)="onDragLeave($event)"
-                    (drop)="onDrop($event)"
-                    (click)="fileInput.click()"
-                  >
-                    <input 
-                      #fileInput 
-                      type="file" 
-                      accept="image/png, image/jpeg, image/gif" 
-                      (change)="onFileSelected($event)"
-                      style="display: none;"
-                    >
-
-                    @if (tempImageUrl) {
-                      <div class="image-preview-container">
-                        <img [src]="tempImageUrl" alt="Preview">
-                      </div>
-                      <p class="upload-subtext">Click or drag to replace image</p>
-                    } @else {
-                      <span class="material-symbols-outlined upload-icon">cloud_upload</span>
-                      <p class="upload-text"><span class="highlight">Click to browse</span> or drag and drop</p>
-                      <p class="upload-subtext">PNG, JPG, or GIF (Max 10MB)</p>
-                    }
-                  </div>
-                } @else {
-                  <div class="proof-box read-only">
-                      <svg class="file-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                          <polyline points="14 2 14 8 20 8"></polyline>
-                          <line x1="16" y1="13" x2="8" y2="13"></line>
-                          <line x1="16" y1="17" x2="8" y2="17"></line>
-                          <polyline points="10 9 9 9 8 9"></polyline>
-                      </svg>
-                      <p>Evidence_Document.pdf</p>
-                  </div>
-                }
+              } @else {
+              <div class="proof-box read-only">
+                <svg class="file-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <p>Evidence_Document.pdf</p>
               </div>
+              }
+            </div>
 
-              <div class="action-footer">
-                @if (isEditMode) {
-                  <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
-                  <button class="save-btn" (click)="saveChanges()">Save Changes</button>
-                } @else {
-                  <button class="edit-btn" (click)="enterEditMode()">Edit Details</button>
-                  <button class="close-btn" (click)="goBack()">Close</button>
-                }
-              </div>
+            <div class="action-footer">
+              @if (isEditMode) {
+              <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+              <button class="save-btn" (click)="saveChanges()">Save Changes</button>
+              } @else {
+              <button class="edit-btn" (click)="enterEditMode()">Edit Details</button>
+              <button class="close-btn" (click)="goBack()">Close</button>
+              }
             </div>
           </div>
         </div>
+      </div>
       }
 
     </div>

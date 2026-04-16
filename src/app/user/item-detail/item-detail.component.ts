@@ -4,6 +4,7 @@ import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ClaimService, Claim } from '../../services/claim.service';
 import { ItemService } from '../../services/item.service';
+import { Image } from '../../services/image.service';
 import { AuthService } from '../../services/auth.service';
 import { Item } from '../../models/item.model';
 import { Observable, of, combineLatest } from 'rxjs';
@@ -28,6 +29,7 @@ interface ItemDetailVm {
 export class ItemDetail {
   private claimService = inject(ClaimService);
   private itemService = inject(ItemService);
+  private imageService = inject(Image);
   private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
 
@@ -185,22 +187,43 @@ export class ItemDetail {
       itemImageUrl: item.imageUrl || '',
       claimantName: user.name,
       claimantEmail: user.email,
-      proofText: this.proofText
+      proofText: this.proofText,
+      evidenceImageUrl: null
     };
 
-    this.claimService.submitClaim(newClaim).subscribe({
-      next: () => {
-        this.showClaimModal = false;
-        this.proofText = '';
-        this.imagePreview = undefined;
-        this.selectedFile = undefined;
-        this.showSuccessModal = true;
-      },
-      error: (err) => {
-        console.error('Failed to submit claim:', err);
-        alert('Failed to submit inquiry. Please try again.');
-      }
-    });
+    // Helper function to proceed with claim submission
+    const proceedWithSubmission = (claimData: any) => {
+      this.claimService.submitClaim(claimData).subscribe({
+        next: () => {
+          this.showClaimModal = false;
+          this.proofText = '';
+          this.imagePreview = undefined;
+          this.selectedFile = undefined;
+          this.showSuccessModal = true;
+        },
+        error: (err) => {
+          console.error('Failed to submit claim:', err);
+          alert('Failed to submit inquiry. Please try again.');
+        }
+      });
+    };
+
+    if (this.selectedFile) {
+      // First upload the proof image
+      this.imageService.uploadProof(this.selectedFile).subscribe({
+        next: (imageUrl: string) => {
+          newClaim.evidenceImageUrl = imageUrl;
+          proceedWithSubmission(newClaim);
+        },
+        error: (err: any) => {
+          console.error('Failed to upload proof image:', err);
+          alert('Failed to upload evidence image. Please try again.');
+        }
+      });
+    } else {
+      // No image attached, submit directly
+      proceedWithSubmission(newClaim);
+    }
   }
 
   closeSuccessModal() {

@@ -22,4 +22,16 @@ export class Image {
       map(response => response.url)
     );
   }
+
+  /**
+   * Uploads an inquiry evidence image to the proofUploads folder.
+   */
+  uploadProof(file: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    return this.http.post<{ url: string }>(`${this.API_URL}/proof`, formData).pipe(
+      map(response => response.url)
+    );
+  }
 }
