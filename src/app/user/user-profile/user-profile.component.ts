@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ClaimService, Claim as ServiceClaim } from '../../services/claim.service';
 
@@ -14,7 +15,7 @@ export interface Claim {
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
 })
@@ -25,6 +26,25 @@ export class UserProfile implements OnInit {
 
   showLogoutModal = signal(false);
   showPrivacyModal = signal(false);
+
+  isEditingName = false;
+  tempName = '';
+
+  enableEdit() {
+    this.isEditingName = true;
+    this.tempName = this.user.name;
+  }
+
+  cancelEdit() {
+    this.isEditingName = false;
+  }
+
+  saveName() {
+    this.user.name = this.tempName;
+    this.isEditingName = false;
+    // Optionally update the avatar to use the new name initials
+    this.user.avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${this.tempName}&backgroundColor=8A0000&fontFamily=Inter,sans-serif&fontWeight=700`;
+  }
 
   // Initialize with real data from AuthService
   currentUser = this.authService.getCurrentUser();

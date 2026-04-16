@@ -141,13 +141,30 @@ $nav-blur-bg: rgba(255, 255, 255, 0.82);
     text-align: center;
   }
 
+  &__name-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 38px;
+  }
+
   &__name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     font-family: 'Manrope', sans-serif;
     font-size: 1.4rem;
     font-weight: 800;
     color: $slate-dark;
     letter-spacing: -0.5px;
     margin: 0;
+  }
+
+  &__edit-mode {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   &__email {
@@ -727,5 +744,83 @@ $nav-blur-bg: rgba(255, 255, 255, 0.82);
     box-shadow: 0 4px 14px rgba($maroon, 0.25);
 
     &:hover { background: $maroon-mid; }
+  }
+}
+
+/* ═══════════════════════════════════════
+   INLINE EDIT COMPONENTS
+═══════════════════════════════════════ */
+.btn-edit-icon {
+  background: transparent;
+  border: none;
+  color: $slate-light;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: $maroon;
+    background: rgba($maroon, 0.08);
+  }
+}
+
+.name-edit-input {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $slate-dark;
+  padding: 6px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  width: 160px;
+  text-align: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    border-color: $maroon;
+    box-shadow: 0 0 0 3px rgba($maroon, 0.1);
+  }
+}
+
+.btn-edit-action {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s ease, transform 0.1s ease;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.btn-edit-save {
+    background: $maroon;
+    color: white;
+
+    &:hover {
+      background: $maroon-mid;
+    }
+  }
+
+  &.btn-edit-cancel {
+    background: #e2e8f0;
+    color: $slate-dark;
+
+    &:hover {
+      background: #cbd5e1;
+    }
   }
 }
