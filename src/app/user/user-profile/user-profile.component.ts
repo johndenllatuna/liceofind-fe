@@ -56,6 +56,12 @@ export class UserProfile implements OnInit {
     memberId: '88219',
   };
 
+  onHomeClick(event: Event) {
+    if (this.router.url === '/user/home') {
+      window.location.reload();
+    }
+  }
+
   myClaims: Claim[] = [];
 
   ngOnInit() {
