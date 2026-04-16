@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -22,12 +22,13 @@ export class UserHome implements OnInit, OnDestroy {
 
   private itemSub: Subscription | null = null;
 
-  constructor(private itemService: ItemService) {}
+  constructor(private itemService: ItemService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.itemSub = this.itemService.getItems().subscribe(items => {
       this.allItems = items;
       this.filteredItems = items;
+      this.cdr.detectChanges();
     });
   }
 
