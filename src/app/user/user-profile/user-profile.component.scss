@@ -341,6 +341,29 @@ $nav-blur-bg: rgba(255, 255, 255, 0.82);
 }
 
 /* ═══════════════════════════════════════
+   SEE ALL BUTTON
+═══════════════════════════════════════ */
+.btn-see-all {
+  display: block;
+  text-align: center;
+  padding: 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $maroon;
+  text-decoration: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba($maroon, 0.04);
+  }
+
+  &:active {
+    background: rgba($maroon, 0.08);
+  }
+}
+
+/* ═══════════════════════════════════════
    STATUS BADGES
 ═══════════════════════════════════════ */
 .claim-badge {

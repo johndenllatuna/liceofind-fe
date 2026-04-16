@@ -56,7 +56,7 @@
       </div>
 
       <div class="claims-list">
-        @for (claim of myClaims; track claim.id) {
+        @for (claim of myClaims | slice:0:3; track claim.id) {
           <div class="claim-item">
             <div class="claim-item__info">
               <h3 class="claim-item__title">{{ claim.itemName }}</h3>
@@ -94,6 +94,10 @@
           </div>
         }
       </div>
+
+      @if (myClaims.length > 3) {
+        <a class="btn-see-all" routerLink="/user/my-claims">See All</a>
+      }
     </div>
 
     <!-- Settings Card -->
