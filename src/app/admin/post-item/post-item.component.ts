@@ -39,7 +39,8 @@ export class PostItem implements OnInit, AfterViewInit {
       name: ['', Validators.required],
       description: ['', Validators.required],
       location: ['', Validators.required],
-      date: ['2026-01-16', Validators.required]
+      date: ['', Validators.required],
+      image: [null, Validators.required]
     });
   }
 
@@ -85,6 +86,9 @@ export class PostItem implements OnInit, AfterViewInit {
 
   private processFile(file: File) {
     this.selectedFile = file;
+    this.postItemForm.patchValue({ image: file });
+    this.postItemForm.get('image')?.updateValueAndValidity();
+    
     const reader = new FileReader();
     reader.onload = () => {
       this.imagePreview = reader.result as string;
@@ -94,18 +98,25 @@ export class PostItem implements OnInit, AfterViewInit {
   }
 
   onSubmit() {
-    if (this.postItemForm.valid) {
+    if (this.postItemForm.valid && this.selectedFile) {
       this.isUploading = true; 
 
       const formValues = this.postItemForm.value;
 
-      if (this.selectedFile) {
-        this.imageService.uploadImage(this.selectedFile).subscribe((uploadedUrl) => {
+      this.imageService.uploadImage(this.selectedFile).subscribe({
+        next: (uploadedUrl) => {
           this.finalizeSubmission(formValues, uploadedUrl);
-        });
-      } else {
-        this.finalizeSubmission(formValues, '/assets/icons/no-img.svg');
-      }
+        },
+        error: (err) => {
+          this.isUploading = false;
+          this.showErrorMessage = true;
+          console.error('Image upload failed:', err);
+          setTimeout(() => {
+            this.showErrorMessage = false;
+            this.cdr.detectChanges();
+          }, 3000);
+        }
+      });
     } else {
       // Trigger the red error toast instead of an alert
       this.showErrorMessage = true;
@@ -133,7 +144,7 @@ export class PostItem implements OnInit, AfterViewInit {
         this.isUploading = false;
         
         // Reset form
-        this.postItemForm.reset({ date: '2026-01-16' });
+        this.postItemForm.reset();
         this.selectedFile = null;
         this.imagePreview = null;
         
