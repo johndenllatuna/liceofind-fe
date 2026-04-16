@@ -60,6 +60,10 @@ export class AuthService {
     return this.http.post(`${this.API_URL}/register`, userData);
   }
 
+  requestPasswordReset(email: string): Observable<any> {
+    return this.http.post(`${this.API_URL}/forgot-password`, { email });
+  }
+
   verifyOtp(data: any): Observable<any> {
     return this.http.post(`${this.API_URL}/verify-otp`, data);
   }

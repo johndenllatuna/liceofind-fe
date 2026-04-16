@@ -17,6 +17,7 @@ import { UserProfile } from './user/user-profile/user-profile.component';
 import { UserRegisterComponent } from './user/user-register/user-register.component';
 import { UserVerifyOtpComponent } from './user/user-verify-otp/user-verify-otp';
 import { MyClaims } from './user/my-claims/my-claims';
+import { ForgotPassword } from './user/forgot-password/forgot-password';
 
 export const routes: Routes = [
   // ── Root Route (Default to User Login) ───────────────────────────────────────
@@ -38,5 +39,6 @@ export const routes: Routes = [
   { path: 'user/home', component: UserHome },
   { path: 'user/item/:id', component: ItemDetail },
   { path: 'user/profile', component: UserProfile },
-  { path: 'user/my-claims', component: MyClaims }
+  { path: 'user/my-claims', component: MyClaims },
+  { path: 'forgot-password', component: ForgotPassword }
 ];
