@@ -17,9 +17,6 @@ export class AdminLogin {
   isForgotPasswordMode: boolean = false;
   resetLinkSent: boolean = false;
 
-  /** Parallax: CSS transform string applied to .bg-parallax */
-  bgTransform: string = 'translate(0%, 0%)';
-
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -30,20 +27,6 @@ export class AdminLogin {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
-  }
-
-  /** Parallax mouse handler: moves bg in the opposite direction of the cursor
-   *  at 2% intensity for a subtle, sophisticated depth effect. */
-  onMouseMove(event: MouseEvent): void {
-    const { clientX, clientY, currentTarget } = event;
-    const el = currentTarget as HTMLElement;
-    const { width, height } = el.getBoundingClientRect();
-    // Map [0, width/height] → [-1, 1]
-    const x = (clientX / width - 0.5) * 2;
-    const y = (clientY / height - 0.5) * 2;
-    // 2% max translate — enough to feel alive, not distracting
-    const intensity = 2;
-    this.bgTransform = `translate(${-x * intensity}%, ${-y * intensity}%)`;
   }
 
   // --- NEW METHODS FOR FORGOT PASSWORD ---

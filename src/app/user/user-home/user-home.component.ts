@@ -1,6 +1,6 @@
 import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Item } from '../../models/item.model';
 import { ItemService } from '../../services/item.service';
@@ -22,14 +22,29 @@ export class UserHome implements OnInit, OnDestroy {
 
   private itemSub: Subscription | null = null;
 
-  constructor(private itemService: ItemService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private itemService: ItemService, 
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) {}
 
   ngOnInit() {
+    this.fetchItems();
+  }
+
+  fetchItems() {
     this.itemSub = this.itemService.getItems().subscribe(items => {
       this.allItems = items;
       this.filteredItems = items;
       this.cdr.detectChanges();
     });
+  }
+
+  onHomeClick(event: Event) {
+    // If already on Home, trigger hard reload
+    if (this.router.url === '/user/home') {
+      window.location.reload();
+    }
   }
 
   ngOnDestroy() {
