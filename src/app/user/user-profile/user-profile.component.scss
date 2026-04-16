@@ -174,25 +174,7 @@ $nav-blur-bg: rgba(255, 255, 255, 0.82);
     color: $slate-light;
   }
 
-  &__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
-    background: $maroon-pale;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: $maroon;
-    letter-spacing: 0.04em;
-    margin-top: 4px;
 
-    svg {
-      width: 11px;
-      height: 11px;
-      flex-shrink: 0;
-    }
-  }
 }
 
 @keyframes shimmer {
