@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // 👈 1. Added form imports
 import { Item } from '../../models/item.model'; 
 import { ItemService } from '../../services/item.service'; 
+import { Image } from '../../services/image.service'; // 👈 3. Added Image service
 import { Sidebar } from '../../shared/sidebar/sidebar.component'; 
 import { Subscription } from 'rxjs';
 
@@ -23,12 +24,19 @@ export class ItemManagement implements OnInit, AfterViewInit {
   modalMode: 'view' | 'edit' | 'delete' = 'view'; 
   editForm: FormGroup;
   uploadedImageBase64: string | undefined = undefined;
-  isDragging: boolean = false; // New state for drag-and-drop feedback
+  selectedFile: File | null = null;
+  isDragging: boolean = false; 
+  
+  // --- TOAST FEEDBACK ---
+  isToastVisible: boolean = false;
+  toastMessage: string = '';
+  isToastError: boolean = false;
 
   // --- ANIMATION STATE ---
   pageEntered: boolean = false;
 
   private itemService = inject(ItemService);
+  private imageService = inject(Image); // 👈 5. Injected Image service
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
 
@@ -72,23 +80,33 @@ export class ItemManagement implements OnInit, AfterViewInit {
 
   // Opens the modal and fills the form with the item's current details
   openDetails(item: Item) {
-    this.uploadedImageBase64 = undefined; // Reset image preview for the new selection
+    this.uploadedImageBase64 = undefined; 
+    this.selectedFile = null; // Reset for new selection
     this.selectedItem = item;
     this.modalMode = 'view';
     
-    // Pre-fill the edit form just in case they click 'Edit'
+    // Pre-fill the edit form with formatted date
     this.editForm.patchValue({
       name: item.name,
       description: item.description,
       location: item.location,
-      date: item.date
+      date: this.formatDate(item.date)
     });
+  }
+
+  /** Converts ISO or any date string to YYYY-MM-DD for <input type="date"> */
+  private formatDate(dateStr: any): string {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    return d.toISOString().split('T')[0];
   }
 
   // Closes the modal completely
   closeModal() {
     this.selectedItem = null;
     this.uploadedImageBase64 = undefined;
+    this.selectedFile = null;
   }
 
   // Switches the modal between view, edit, and delete screens
@@ -127,6 +145,7 @@ export class ItemManagement implements OnInit, AfterViewInit {
   }
 
   private processFile(file: File) {
+    this.selectedFile = file; // Store the actual file for uploading later
     const reader = new FileReader();
     reader.onload = () => {
       this.uploadedImageBase64 = reader.result as string;
@@ -137,23 +156,53 @@ export class ItemManagement implements OnInit, AfterViewInit {
   // Save Edit Logic
   saveChanges() {
     if (this.editForm.valid && this.selectedItem) {
-      const updatedData = {
-        ...this.selectedItem,
-        ...this.editForm.value
+      const updatedData = { 
+        ...this.selectedItem, 
+        ...this.editForm.value 
       };
-      
-      if (this.uploadedImageBase64) {
-        updatedData.imageUrl = this.uploadedImageBase64;
-      }
 
-      this.itemService.updateItem(updatedData).subscribe({
-        next: () => {
-          this.changeMode('view');
-          this.cdr.detectChanges();
-        },
-        error: (err) => console.error('Failed to update item:', err)
-      });
+      console.log('Attempting item update with payload:', updatedData);
+
+      // If a new file was selected, upload it first
+      if (this.selectedFile) {
+        this.imageService.uploadImage(this.selectedFile).subscribe({
+          next: (url) => {
+            updatedData.imageUrl = url;
+            this.performUpdate(updatedData);
+          },
+          error: (err) => {
+            console.error('Upload failed:', err);
+            this.showToast('Upload failed. Check server logs.', true);
+          }
+        });
+      } else {
+        this.performUpdate(updatedData);
+      }
+    } else {
+      this.showToast('Please fill all required fields correctly.', true);
     }
+  }
+
+  private performUpdate(updatedData: any) {
+    this.itemService.updateItem(updatedData).subscribe({
+      next: () => {
+        this.showToast('Item updated successfully!');
+        this.changeMode('view');
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to update item:', err);
+        const errorMsg = err?.error?.error || err?.error?.message || 'Failed to update item.';
+        this.showToast(errorMsg, true);
+      }
+    });
+  }
+
+  private showToast(message: string, isError: boolean = false) {
+    this.toastMessage = message;
+    this.isToastError = isError;
+    this.isToastVisible = true;
+    setTimeout(() => this.isToastVisible = false, 3000);
   }
 
   // Confirm Delete Logic

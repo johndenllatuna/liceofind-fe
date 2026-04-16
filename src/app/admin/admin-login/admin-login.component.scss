@@ -3,13 +3,13 @@
 /* ═══════════════════════════════════════
    DESIGN TOKENS (Light Maroon Theme)
 ═══════════════════════════════════════ */
-$maroon:       #8a0000;
+$maroon: #8a0000;
 $maroon-light: #a31515;
-$maroon-dark:  #630000;
-$slate-dark:   #0f172a;
-$slate-mid:    #475569;
-$slate-light:  #94a3b8;
-$glass-bg:     rgba(255, 255, 255, 0.85);
+$maroon-dark: #630000;
+$slate-dark: #0f172a;
+$slate-mid: #475569;
+$slate-light: #94a3b8;
+$glass-bg: rgba(255, 255, 255, 0.85);
 $glass-border: rgba(255, 255, 255, 0.4);
 
 /* ═══════════════════════════════════════
@@ -29,7 +29,8 @@ $glass-border: rgba(255, 255, 255, 0.4);
 /* The actual background image in its own layer so we can transform it */
 .bg-parallax {
   position: absolute;
-  inset: -6%;        /* overshoot edges so the parallax never reveals gaps */
+  inset: -6%;
+  /* overshoot edges so the parallax never reveals gaps */
   background-image:
     url('../../../assets/landingpage-bg.jpg');
   background-size: cover;
@@ -45,7 +46,7 @@ $glass-border: rgba(255, 255, 255, 0.4);
   z-index: 1;
   background:
     /* Slight vignette to draw focus to the center */
-    radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.15) 100%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.15) 100%),
     /* Very subtle maroon tint just to warm the image and tie in the brand */
     rgba(138, 0, 0, 0.05);
   mix-blend-mode: normal;
@@ -73,21 +74,101 @@ $glass-border: rgba(255, 255, 255, 0.4);
 }
 
 /* Size and position each bokeh circle individually */
-.b1 { width: 120px; height: 120px; left: 8%;  top: 70%; animation-duration: 18s; animation-delay:  0s;  }
-.b2 { width:  60px; height:  60px; left: 20%; top: 15%; animation-duration: 22s; animation-delay: -6s;  }
-.b3 { width:  90px; height:  90px; left: 45%; top: 80%; animation-duration: 25s; animation-delay: -3s;  }
-.b4 { width:  40px; height:  40px; left: 65%; top: 20%; animation-duration: 20s; animation-delay: -10s; }
-.b5 { width: 150px; height: 150px; left: 75%; top: 60%; animation-duration: 30s; animation-delay: -8s;  }
-.b6 { width:  50px; height:  50px; left: 90%; top: 40%; animation-duration: 16s; animation-delay: -4s;  }
-.b7 { width:  70px; height:  70px; left: 30%; top: 50%; animation-duration: 24s; animation-delay: -14s; }
-.b8 { width:  35px; height:  35px; left: 55%; top:  5%; animation-duration: 19s; animation-delay: -2s;  }
+.b1 {
+  width: 120px;
+  height: 120px;
+  left: 8%;
+  top: 70%;
+  animation-duration: 18s;
+  animation-delay: 0s;
+}
+
+.b2 {
+  width: 60px;
+  height: 60px;
+  left: 20%;
+  top: 15%;
+  animation-duration: 22s;
+  animation-delay: -6s;
+}
+
+.b3 {
+  width: 90px;
+  height: 90px;
+  left: 45%;
+  top: 80%;
+  animation-duration: 25s;
+  animation-delay: -3s;
+}
+
+.b4 {
+  width: 40px;
+  height: 40px;
+  left: 65%;
+  top: 20%;
+  animation-duration: 20s;
+  animation-delay: -10s;
+}
+
+.b5 {
+  width: 150px;
+  height: 150px;
+  left: 75%;
+  top: 60%;
+  animation-duration: 30s;
+  animation-delay: -8s;
+}
+
+.b6 {
+  width: 50px;
+  height: 50px;
+  left: 90%;
+  top: 40%;
+  animation-duration: 16s;
+  animation-delay: -4s;
+}
+
+.b7 {
+  width: 70px;
+  height: 70px;
+  left: 30%;
+  top: 50%;
+  animation-duration: 24s;
+  animation-delay: -14s;
+}
+
+.b8 {
+  width: 35px;
+  height: 35px;
+  left: 55%;
+  top: 5%;
+  animation-duration: 19s;
+  animation-delay: -2s;
+}
 
 @keyframes bokeFloat {
-  0%   { transform: translateY(0)   translateX(0);   opacity: 0;    }
-  10%  { opacity: 0.8; }
-  50%  { transform: translateY(-60px) translateX(20px); opacity: 0.5; }
-  90%  { opacity: 0.8; }
-  100% { transform: translateY(-120px) translateX(-10px); opacity: 0; }
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translateY(-60px) translateX(20px);
+    opacity: 0.5;
+  }
+
+  90% {
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(-120px) translateX(-10px);
+    opacity: 0;
+  }
 }
 
 /* ═══════════════════════════════════════
@@ -106,14 +187,22 @@ $glass-border: rgba(255, 255, 255, 0.4);
   -webkit-backdrop-filter: blur(12px);
   box-shadow:
     0 12px 32px rgba(0, 0, 0, 0.12),
-    0 2px 8px   rgba(0, 0, 0, 0.08); /* Soft dark shadow to lift the white card */
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  /* Soft dark shadow to lift the white card */
   /* Smooth card entrance */
   animation: cardFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes cardFadeUp {
-  from { opacity: 0; transform: translateY(28px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* ═══════════════════════════════════════
@@ -218,8 +307,8 @@ $glass-border: rgba(255, 255, 255, 0.4);
     outline: none;
     transition:
       border-color 0.22s ease,
-      box-shadow   0.22s ease,
-      background   0.22s ease;
+      box-shadow 0.22s ease,
+      background 0.22s ease;
     box-sizing: border-box;
 
     &::placeholder {
@@ -234,7 +323,9 @@ $glass-border: rgba(255, 255, 255, 0.4);
     }
 
     /* Focus brightens the companion icon */
-    &:focus ~ .field-icon { color: $maroon; }
+    &:focus~.field-icon {
+      color: $maroon;
+    }
   }
 
   /* Re-target icon when input is focused */
@@ -247,48 +338,6 @@ $glass-border: rgba(255, 255, 255, 0.4);
   font-size: 0.75rem;
   color: #d32f2f;
   font-weight: 500;
-}
-
-/* ═══════════════════════════════════════
-   OPTIONS ROW (Remember me / Forgot)
-═══════════════════════════════════════ */
-.options-group {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-.remember-label {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: $slate-mid;
-  cursor: pointer;
-  user-select: none;
-
-  input[type="checkbox"] {
-    accent-color: $maroon;
-    width: 14px;
-    height: 14px;
-    cursor: pointer;
-  }
-}
-
-.forgot-link {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: $maroon;
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: color 0.2s ease, border-bottom-color 0.2s ease;
-
-  &:hover {
-    color: $maroon-light;
-    border-bottom-color: $maroon-light;
-  }
 }
 
 /* ═══════════════════════════════════════
@@ -324,9 +373,9 @@ $glass-border: rgba(255, 255, 255, 0.4);
   background: $maroon;
   box-shadow: 0 4px 14px rgba($maroon, 0.25);
   transition:
-    transform    0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow   0.2s ease,
-    background   0.2s ease;
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease,
+    background 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -355,8 +404,14 @@ $glass-border: rgba(255, 255, 255, 0.4);
     box-shadow: 0 6px 20px rgba($maroon, 0.35);
     background: $maroon-light;
 
-    .btn-text  { transform: translateX(-6px); }
-    .btn-arrow { transform: translateX(0);    opacity: 1; }
+    .btn-text {
+      transform: translateX(-6px);
+    }
+
+    .btn-arrow {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
 
   &:active:not(.disabled) {

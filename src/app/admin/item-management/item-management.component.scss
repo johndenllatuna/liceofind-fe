@@ -318,6 +318,53 @@ $maroon: #8a0000;
   }
 }
 
+/* ── TOAST NOTIFICATIONS ── */
+.toast-overlay {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  transform: translateX(120%);
+  transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  pointer-events: none;
+
+  &.show {
+    transform: translateX(0);
+  }
+
+  &.error .toast-content {
+    background: #fff5f5;
+    border-color: #feb2b2;
+    color: #c53030;
+    
+    .toast-icon { color: #f56565; }
+  }
+}
+
+.toast-content {
+  background: #f0fff4;
+  border: 1px solid #9ae6b4;
+  color: #22543d;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+
+  .toast-icon {
+    font-size: 20px;
+    color: #48bb78;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+}
+
 .modal-header {
   padding: 20px 24px;
   border-bottom: 1px solid #eaeaea;

@@ -68,6 +68,10 @@ export class AuthService {
     return this.http.post(`${this.API_URL}/verify-otp`, data);
   }
 
+  resetPassword(data: any): Observable<any> {
+    return this.http.post(`${this.API_URL}/reset-password`, data);
+  }
+
   logout(isAdmin: boolean = false) {
     this.currentUser.set(null);
     if (typeof window !== 'undefined' && window.localStorage) {

@@ -29,6 +29,10 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
   showPassword = signal(false);
   showConfirmPassword = signal(false);
   isLoading = signal(false);
+  
+  // Toast notification state
+  showToast = signal(false);
+  errorMessage = signal('');
 
   ngOnInit(): void {
     if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
@@ -89,7 +93,7 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.isLoading.set(false);
         // Pass data to verify-otp page
-        this.router.navigate(['/verify-otp'], { 
+        this.router.navigate(['/user/verify-otp'], { 
           state: { 
             name: this.fullNameStr, 
             email: this.emailStr, 
@@ -99,9 +103,19 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.isLoading.set(false);
+        const msg = err?.error?.message || 'Registration failed. Please try again.';
+        this.triggerToast(msg);
         console.error('Registration failed:', err);
-        // Add toast or alert here if needed
       }
     });
+  }
+
+  private triggerToast(message: string) {
+    this.errorMessage.set(message);
+    this.showToast.set(true);
+    // Auto-dismiss after 4 seconds
+    setTimeout(() => {
+      this.showToast.set(false);
+    }, 4000);
   }
 }

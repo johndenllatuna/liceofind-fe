@@ -165,7 +165,7 @@
 
     <div class="modal-footer modal-actions">
       <button type="button" class="cancel-btn" (click)="changeMode('view')">Cancel</button>
-      <button type="button" class="save-btn" (click)="saveChanges()">Save Changes</button>
+      <button type="button" class="save-btn" (click)="saveChanges()" [disabled]="editForm.invalid">Save Changes</button>
     </div>
     }
 
@@ -190,3 +190,13 @@
   </div>
 </div>
 }
+
+<!-- ── Toast Notification Overlay ── -->
+<div class="toast-overlay" [class.show]="isToastVisible" [class.error]="isToastError">
+  <div class="toast-content">
+    <span class="material-symbols-outlined toast-icon">
+      {{ isToastError ? 'error' : 'check_circle' }}
+    </span>
+    <p>{{ toastMessage }}</p>
+  </div>
+</div>

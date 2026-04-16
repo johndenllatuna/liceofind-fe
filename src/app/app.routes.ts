@@ -23,8 +23,8 @@ import { ResetPasswordComponent } from './user/reset-password/reset-password';
 export const routes: Routes = [
   // ── Root Route (Default to User Login) ───────────────────────────────────────
   { path: '', component: UserLogin },
-  { path: 'register', component: UserRegisterComponent },
-  { path: 'verify-otp', component: UserVerifyOtpComponent },
+  { path: 'user/register', component: UserRegisterComponent },
+  { path: 'user/verify-otp', component: UserVerifyOtpComponent },
 
   // ── Admin routes ─────────────────────────────────────────────────────────────
   { path: 'admin-login', component: AdminLogin },
@@ -41,6 +41,6 @@ export const routes: Routes = [
   { path: 'user/item/:id', component: ItemDetail },
   { path: 'user/profile', component: UserProfile },
   { path: 'user/my-claims', component: MyClaims },
-  { path: 'forgot-password', component: ForgotPassword },
-  { path: 'reset-password', component: ResetPasswordComponent }
+  { path: 'user/forgot-password', component: ForgotPassword },
+  { path: 'user/reset-password', component: ResetPasswordComponent }
 ];
