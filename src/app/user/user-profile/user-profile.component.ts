@@ -19,6 +19,8 @@ export interface Claim {
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
 })
+
+
 export class UserProfile implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
@@ -40,11 +42,29 @@ export class UserProfile implements OnInit {
   }
 
   saveName() {
-    this.user.name = this.tempName;
-    this.isEditingName = false;
-    // Optionally update the avatar to use the new name initials
-    this.user.avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${this.tempName}&backgroundColor=8A0000&fontFamily=Inter,sans-serif&fontWeight=700`;
+    if (!this.tempName.trim() || this.tempName === this.user.name) {
+      this.isEditingName = false;
+      return;
+    }
+
+    const userId = this.currentUser?.id;
+    if (!userId) return;
+
+    this.authService.updateProfile(userId, { name: this.tempName }).subscribe({
+      next: (response) => {
+        this.user.name = response.user.name;
+        this.isEditingName = false;
+        // Update avatar to use the new name initials
+        this.user.avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${this.user.name}&backgroundColor=8A0000&fontFamily=Inter,sans-serif&fontWeight=700`;
+      },
+      error: (err) => {
+        console.error('Failed to update profile:', err);
+        alert('Failed to update profile. Please try again.');
+        this.isEditingName = false;
+      }
+    });
   }
+
 
   // Initialize with real data from AuthService
   currentUser = this.authService.getCurrentUser();

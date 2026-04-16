@@ -1,4 +1,5 @@
 /* ── PREMIUM ANIMATIONS ── */
+
 $easing-premium-entrance: cubic-bezier(0.16, 1, 0.3, 1);
 $transition-duration: 0.4s;
 $maroon: #8a0000;
@@ -118,10 +119,12 @@ $maroon: #8a0000;
   @media (max-width: 1200px) {
     grid-template-columns: repeat(3, 1fr);
   }
+
   @media (max-width: 992px) {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
+
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
   }
@@ -135,10 +138,10 @@ $maroon: #8a0000;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  
+
   /* Initial state for hover transition */
-  border-top: 4px solid transparent; 
-  transition: 
+  border-top: 4px solid transparent;
+  transition:
     transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.22s ease,
     border-top-color 0.22s ease;
@@ -147,7 +150,8 @@ $maroon: #8a0000;
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-    border-top-color: $maroon; /* Elegant top-border branded highlight */
+    border-top-color: $maroon;
+    /* Elegant top-border branded highlight */
   }
 
   /* ── 16:9 Thumbnail ── */
@@ -178,7 +182,8 @@ $maroon: #8a0000;
     display: flex;
     flex-direction: column;
     padding: 16px;
-    flex: 1; /* Pushes actions to the bottom */
+    flex: 1;
+    /* Pushes actions to the bottom */
   }
 
   &__info {
@@ -250,7 +255,7 @@ $maroon: #8a0000;
   &--primary {
     background: $maroon;
     color: #ffffff;
-    
+
     &:hover {
       background: darken($maroon, 5%);
       box-shadow: 0 4px 12px rgba($maroon, 0.25);
