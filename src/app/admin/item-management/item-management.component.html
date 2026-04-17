@@ -54,7 +54,7 @@
                     <line x1="8" y1="2" x2="8" y2="6"></line>
                     <line x1="3" y1="10" x2="21" y2="10"></line>
                   </svg>
-                  <span>{{ item.date | date: 'MMM d, y' }}</span>
+                  <span>{{ item.date }}</span>
                 </div>
               </div>
             </div>
@@ -100,7 +100,7 @@
             </div>
             <div class="meta-item">
               <span class="meta-icon calendar-icon"></span>
-              <span><strong>Date:</strong> {{ selectedItem.date | date: 'MMM d, y' }}</span>
+              <span><strong>Date:</strong> {{ selectedItem.date }}</span>
             </div>
             <div class="meta-item">
               <span class="meta-icon label-icon"></span>
@@ -165,7 +165,7 @@
 
     <div class="modal-footer modal-actions">
       <button type="button" class="cancel-btn" (click)="changeMode('view')">Cancel</button>
-      <button type="button" class="save-btn" (click)="saveChanges()" [disabled]="editForm.invalid">Save Changes</button>
+      <button type="button" class="save-btn" (click)="saveChanges()">Save Changes</button>
     </div>
     }
 
@@ -177,8 +177,7 @@
 
     <div class="modal-body delete-state">
       <div class="warning-icon"></div>
-      <p>Are you absolutely sure you want to delete <strong>{{ selectedItem.name }}</strong>? This action cannot be
-        undone.</p>
+      <p>Are you absolutely sure you want to delete this item? This action cannot be undone.</p>
     </div>
 
     <div class="modal-footer modal-actions">

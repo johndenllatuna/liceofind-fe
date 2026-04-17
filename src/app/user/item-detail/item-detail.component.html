@@ -56,6 +56,14 @@
         </svg>
       </div>
       }
+
+      <!-- Status overlay badge -->
+      @if (vm.isItemUnderReview && !vm.userHasPendingClaim) {
+      <div class="detail-hero__status-badge">
+        <span class="detail-hero__status-dot"></span>
+        Under Review
+      </div>
+      }
     </div>
   </section>
 

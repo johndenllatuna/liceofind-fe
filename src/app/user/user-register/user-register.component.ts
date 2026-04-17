@@ -16,7 +16,7 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
 
   // ── Parallax strings bound to the template ──
-  bgTransform   = 'translate(0%, 0%)';
+  bgTransform = 'translate(0%, 0%)';
   cardTransform = 'translate(0%, 0%)';
 
   private _motionHandler = (e: DeviceOrientationEvent) => this._onDeviceMotion(e);
@@ -25,11 +25,11 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
   emailStr = '';
   passwordStr = '';
   confirmPasswordStr = '';
-  
+
   showPassword = signal(false);
   showConfirmPassword = signal(false);
   isLoading = signal(false);
-  
+
   // Toast notification state
   showToast = signal(false);
   errorMessage = signal('');
@@ -41,7 +41,7 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
           if (state === 'granted') {
             window.addEventListener('deviceorientation', this._motionHandler);
           }
-        }).catch(() => {});
+        }).catch(() => { });
     } else {
       window.addEventListener('deviceorientation', this._motionHandler);
     }
@@ -55,10 +55,10 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
     const maxTilt = 20;
     const intensity = 1.2;
     const gamma = Math.max(-maxTilt, Math.min(maxTilt, e.gamma ?? 0));
-    const beta  = Math.max(-maxTilt, Math.min(maxTilt, e.beta  ?? 0));
+    const beta = Math.max(-maxTilt, Math.min(maxTilt, e.beta ?? 0));
     const x = (gamma / maxTilt) * intensity;
-    const y = (beta  / maxTilt) * intensity;
-    this.bgTransform   = `translate(${x}%, ${y}%)`;
+    const y = (beta / maxTilt) * intensity;
+    this.bgTransform = `translate(${x}%, ${y}%)`;
     this.cardTransform = `translate(${-x * 0.4}%, ${-y * 0.4}%)`;
   }
 
@@ -72,7 +72,7 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
 
   handleRegister() {
     console.log('handleRegister called with:', { name: this.fullNameStr, email: this.emailStr });
-    
+
     if (!this.fullNameStr || !this.emailStr || !this.passwordStr || !this.confirmPasswordStr) {
       console.warn('Registration form is incomplete');
       return;
@@ -82,9 +82,9 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
       alert('Passwords do not match');
       return;
     }
-    
+
     this.isLoading.set(true);
-    
+
     this.authService.register({
       name: this.fullNameStr,
       email: this.emailStr,
@@ -93,12 +93,12 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.isLoading.set(false);
         // Pass data to verify-otp page
-        this.router.navigate(['/user/verify-otp'], { 
-          state: { 
-            name: this.fullNameStr, 
-            email: this.emailStr, 
-            password: this.passwordStr 
-          } 
+        this.router.navigate(['/user/verify-otp'], {
+          state: {
+            name: this.fullNameStr,
+            email: this.emailStr,
+            password: this.passwordStr
+          }
         });
       },
       error: (err) => {
