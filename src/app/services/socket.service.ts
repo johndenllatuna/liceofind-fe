@@ -30,6 +30,10 @@ export class SocketService {
     });
   }
 
+  onClaimStatusUpdated(): Observable<{ id: number, status: string }> {
+    return this.onEvent<{ id: number, status: string }>('claim_status_updated');
+  }
+
   // Emit events if needed
   emitEvent(eventName: string, data: any) {
     this.socket.emit(eventName, data);

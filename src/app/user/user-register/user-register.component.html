@@ -37,7 +37,7 @@
       </div>
     </header>
 
-    <form class="login-form" (ngSubmit)="handleRegister()">
+    <form class="login-form" [formGroup]="registerForm" (ngSubmit)="handleRegister()">
 
       <!-- Full Name -->
       <div class="field-group">
@@ -52,13 +52,16 @@
           <input
             id="register-name"
             class="field-input"
+            [class.field-input--error]="registerForm.get('fullName')?.invalid && (registerForm.get('fullName')?.touched || registerForm.get('fullName')?.dirty)"
             type="text"
             placeholder="John Doe"
             autocomplete="name"
-            [(ngModel)]="fullNameStr"
-            name="fullName"
+            formControlName="fullName"
           />
         </div>
+        @if (registerForm.get('fullName')?.invalid && (registerForm.get('fullName')?.touched || registerForm.get('fullName')?.dirty)) {
+          <span class="field-error">Full name is required.</span>
+        }
       </div>
 
       <!-- Email -->
@@ -74,13 +77,20 @@
           <input
             id="register-email"
             class="field-input"
+            [class.field-input--error]="registerForm.get('email')?.invalid && (registerForm.get('email')?.touched || registerForm.get('email')?.dirty)"
             type="email"
-            placeholder="name@example.com"
+            placeholder="name@liceo.edu.ph"
             autocomplete="email"
-            [(ngModel)]="emailStr"
-            name="email"
+            formControlName="email"
           />
         </div>
+        @if (registerForm.get('email')?.invalid && (registerForm.get('email')?.touched || registerForm.get('email')?.dirty)) {
+          @if (registerForm.get('email')?.errors?.['required']) {
+            <span class="field-error">Email address is required.</span>
+          } @else if (registerForm.get('email')?.errors?.['email'] || registerForm.get('email')?.errors?.['liceoDomain']) {
+            <span class="field-error">You must use a valid @liceo.edu.ph email address.</span>
+          }
+        }
       </div>
 
       <!-- Password -->
@@ -96,11 +106,11 @@
           <input
             id="register-password"
             class="field-input field-input--with-action"
+            [class.field-input--error]="registerForm.get('password')?.invalid && (registerForm.get('password')?.touched || registerForm.get('password')?.dirty)"
             [type]="showPassword() ? 'text' : 'password'"
             placeholder="••••••••"
             autocomplete="new-password"
-            [(ngModel)]="passwordStr"
-            name="password"
+            formControlName="password"
           />
           <button
             class="field-action-btn"
@@ -121,6 +131,14 @@
             </svg>
           </button>
         </div>
+        @if (registerForm.get('password')?.invalid && (registerForm.get('password')?.touched || registerForm.get('password')?.dirty)) {
+          @if (registerForm.get('password')?.errors?.['required']) {
+            <span class="field-error">Password is required.</span>
+          }
+          @if (registerForm.get('password')?.errors?.['minlength']) {
+            <span class="field-error">Password must be at least 8 characters.</span>
+          }
+        }
       </div>
 
       <!-- Confirm Password -->
@@ -136,11 +154,11 @@
           <input
             id="register-confirm-password"
             class="field-input field-input--with-action"
+            [class.field-input--error]="registerForm.get('confirmPassword')?.invalid && (registerForm.get('confirmPassword')?.touched || registerForm.get('confirmPassword')?.dirty)"
             [type]="showConfirmPassword() ? 'text' : 'password'"
             placeholder="••••••••"
             autocomplete="new-password"
-            [(ngModel)]="confirmPasswordStr"
-            name="confirmPassword"
+            formControlName="confirmPassword"
           />
           <button
             class="field-action-btn"
@@ -161,6 +179,14 @@
             </svg>
           </button>
         </div>
+        @if (registerForm.get('confirmPassword')?.invalid && (registerForm.get('confirmPassword')?.touched || registerForm.get('confirmPassword')?.dirty)) {
+          @if (registerForm.get('confirmPassword')?.errors?.['required']) {
+            <span class="field-error">Please confirm your password.</span>
+          }
+          @if (registerForm.get('confirmPassword')?.errors?.['mustMatch']) {
+            <span class="field-error">Passwords do not match.</span>
+          }
+        }
       </div>
 
       <!-- Actions -->
@@ -169,7 +195,7 @@
           class="btn-login"
           type="submit"
           [class.btn-login--loading]="isLoading()"
-          [disabled]="isLoading()"
+          [disabled]="isLoading() || registerForm.invalid"
         >
           @if (isLoading()) {
             <span class="spinner"></span>

@@ -144,8 +144,8 @@
     <div class="deactivate-modal-actions">
       <button class="modal-btn cancel-btn" (click)="closeModal()">Cancel</button>
       <button class="modal-btn action-btn danger-btn" [class.success-btn]="!isUserActive(userToModify)"
-        (click)="confirmAction()">
-        {{ isUserActive(userToModify) ? 'Deactivate' : 'Activate' }}
+        (click)="confirmAction()" [disabled]="isProcessingModal">
+        {{ isProcessingModal ? 'Processing...' : (isUserActive(userToModify) ? 'Deactivate' : 'Activate') }}
       </button>
     </div>
   </div>

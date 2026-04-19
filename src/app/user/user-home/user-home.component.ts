@@ -1,10 +1,11 @@
 import { Component, signal, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, ViewportScroller } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Item } from '../../models/item.model';
 import { ItemService } from '../../services/item.service';
 import { SocketService } from '../../services/socket.service';
+import { ScrollService } from '../../services/scroll.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -26,10 +27,29 @@ export class UserHome implements OnInit, OnDestroy {
   constructor(
     private itemService: ItemService, 
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private scrollService: ScrollService,
+    private viewportScroller: ViewportScroller
   ) {}
 
   ngOnInit() {
+    // 1. Synchronously load from cache to ensure DOM height is ready for scroll restoration
+    const cached = this.itemService.getCachedItems();
+    if (cached && cached.length > 0) {
+      this.allItems = cached;
+      this.searchItems();
+
+      // Manual scroll restoration for window-level scrolling
+      const savedY = this.scrollService.getScrollPosition('/user/home');
+      if (savedY > 0) {
+        // Use setTimeout to ensure the DOM has rendered the cached items
+        setTimeout(() => {
+          this.viewportScroller.scrollToPosition([0, savedY]);
+        }, 0);
+      }
+    }
+
+    // 2. Refresh/Subscribe for updates
     this.fetchItems();
   }
 

@@ -23,6 +23,7 @@ export class ResetPasswordComponent implements OnInit {
   showToast = signal(false);
   errorMessage = signal('');
   isLoading = signal(false);
+  isTokenInvalid = signal(false); // Added boolean flag for token invalidity
 
   toggleNewPasswordVisibility() {
     this.showNewPassword.set(!this.showNewPassword());
@@ -77,8 +78,8 @@ export class ResetPasswordComponent implements OnInit {
       error: (err) => {
         this.isLoading.set(false);
         console.error('Reset password error:', err);
-        const msg = err?.error?.message || 'Failed to reset password. The link may be invalid or expired.';
-        this.triggerToast(msg);
+        // Display invalid token state instead of toast
+        this.isTokenInvalid.set(true);
       }
     });
   }

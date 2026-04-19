@@ -70,7 +70,12 @@ $maroon: #8a0000;
 
 .claims-table {
   width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed;
-  th:nth-child(1) { width: 25%; } th:nth-child(2) { width: 20%; } th:nth-child(3) { width: 25%; } th:nth-child(4) { width: 10%; } th:nth-child(5) { width: 15%; } th:nth-child(6) { width: 5%; }
+  th:nth-child(1) { width: 28%; } 
+  th:nth-child(2) { width: 25%; } 
+  th:nth-child(3) { width: 18%; } 
+  th:nth-child(4) { width: 12%; } 
+  th:nth-child(5) { width: 13%; } 
+  th:nth-child(6) { width: 4%; }
   .date-header { white-space: nowrap; }
 
   thead th {
@@ -103,8 +108,8 @@ $maroon: #8a0000;
 .item-cell img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
 .item-info, .claimant-info { display: flex; flex-direction: column; .name, .item-name { font-weight: 600; color: #0f172a; font-size: 0.9rem; } .email, .item-desc { font-size: 0.78rem; color: #94a3b8; } }
 .avatar-circle { width: 38px; height: 38px; border-radius: 50%; background: #f1f5f9; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; flex-shrink: 0; }
-.proof-cell .proof-text { font-size: 0.82rem; color: #64748b; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; max-width: 300px; }
-.arrow-cell { text-align: right; color: #cbd5e1; transition: color 0.15s; } .clickable-row:hover .arrow-cell { color: #475569; }
+.proof-cell .proof-text { font-size: 0.82rem; color: #64748b; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+.arrow-cell { text-align: right; color: #cbd5e1; transition: color 0.15s; padding-right: 32px; } .clickable-row:hover .arrow-cell { color: #475569; }
 
 .empty-state {
   text-align: center !important;

@@ -168,33 +168,28 @@ export class PostItem implements OnInit, AfterViewInit {
   }
 
   onSubmit() {
-    if (this.postItemForm.valid && this.selectedFile) {
-      this.isUploading = true; 
-
-      const formValues = this.postItemForm.value;
-
-      this.imageService.uploadImage(this.selectedFile).subscribe({
-        next: (uploadedUrl) => {
-          this.finalizeSubmission(formValues, uploadedUrl);
-        },
-        error: (err) => {
-          this.isUploading = false;
-          this.showErrorMessage = true;
-          console.error('Image upload failed:', err);
-          setTimeout(() => {
-            this.showErrorMessage = false;
-            this.cdr.detectChanges();
-          }, 3000);
-        }
-      });
-    } else {
-      // Trigger the red error toast instead of an alert
-      this.showErrorMessage = true;
-      setTimeout(() => {
-        this.showErrorMessage = false;
-        this.cdr.detectChanges(); 
-      }, 3000);
+    if (this.postItemForm.invalid || !this.selectedFile) {
+      this.postItemForm.markAllAsTouched();
+      return;
     }
+
+    this.isUploading = true; 
+    const formValues = this.postItemForm.value;
+
+    this.imageService.uploadImage(this.selectedFile).subscribe({
+      next: (uploadedUrl) => {
+        this.finalizeSubmission(formValues, uploadedUrl);
+      },
+      error: (err) => {
+        this.isUploading = false;
+        this.showErrorMessage = true;
+        console.error('Image upload failed:', err);
+        setTimeout(() => {
+          this.showErrorMessage = false;
+          this.cdr.detectChanges();
+        }, 3000);
+      }
+    });
   }
 
   private finalizeSubmission(formValues: any, finalImageUrl: string) {
@@ -211,15 +206,19 @@ export class PostItem implements OnInit, AfterViewInit {
     this.itemService.addItem(newItem).subscribe({
       next: () => {
         this.isUploading = false;
+        this.showSuccessMessage = true;
         
         // Reset form
         this.postItemForm.reset();
         this.selectedFile = null;
         this.imagePreview = null;
         
-        // Redirect to item management immediately as requested
-        this.router.navigate(['/item-management']);
-        this.cdr.detectChanges(); 
+        // Delay navigation to let the success toast be visible
+        setTimeout(() => {
+          this.showSuccessMessage = false;
+          this.router.navigate(['/item-management']);
+          this.cdr.detectChanges(); 
+        }, 2500);
       },
       error: (err) => {
         this.isUploading = false;

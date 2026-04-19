@@ -72,6 +72,10 @@ export class AuthService {
     return this.http.post(`${this.API_URL}/verify-otp`, data);
   }
 
+  resendOtp(email: string): Observable<any> {
+    return this.http.post(`${this.API_URL}/resend-otp`, { email });
+  }
+
   resetPassword(data: any): Observable<any> {
     return this.http.post(`${this.API_URL}/reset-password`, data);
   }
@@ -81,6 +85,12 @@ export class AuthService {
     if (typeof window !== 'undefined' && window.localStorage) {
       localStorage.removeItem(this.STORAGE_KEY);
       localStorage.removeItem(this.SESSION_KEY);
+    }
+
+    // Clear route reuse cache to prevent memory leaks or security issues between user sessions
+    const routeStrategy = this.router.routeReuseStrategy as any;
+    if (routeStrategy && typeof routeStrategy.clearCache === 'function') {
+      routeStrategy.clearCache();
     }
 
     if (isAdmin) {
@@ -117,5 +127,9 @@ export class AuthService {
         }
       })
     );
+  }
+
+  changePassword(data: any): Observable<any> {
+    return this.http.post(`${this.USER_API_URL}/change-password`, data);
   }
 }

@@ -32,12 +32,25 @@ export class ItemService {
   // Refresh the local subject from the backend
   refreshItems() {
     this.http.get<Item[]>(this.API_URL).subscribe(items => {
-      this.itemsSubject.next(items);
+      // Only update if we received a valid array. 
+      // We don't emit an empty array if the previous state was populated,
+      // unless the backend explicitly returns an empty list.
+      if (items) {
+        this.itemsSubject.next(items);
+      }
     });
   }
 
   getItems(): Observable<Item[]> {
     return this.itemsSubject.asObservable();
+  }
+
+  /**
+   * Returns the current cached items synchronously.
+   * This is crucial for fixing scroll restoration race conditions.
+   */
+  getCachedItems(): Item[] {
+    return this.itemsSubject.value;
   }
 
   getItemById(id: number): Observable<Item> {

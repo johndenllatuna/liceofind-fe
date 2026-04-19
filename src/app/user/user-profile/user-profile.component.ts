@@ -1,16 +1,22 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ClaimService, Claim as ServiceClaim } from '../../services/claim.service';
 import { Image as ImageService } from '../../services/image.service';
+import { SocketService } from '../../services/socket.service';
+import { Subscription } from 'rxjs';
 
 export interface Claim {
   id: number | string;
   itemName: string;
   dateClaimed: string;
   status: 'Pending' | 'Verified' | 'Rejected' | 'pending' | 'verified' | 'rejected';
+  proofText?: string;
+  imageUrl?: string;
+  description?: string;
+  location?: string;
 }
 
 @Component({
@@ -22,15 +28,36 @@ export interface Claim {
 })
 
 
-export class UserProfile implements OnInit {
+export class UserProfile implements OnInit, OnDestroy {
   private router = inject(Router);
   private authService = inject(AuthService);
   private claimService = inject(ClaimService);
   private imageService = inject(ImageService);
+  private socketService = inject(SocketService);
+  private cdr = inject(ChangeDetectorRef);
+
+  private statusUpdateSub?: Subscription;
 
   showLogoutModal = signal(false);
   showPrivacyModal = signal(false);
   isUploadingAvatar = signal(false);
+
+  // Claim item details modal
+  isItemModalOpen = signal(false);
+  selectedItem = signal<Claim | null>(null);
+
+  openItemModal(claim: Claim) {
+    this.selectedItem.set(claim);
+    this.isItemModalOpen.set(true);
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeItemModal() {
+    this.isItemModalOpen.set(false);
+    this.selectedItem.set(null);
+    document.body.style.overflow = '';
+  }
+
 
   isEditingName = false;
   tempName = '';
@@ -103,7 +130,7 @@ export class UserProfile implements OnInit {
 
     // Optimistic Update: Close UI and update display name immediately
     const previousName = this.user.name;
-    
+
     this.user.name = this.tempName;
     this.isEditingName = false;
 
@@ -146,7 +173,44 @@ export class UserProfile implements OnInit {
   myClaims: Claim[] = [];
 
   ngOnInit() {
+    window.scrollTo(0, 0);
     this.refreshClaims();
+
+    // Listen for real-time status updates and modify the local array directly
+    this.statusUpdateSub = this.socketService.onClaimStatusUpdated().subscribe(update => {
+      console.log('Received WebSocket update for claim:', update);
+      const claimIndex = this.myClaims.findIndex(c => c.id == update.id); // use == to allow number/string match
+
+      if (claimIndex !== -1) {
+        console.log('Found claim locally, updating status...');
+        // Update the claim status in the local array directly
+        const newStatus = this.capitalize(update.status) as any;
+
+        // Create a new reference to trigger Angular change detection
+        this.myClaims = [
+          ...this.myClaims.slice(0, claimIndex),
+          { ...this.myClaims[claimIndex], status: newStatus },
+          ...this.myClaims.slice(claimIndex + 1)
+        ];
+
+        // Also update the selected item if the modal is currently open
+        if (this.selectedItem()?.id === update.id) {
+          const currentItem = this.selectedItem();
+          if (currentItem) {
+            this.selectedItem.set({ ...currentItem, status: newStatus });
+          }
+        }
+
+        // Force Angular to check for changes since socket events might run outside the Angular Zone
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.statusUpdateSub) {
+      this.statusUpdateSub.unsubscribe();
+    }
   }
 
   refreshClaims() {
@@ -158,8 +222,11 @@ export class UserProfile implements OnInit {
           id: c.id,
           itemName: c.itemName,
           dateClaimed: c.claimDate,
-          // Map lowercase service status to capitalized UI status
-          status: this.capitalize(c.status) as any
+          status: this.capitalize(c.status) as any,
+          proofText: c.proofText,
+          imageUrl: c.itemImageUrl,
+          description: c.itemDescription,
+          location: c.itemLocation
         }));
     });
   }
@@ -199,7 +266,7 @@ export class UserProfile implements OnInit {
     if (!this.isDragging()) return;
     const currentY = this.getClientY(event);
     const deltaY = Math.max(0, currentY - this.dragStartY);
-    
+
     this.dragCurrentY.set(deltaY);
   }
 

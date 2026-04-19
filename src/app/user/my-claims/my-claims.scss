@@ -4,6 +4,7 @@
    DESIGN TOKENS
 ═══════════════════════════════════════ */
 $maroon:      #8a0000;
+$maroon-pale: #fff0f0;
 $slate-dark:  #0f172a;
 $slate-mid:   #475569;
 $slate-light: #94a3b8;
@@ -80,7 +81,7 @@ $surface-card: #ffffff;
   }
 
   &__placeholder {
-    width: 36px; /* Balance the back btn */
+    width: 36px;
   }
 }
 
@@ -104,6 +105,7 @@ $surface-card: #ffffff;
   flex-direction: column;
 }
 
+/* ── Claim Item (Clickable) ── */
 .claim-item {
   display: flex;
   align-items: center;
@@ -111,16 +113,31 @@ $surface-card: #ffffff;
   gap: 12px;
   padding: 16px 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
   transition: background 0.15s ease;
+  outline: none;
 
   &:last-child { border-bottom: none; }
-  &:hover { background: rgba($maroon, 0.015); }
+
+  &:hover {
+    background: #f9f9f9;
+  }
+
+  &:focus-visible {
+    background: #f9f9f9;
+    box-shadow: inset 0 0 0 2px rgba($maroon, 0.35);
+  }
+
+  &:active {
+    background: rgba($maroon, 0.04);
+  }
 
   &__info {
     display: flex;
     flex-direction: column;
     gap: 4px;
     min-width: 0;
+    flex: 1;
   }
 
   &__title {
@@ -148,8 +165,49 @@ $surface-card: #ffffff;
       flex-shrink: 0;
     }
   }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  &__chevron {
+    width: 16px;
+    height: 16px;
+    color: $slate-light;
+    flex-shrink: 0;
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+
+  &:hover &__chevron {
+    color: $maroon;
+    transform: translateX(2px);
+  }
 }
 
+/* ═══════════════════════════════════════
+   STATUS BADGES
+═══════════════════════════════════════ */
+.claim-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+
+  &--pending  { background: #fef9c3; color: #854d0e; }
+  &--verified { background: #dcfce7; color: #166534; }
+  &--rejected { background: #fee2e2; color: #991b1b; }
+}
+
+/* ═══════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════ */
 .claims-empty {
   display: flex;
   flex-direction: column;
@@ -181,30 +239,264 @@ $surface-card: #ffffff;
 }
 
 /* ═══════════════════════════════════════
-   STATUS BADGES
+   MODAL OVERLAY
 ═══════════════════════════════════════ */
-.claim-badge {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  z-index: 200;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  animation: overlayIn 0.22s ease both;
+}
 
-  &--pending {
-    background: #fef9c3;
-    color: #854d0e;
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════
+   CLAIM DETAILS MODAL CARD
+═══════════════════════════════════════ */
+.claim-modal {
+  width: 100%;
+  background: $surface-card;
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  box-shadow:
+    0 -8px 30px rgba(0, 0, 0, 0.12),
+    0 -2px 8px rgba(0, 0, 0, 0.06);
+  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  display: flex;
+  flex-direction: column;
+  max-height: 85dvh;
+
+  /* Drag-handle visual hint */
+  &::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba($slate-light, 0.4);
+    margin: 12px auto 0;
+    flex-shrink: 0;
   }
 
-  &--verified {
-    background: #dcfce7;
-    color: #166534;
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
   }
 
-  &--rejected {
-    background: #fee2e2;
-    color: #991b1b;
+  &__title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: $slate-dark;
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__badge {
+    align-self: flex-start;
+  }
+
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 20px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  &__img-wrap {
+    width: 100%;
+    height: 180px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &__img-placeholder {
+    width: 100%;
+    height: 140px;
+    border-radius: 12px;
+    background: $surface;
+    border: 1.5px dashed rgba($slate-light, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+
+    svg {
+      width: 32px;
+      height: 32px;
+      color: $slate-light;
+    }
+
+    span {
+      font-size: 0.78rem;
+      color: $slate-light;
+      font-weight: 500;
+    }
+  }
+
+  &__description {
+    margin: 0 0 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $slate-mid;
+    line-height: 1.6;
+  }
+
+  &__status-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 12px;
+    margin-top: 8px;
+    background: #f1f5f9;
+
+    &--verified {
+      background: #f0fdf4;
+      .claim-modal__status-icon { color: #16a34a; }
+      .claim-modal__status-text { color: #166534; }
+    }
+
+    &--pending {
+      background: #fefce8;
+      .claim-modal__status-icon { color: #ca8a04; }
+      .claim-modal__status-text { color: #854d0e; }
+    }
+
+    &--rejected {
+      background: #fff1f2;
+      .claim-modal__status-icon { color: #e11d48; }
+      .claim-modal__status-text { color: #9f1239; }
+    }
+  }
+
+  &__status-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: $slate-mid;
+  }
+
+  &__status-text {
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.55;
+    color: $slate-mid;
+  }
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════
+   DETAIL ROWS (inside modal body)
+═══════════════════════════════════════ */
+.claim-detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: $maroon-pale;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      color: $maroon;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: $slate-light;
+    text-transform: uppercase;
+  }
+
+  &__value {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: $slate-dark;
+    line-height: 1.5;
+    word-break: break-word;
+
+    &--mono {
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      color: $slate-mid;
+    }
   }
 }

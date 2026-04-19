@@ -39,6 +39,7 @@ $surface:     #f8fafc;
   background-position: center;
   background-repeat: no-repeat;
   will-change: transform;
+  filter: blur(4px);
   /* Smooth each device-motion / mouse tick */
   transition: transform 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 0;
@@ -168,6 +169,25 @@ $surface:     #f8fafc;
     font-size: 0.88rem;
     font-weight: 500;
   }
+}
+
+.timer-container {
+  position: relative;
+  height: 24px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-display {
+  position: absolute;
+  font-weight: 600;
+  color: #ef4444;
+  font-size: 0.9rem;
+  white-space: nowrap;
+
+
 }
 
 /* ═══════════════════════════════════════
@@ -377,4 +397,53 @@ $surface:     #f8fafc;
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════
+   TOAST NOTIFICATION
+═══════════════════════════════════════ */
+.toast {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border-left: 4px solid #ef4444;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  &__icon {
+    width: 20px;
+    height: 20px;
+    color: #ef4444;
+    flex-shrink: 0;
+  }
+  
+  &__message {
+    color: $slate-dark;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.animate-slide-down {
+  animation: toastSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes toastSlideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -30px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }

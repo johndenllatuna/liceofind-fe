@@ -43,6 +43,7 @@ $outline-variant:       #e2bfb9;
   background-position: center;
   background-repeat: no-repeat;
   will-change: transform;
+  filter: blur(4px);
   /* Smooth each device-motion / mouse tick */
   transition: transform 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 0;
@@ -218,7 +219,7 @@ $outline-variant:       #e2bfb9;
 .field-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px; /* Tighter gap for better nesting of error message */
 }
 
 .field-label {
@@ -466,3 +467,21 @@ $outline-variant:       #e2bfb9;
 }
 
 
+.field-error {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #e11d48;
+  padding: 0 2px;
+  margin-top: 4px;
+  animation: fadeInError 0.2s ease both;
+}
+
+@keyframes fadeInError {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.field-input--error {
+  border-color: #e11d48 !important;
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1) !important;
+}

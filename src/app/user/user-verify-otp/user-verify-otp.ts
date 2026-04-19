@@ -27,6 +27,20 @@ export class UserVerifyOtpComponent implements OnInit, OnDestroy {
 
   codeStr = '';
   isLoading = signal(false);
+  isResending = signal(false);
+
+  showToast = signal(false);
+  errorMessage = signal('');
+
+  countdown = signal(180);
+  timerInterval: any;
+
+  get formattedTime() {
+    const totalSeconds = this.countdown();
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
 
   ngOnInit(): void {
     const navigation = this.router.getCurrentNavigation();
@@ -47,10 +61,39 @@ export class UserVerifyOtpComponent implements OnInit, OnDestroy {
     } else {
       window.addEventListener('deviceorientation', this._motionHandler);
     }
+    this.startTimer();
   }
 
   ngOnDestroy(): void {
     window.removeEventListener('deviceorientation', this._motionHandler);
+    this.stopTimer();
+  }
+
+  startTimer() {
+    this.countdown.set(180);
+    this.timerInterval = setInterval(() => {
+      const current = this.countdown();
+      if (current > 0) {
+        this.countdown.set(current - 1);
+      } else {
+        this.stopTimer();
+        this.triggerToast('Your OTP code has expired. Please request a new one.');
+      }
+    }, 1000);
+  }
+
+  stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+  }
+
+  private triggerToast(message: string) {
+    this.errorMessage.set(message);
+    this.showToast.set(true);
+    setTimeout(() => {
+      this.showToast.set(false);
+    }, 4000);
   }
 
   private _onDeviceMotion(e: DeviceOrientationEvent): void {
@@ -65,7 +108,7 @@ export class UserVerifyOtpComponent implements OnInit, OnDestroy {
   }
 
   handleConfirm() {
-    if (!this.codeStr || !this.registrationData) return;
+    if (!this.codeStr || !this.registrationData || this.countdown() === 0) return;
 
     this.isLoading.set(true);
     
@@ -89,6 +132,23 @@ export class UserVerifyOtpComponent implements OnInit, OnDestroy {
 
   resendCode(e: Event) {
     e.preventDefault();
-    // Simulate resend functionality placeholder
+    if (!this.registrationData || !this.registrationData.email) return;
+
+    this.isResending.set(true);
+
+    // Assume resendOtp exists in authService as requested
+    (this.authService as any).resendOtp(this.registrationData.email).subscribe({
+      next: () => {
+        this.isResending.set(false);
+        this.codeStr = '';
+        this.startTimer();
+        this.triggerToast('A new 6-digit code has been sent to your email.');
+      },
+      error: (err: any) => {
+        this.isResending.set(false);
+        this.triggerToast('Failed to resend code. Please try again.');
+        console.error('Failed to resend code:', err);
+      }
+    });
   }
 }

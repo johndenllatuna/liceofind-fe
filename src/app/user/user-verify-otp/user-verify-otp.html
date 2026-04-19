@@ -33,6 +33,14 @@
       <div class="login-header__text">
         <h1 class="login-header__title">Verify Email</h1>
         <p class="login-header__sub">We sent a 6-digit code to your email.</p>
+        <div class="timer-container">
+          <span class="timer-display" [style.visibility]="countdown() > 0 ? 'visible' : 'hidden'">
+            Expires in: {{ formattedTime }}
+          </span>
+          <span class="timer-display timer-display--expired" [style.visibility]="countdown() === 0 ? 'visible' : 'hidden'">
+            Code expired
+          </span>
+        </div>
       </div>
     </header>
 
@@ -59,6 +67,7 @@
             [(ngModel)]="codeStr"
             name="code"
             style="letter-spacing: 0.25em; font-size: 1.25rem; font-weight: 700; text-align: center; padding-left: 16px;"
+            [disabled]="countdown() === 0"
           />
         </div>
       </div>
@@ -69,7 +78,7 @@
           class="btn-login"
           type="submit"
           [class.btn-login--loading]="isLoading()"
-          [disabled]="isLoading()"
+          [disabled]="isLoading() || countdown() === 0"
         >
           @if (isLoading()) {
             <span class="spinner"></span>
@@ -86,9 +95,26 @@
       </div>
 
       <div class="login-form__row" style="justify-content: center; padding-top: 8px;">
-        <a class="forgot-link" href="#" (click)="resendCode($event)">Resend Code</a>
+        @if (isResending()) {
+          <a class="forgot-link" href="#" style="pointer-events: none; opacity: 0.7;" (click)="$event.preventDefault()">Sending...</a>
+        } @else {
+          <a class="forgot-link" href="#" (click)="resendCode($event)">Resend Code</a>
+        }
       </div>
 
     </form>
   </main>
 </div>
+
+<!-- Toast Notification -->
+@if (showToast()) {
+<div class="toast animate-slide-down">
+  <svg class="toast__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+    <line x1="12" y1="9" x2="12" y2="13"></line>
+    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+  </svg>
+  <p class="toast__message">{{ errorMessage() }}</p>
+</div>
+}

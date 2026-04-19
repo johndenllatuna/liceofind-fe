@@ -71,41 +71,121 @@ export class AdminDashboard implements OnInit, AfterViewInit {
     if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
-    let gradient;
+    let barGradient;
 
     if (ctx) {
-      gradient = ctx.createLinearGradient(0, 0, 0, 400);
-      gradient.addColorStop(0, 'rgba(138, 0, 0, 0.4)'); 
-      gradient.addColorStop(1, 'rgba(138, 0, 0, 0.0)');
+      // Adjust the gradient height based on typical chart height
+      barGradient = ctx.createLinearGradient(0, 0, 0, canvas.height || 400);
+      barGradient.addColorStop(0, '#A11E26'); // Rich maroon top
+      barGradient.addColorStop(1, '#7D1016'); // Darker maroon bottom
     }
 
+    const labels = this.submissionTrends.map(t => t.day);
+    const data   = this.submissionTrends.map(t => Number(t.count));
+
+    // Custom Plugin: Bar Drop Shadow
+    const shadowPlugin = {
+      id: 'shadowPlugin',
+      beforeDatasetsDraw: (chart: any) => {
+        const chartCtx = chart.ctx;
+        chartCtx.save();
+        chartCtx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+        chartCtx.shadowBlur = 10;
+        chartCtx.shadowOffsetX = 0;
+        chartCtx.shadowOffsetY = 4;
+      },
+      afterDatasetsDraw: (chart: any) => {
+        chart.ctx.restore();
+      }
+    };
+
+    // Custom Plugin: Data Labels above bars
+    const dataLabelsPlugin = {
+      id: 'dataLabelsPlugin',
+      afterDatasetsDraw: (chart: any) => {
+        const chartCtx = chart.ctx;
+        chart.data.datasets.forEach((dataset: any, i: number) => {
+          const meta = chart.getDatasetMeta(i);
+          if (!meta.hidden) {
+            meta.data.forEach((element: any, index: number) => {
+              const dataString = dataset.data[index].toString();
+              // Optionally skip drawing '0' labels for a cleaner look
+              if (dataString === '0') return; 
+              
+              chartCtx.fillStyle = '#64748b'; // slate-500
+              chartCtx.font = 'bold 12px "Inter", sans-serif';
+              chartCtx.textAlign = 'center';
+              chartCtx.textBaseline = 'bottom';
+              
+              const padding = 6;
+              const position = element.tooltipPosition();
+              chartCtx.fillText(dataString, position.x, position.y - padding);
+            });
+          }
+        });
+      }
+    };
+
     this.chart = new Chart('MyChart', {
-      type: 'line',
+      type: 'bar',
       data: {
-        // Map the labels and data from our submissionTrends array
-        labels: this.submissionTrends.map(t => t.day), 
+        labels,
         datasets: [{
           label: 'Items Reported',
-          data: this.submissionTrends.map(t => t.count), 
-          borderColor: '#8a0000', 
-          backgroundColor: gradient || 'rgba(138, 0, 0, 0.2)',
-          borderWidth: 3,
-          fill: true,
-          tension: 0, 
-          pointBackgroundColor: '#ffffff',
-          pointBorderColor: '#8a0000',
-          pointBorderWidth: 2,
-          pointRadius: 4,
-          pointHoverRadius: 6
+          data,
+          backgroundColor: barGradient || '#A11E26',
+          hoverBackgroundColor: '#8a0000',
+          borderRadius: 10,
+          borderSkipped: 'bottom',
+          barPercentage: 0.5, // slightly slimmer bars look more premium
+          categoryPercentage: 0.8
         }]
       },
+      plugins: [shadowPlugin, dataLabelsPlugin],
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        layout: {
+          padding: {
+            top: 25 // Make room for data labels
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(15, 23, 42, 0.9)', // Dark slate tooltip
+            titleFont: { family: 'Inter', size: 13 },
+            bodyFont: { family: 'Inter', size: 13 },
+            padding: 10,
+            cornerRadius: 8,
+            displayColors: false,
+            callbacks: {
+              label: (ctx) => ` ${ctx.parsed.y} item${ctx.parsed.y !== 1 ? 's' : ''} reported`
+            }
+          }
+        },
         scales: {
-          y: { beginAtZero: true, grid: { color: '#f0f0f0' }, border: { display: false } },
-          x: { grid: { display: false }, border: { display: false } }
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              precision: 0,
+              color: '#94a3b8',
+              font: { family: 'Inter', size: 11 }
+            },
+            grid: { 
+              color: '#f1f5f9' // Very subtle light grey grid lines
+            },
+            border: { display: false }
+          },
+          x: {
+            ticks: {
+              color: '#64748b',
+              font: { family: 'Inter', size: 12, weight: 500 }
+            },
+            grid: { display: false },
+            border: { display: false }
+          }
         }
       }
     });

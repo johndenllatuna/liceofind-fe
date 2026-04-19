@@ -1,30 +1,27 @@
 import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-user-register',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule],
   templateUrl: './user-register.component.html',
   styleUrl: './user-register.component.scss'
 })
 export class UserRegisterComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private authService = inject(AuthService);
+  private fb = inject(FormBuilder);
 
-  // ── Parallax strings bound to the template ──
+  registerForm!: FormGroup;
+
   bgTransform = 'translate(0%, 0%)';
   cardTransform = 'translate(0%, 0%)';
 
   private _motionHandler = (e: DeviceOrientationEvent) => this._onDeviceMotion(e);
-
-  fullNameStr = '';
-  emailStr = '';
-  passwordStr = '';
-  confirmPasswordStr = '';
 
   showPassword = signal(false);
   showConfirmPassword = signal(false);
@@ -35,6 +32,7 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
   errorMessage = signal('');
 
   ngOnInit(): void {
+    this.initForm();
     if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
       (DeviceOrientationEvent as any).requestPermission()
         .then((state: string) => {
@@ -45,6 +43,43 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
     } else {
       window.addEventListener('deviceorientation', this._motionHandler);
     }
+  }
+
+  private initForm() {
+    this.registerForm = this.fb.group({
+      fullName: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email, this.liceoEmailValidator]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', [Validators.required]]
+    }, {
+      validators: [this.mustMatchValidator('password', 'confirmPassword')]
+    });
+  }
+
+  private liceoEmailValidator(control: AbstractControl): ValidationErrors | null {
+    const email = control.value?.toLowerCase() || '';
+    if (email && !email.endsWith('@liceo.edu.ph')) {
+      return { liceoDomain: true };
+    }
+    return null;
+  }
+
+  private mustMatchValidator(controlName: string, matchingControlName: string) {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const control = group.get(controlName);
+      const matchingControl = group.get(matchingControlName);
+
+      if (!control || !matchingControl) return null;
+      if (matchingControl.errors && !matchingControl.errors['mustMatch']) return null;
+
+      if (control.value !== matchingControl.value) {
+        matchingControl.setErrors({ mustMatch: true });
+        return { mustMatch: true };
+      } else {
+        matchingControl.setErrors(null);
+        return null;
+      }
+    };
   }
 
   ngOnDestroy(): void {
@@ -71,43 +106,32 @@ export class UserRegisterComponent implements OnInit, OnDestroy {
   }
 
   handleRegister() {
-    console.log('handleRegister called with:', { name: this.fullNameStr, email: this.emailStr });
+    if (this.isLoading()) return;
 
-    if (!this.fullNameStr || !this.emailStr || !this.passwordStr || !this.confirmPasswordStr) {
-      console.warn('Registration form is incomplete');
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
       return;
     }
 
-    if (!this.emailStr.toLowerCase().endsWith('@liceo.edu.ph')) {
-      this.triggerToast('Only @liceo.edu.ph emails are allowed');
-      return;
-    }
-
-    if (this.passwordStr !== this.confirmPasswordStr) {
-      this.triggerToast('Passwords do not match');
-      return;
-    }
-
+    const { fullName, email, password } = this.registerForm.value;
     this.isLoading.set(true);
+    this.registerForm.disable(); // Programmatically disable form during loading
 
     this.authService.register({
-      name: this.fullNameStr,
-      email: this.emailStr,
-      password: this.passwordStr
+      name: fullName,
+      email: email,
+      password: password
     }).subscribe({
-      next: (response) => {
+      next: () => {
         this.isLoading.set(false);
-        // Pass data to verify-otp page
+        this.registerForm.enable();
         this.router.navigate(['/user/verify-otp'], {
-          state: {
-            name: this.fullNameStr,
-            email: this.emailStr,
-            password: this.passwordStr
-          }
+          state: { name: fullName, email, password }
         });
       },
       error: (err) => {
         this.isLoading.set(false);
+        this.registerForm.enable();
         const msg = err?.error?.message || 'Registration failed. Please try again.';
         this.triggerToast(msg);
         console.error('Registration failed:', err);

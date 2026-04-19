@@ -20,6 +20,7 @@ import { UserVerifyOtpComponent } from './user/user-verify-otp/user-verify-otp';
 import { MyClaims } from './user/my-claims/my-claims';
 import { ForgotPassword } from './user/forgot-password/forgot-password';
 import { ResetPasswordComponent } from './user/reset-password/reset-password';
+import { ChangePassword } from './user/change-password/change-password';
 
 export const routes: Routes = [
   // ── Root Route (Default to User Login) ───────────────────────────────────────
@@ -49,5 +50,6 @@ export const routes: Routes = [
   { path: 'user/profile', component: UserProfile },
   { path: 'user/my-claims', component: MyClaims },
   { path: 'user/forgot-password', component: ForgotPassword },
-  { path: 'user/reset-password', component: ResetPasswordComponent }
+  { path: 'user/reset-password', component: ResetPasswordComponent },
+  { path: 'user/change-password', component: ChangePassword }
 ];

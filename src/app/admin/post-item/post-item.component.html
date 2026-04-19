@@ -12,18 +12,18 @@
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
           <polyline points="22 4 12 14.01 9 11.01"></polyline>
         </svg>
-        <span>Item successfully posted in the item management!</span>
+        <span>Item posted successfully!</span>
       </div>
     }
 
-    @if (showErrorMessage) {
+    @if (showErrorMessage && postItemForm.valid && selectedFile) {
       <div class="toast error-toast">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
           <line x1="12" y1="9" x2="12" y2="13"></line>
           <line x1="12" y1="17" x2="12.01" y2="17"></line>
         </svg>
-        <span>Please fill out all fields.</span>
+        <span>Failed to post item to the server.</span>
       </div>
     }
 
@@ -33,17 +33,26 @@
         <div class="form-group">
           <label>Item Title</label>
           <input type="text" formControlName="name" placeholder="e.g. Apple AirPods Pro" />
+          @if (postItemForm.get('name')?.invalid && (postItemForm.get('name')?.touched || postItemForm.get('name')?.dirty)) {
+            <span class="field-error">Item title is required.</span>
+          }
         </div>
 
         <div class="form-group">
           <label>Description</label>
           <textarea formControlName="description" placeholder="Describe the item, its condition, and any distinguishing features…"></textarea>
+          @if (postItemForm.get('description')?.invalid && (postItemForm.get('description')?.touched || postItemForm.get('description')?.dirty)) {
+            <span class="field-error">Please provide a description.</span>
+          }
         </div>
 
         <div class="form-row">
           <div class="form-group location-input">
             <label>Location</label>
             <input type="text" formControlName="location" placeholder="e.g. LDCU Library, 2nd Floor" />
+            @if (postItemForm.get('location')?.invalid && (postItemForm.get('location')?.touched || postItemForm.get('location')?.dirty)) {
+              <span class="field-error">Location is required.</span>
+            }
           </div>
           <div class="form-group date-input">
             <label>Date Found</label>
@@ -53,12 +62,18 @@
                 <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/>
               </svg>
             </div>
+            @if (postItemForm.get('date')?.invalid && (postItemForm.get('date')?.touched || postItemForm.get('date')?.dirty)) {
+              <span class="field-error">Please select the date found.</span>
+            }
           </div>
         </div>
 
         <div class="form-group">
           <label>Item Image</label>
           <app-image-upload (imageChanged)="onImageChanged($event)"></app-image-upload>
+          @if (postItemForm.get('image')?.invalid && (postItemForm.get('image')?.touched || postItemForm.get('image')?.dirty)) {
+            <span class="field-error">An item image is required.</span>
+          }
         </div>
 
         <div class="form-actions">

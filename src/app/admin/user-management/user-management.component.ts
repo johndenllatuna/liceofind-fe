@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, AfterViewInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../../shared/sidebar/sidebar.component';
@@ -14,12 +14,16 @@ import { AuthService, User } from '../../services/auth.service';
 export class UserManagement implements OnInit, AfterViewInit {
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
 
   // --- ANIMATION STATE ---
   pageEntered: boolean = false;
 
   allUsers: User[] = [];
   filteredUsers: User[] = [];
+
+  // Loading state for modal
+  isProcessingModal: boolean = false;
 
   // Filter states
   searchTerm: string = '';
@@ -88,26 +92,41 @@ export class UserManagement implements OnInit, AfterViewInit {
   }
 
   confirmAction() {
-    if (this.userToModify) {
-      this.authService.toggleUserStatus(this.userToModify.id).subscribe({
-        next: () => {
-          // Update the user's status locally
-          const isActiveNow = this.userToModify.is_active !== undefined ? this.userToModify.is_active : this.userToModify.isActive;
+    if (!this.userToModify) {
+      this.closeModal();
+      return;
+    }
+
+    this.isProcessingModal = true;
+
+    this.authService.toggleUserStatus(this.userToModify.id).subscribe({
+      next: () => {
+        this.ngZone.run(() => {
+          // Update local status
+          const isActiveNow = this.userToModify.is_active !== undefined 
+            ? this.userToModify.is_active 
+            : this.userToModify.isActive;
 
           if (this.userToModify.is_active !== undefined) {
             this.userToModify.is_active = !isActiveNow;
           } else {
             this.userToModify.isActive = !isActiveNow;
           }
+          
+          // Reset state and close
+          this.isProcessingModal = false;
           this.closeModal();
-        },
-        error: (err) => {
+          this.cdr.detectChanges(); // Force view refresh
+        });
+      },
+      error: (err) => {
+        this.ngZone.run(() => {
           console.error('Error updating user status:', err);
+          this.isProcessingModal = false;
           this.closeModal();
-        }
-      });
-    } else {
-      this.closeModal();
-    }
+          this.cdr.detectChanges();
+        });
+      }
+    });
   }
 }

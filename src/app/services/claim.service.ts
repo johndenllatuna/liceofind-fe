@@ -8,6 +8,8 @@ export interface Claim {
   itemId?: number;
   itemName: string;
   itemImageUrl: string;
+  itemDescription?: string;
+  itemLocation?: string;
   claimantName: string;
   claimantEmail: string;
   claimDate: string;
@@ -38,10 +40,7 @@ export class ClaimService {
       this.refreshClaims();
     });
 
-    // Refresh claims whenever a status is updated
-    this.socketService.onEvent('claim_status_updated').subscribe(() => {
-      this.refreshClaims();
-    });
+    // Handle claim status updates locally in components to avoid full API refetch
   }
 
   refreshClaims() {
@@ -58,6 +57,8 @@ export class ClaimService {
       itemId: row.item_id,
       itemName: row.item_name || 'Unknown Item',
       itemImageUrl: row.item_image_url || '',
+      itemDescription: row.item_description || '',
+      itemLocation: row.item_location || '',
       claimantName: row.claimant_name,
       claimantEmail: row.claimant_email,
       claimDate: row.created_at,

@@ -217,6 +217,10 @@ span.flatpickr-weekday {
   box-sizing: border-box;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background-color: #f8f9fa; /* Optional: A slight off-white background for the app */
@@ -316,3 +320,25 @@ body {
     mask: url('/assets/icons/search-icon.svg') no-repeat center / contain;
   }
 }
+
+/* --- GLOBAL USER LAYOUT --- */
+.profile-main {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: #f4f5f8;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-bottom: 110px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.05);
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 16px;
+}
