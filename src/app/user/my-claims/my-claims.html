@@ -66,7 +66,22 @@
 @if (isModalOpen() && selectedClaim()) {
 <div class="modal-overlay" (click)="closeClaimModal()" role="dialog" aria-modal="true"
   [attr.aria-label]="'Details for ' + selectedClaim()!.itemName">
-  <div class="claim-modal" (click)="$event.stopPropagation()">
+  <div class="claim-modal claim-modal--draggable"
+       (click)="$event.stopPropagation()"
+       [style.transform]="'translateY(' + dragCurrentY() + 'px)'"
+       [style.transition]="isDragging() ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'">
+
+    <!-- Drag Handle Area -->
+    <div class="modal-drag-area"
+         (touchstart)="onDragStart($event)"
+         (touchmove)="onDragMove($event)"
+         (touchend)="onDragEnd()"
+         (mousedown)="onDragStart($event)"
+         (mousemove)="onDragMove($event)"
+         (mouseup)="onDragEnd()"
+         (mouseleave)="onDragEnd()">
+      <div class="modal-drag-handle"></div>
+    </div>
 
     <!-- Modal Header -->
     <div class="claim-modal__header">

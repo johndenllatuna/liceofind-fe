@@ -38,7 +38,7 @@ $outline-variant:       #e2bfb9;
 .bg-parallax {
   position: absolute;
   inset: -6%;            /* overshoot so parallax shift never reveals edges */
-  background-image: url('/assets/landingpage-bg.jpg');
+  background-image: url('../../../assets/landingpage-bg.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

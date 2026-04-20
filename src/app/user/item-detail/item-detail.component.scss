@@ -539,9 +539,17 @@ $surface-card: #ffffff;
   align-items: center;
   gap: 14px;
   box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.15);
-  animation: sheetUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: sheetUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(0);
+  opacity: 1;
   max-height: 90dvh;
   overflow-y: auto;
+
+  &--draggable {
+    touch-action: none;
+    will-change: transform;
+    overflow-y: hidden; /* body scrolls internally, not the sheet itself */
+  }
 
   &__handle {
     width: 40px;
@@ -549,7 +557,10 @@ $surface-card: #ffffff;
     border-radius: 2px;
     background: #e2e8f0;
     flex-shrink: 0;
-    margin-bottom: 4px;
+    margin: 0 auto 4px;
+    cursor: grab;
+
+    &:active { cursor: grabbing; }
   }
 
   &__icon-wrap {
@@ -613,6 +624,15 @@ $surface-card: #ffffff;
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+/* ── Drag Area (wraps the handle for larger touch target) ── */
+.modal-drag-area {
+  width: 100%;
+  padding: 8px 0;
+  touch-action: none;
+  display: flex;
+  justify-content: center;
 }
 
 /* Modal form fields */

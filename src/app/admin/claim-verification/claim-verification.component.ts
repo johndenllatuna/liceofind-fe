@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { Sidebar } from '../../shared/sidebar/sidebar.component'; 
+
 import { ClaimService, Claim } from '../../services/claim.service'; 
 import { ItemService } from '../../services/item.service';
 import { CommonModule } from '@angular/common';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-claim-verification',
   standalone: true,
-  imports: [Sidebar, CommonModule],
+  imports: [CommonModule],
   templateUrl: './claim-verification.component.html',
   styleUrls: ['./claim-verification.component.scss']
 })

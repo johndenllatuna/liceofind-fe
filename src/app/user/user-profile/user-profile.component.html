@@ -280,15 +280,17 @@
   <div class="modal-content modal-content--draggable" 
        (click)="$event.stopPropagation()"
        [style.transform]="'translateY(' + dragCurrentY() + 'px)'"
-       [style.transition]="isDragging() ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'"
-       (touchstart)="onDragStart($event)"
-       (touchmove)="onDragMove($event)"
-       (touchend)="onDragEnd()"
-       (mousedown)="onDragStart($event)"
-       (mousemove)="onDragMove($event)"
-       (mouseup)="onDragEnd()"
-       (mouseleave)="onDragEnd()">
-    <div class="modal-drag-handle" (click)="closePrivacyModal()"></div>
+       [style.transition]="isDragging() ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'">
+    <div class="modal-drag-area"
+         (touchstart)="onDragStart($event)"
+         (touchmove)="onDragMove($event)"
+         (touchend)="onDragEnd()"
+         (mousedown)="onDragStart($event)"
+         (mousemove)="onDragMove($event)"
+         (mouseup)="onDragEnd()"
+         (mouseleave)="onDragEnd()">
+      <div class="modal-drag-handle" (click)="closePrivacyModal()"></div>
+    </div>
     <div class="modal-icon">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round">
@@ -312,7 +314,21 @@
 @if (isItemModalOpen() && selectedItem()) {
 <div class="modal-overlay" (click)="closeItemModal()" role="dialog" aria-modal="true"
   [attr.aria-label]="'Details for ' + selectedItem()!.itemName">
-  <div class="claim-modal" (click)="$event.stopPropagation()">
+  <div class="claim-modal claim-modal--draggable"
+       (click)="$event.stopPropagation()"
+       [style.transform]="'translateY(' + dragCurrentY() + 'px)'"
+       [style.transition]="isDragging() ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'">
+
+    <div class="modal-drag-area"
+         (touchstart)="onDragStart($event)"
+         (touchmove)="onDragMove($event)"
+         (touchend)="onDragEnd()"
+         (mousedown)="onDragStart($event)"
+         (mousemove)="onDragMove($event)"
+         (mouseup)="onDragEnd()"
+         (mouseleave)="onDragEnd()">
+      <div class="modal-drag-handle"></div>
+    </div>
 
     <!-- Modal Header -->
     <div class="claim-modal__header">

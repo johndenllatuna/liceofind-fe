@@ -158,9 +158,21 @@
 <!-- ── Claim Modal ───────────────────────── -->
 @if (showClaimModal && vm.item) {
 <div class="modal-overlay" (click)="showClaimModal = false">
-  <div class="modal-sheet" (click)="$event.stopPropagation()">
+  <div class="modal-sheet modal-sheet--draggable"
+       (click)="$event.stopPropagation()"
+       [style.transform]="sheetTransform"
+       [style.transition]="sheetTransition">
 
-    <div class="modal-sheet__handle" aria-hidden="true"></div>
+    <div class="modal-drag-area"
+         (touchstart)="onDragStart($event)"
+         (touchmove)="onDragMove($event)"
+         (touchend)="onDragEnd()"
+         (mousedown)="onDragStart($event)"
+         (mousemove)="onDragMove($event)"
+         (mouseup)="onDragEnd()"
+         (mouseleave)="onDragEnd()">
+      <div class="modal-sheet__handle" aria-hidden="true"></div>
+    </div>
 
     <div class="modal-sheet__icon-wrap">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -203,9 +215,21 @@
 <!-- ── Success Modal ─────────────────────── -->
 @if (showSuccessModal) {
 <div class="modal-overlay" (click)="closeSuccessModal()">
-  <div class="modal-sheet" (click)="$event.stopPropagation()">
+  <div class="modal-sheet modal-sheet--draggable"
+       (click)="$event.stopPropagation()"
+       [style.transform]="sheetTransform"
+       [style.transition]="sheetTransition">
 
-    <div class="modal-sheet__handle" aria-hidden="true"></div>
+    <div class="modal-drag-area"
+         (touchstart)="onDragStart($event)"
+         (touchmove)="onDragMove($event)"
+         (touchend)="onDragEnd()"
+         (mousedown)="onDragStart($event)"
+         (mousemove)="onDragMove($event)"
+         (mouseup)="onDragEnd()"
+         (mouseleave)="onDragEnd()">
+      <div class="modal-sheet__handle" aria-hidden="true"></div>
+    </div>
 
     <div class="modal-sheet__icon-wrap modal-sheet__icon-wrap--success">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"

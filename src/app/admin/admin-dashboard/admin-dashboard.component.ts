@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Sidebar } from '../../shared/sidebar/sidebar.component';
+
 import { Chart, registerables } from 'chart.js';
 import { DashboardStats } from '../../models/dashboard.model';
 import { DashboardService } from '../../services/dashboard.service';
@@ -12,7 +12,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [Sidebar, CommonModule],
+  imports: [CommonModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })

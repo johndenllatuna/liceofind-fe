@@ -5,14 +5,14 @@ import { Router } from '@angular/router';
 import flatpickr from 'flatpickr';
 import { ItemService } from '../../services/item.service'; 
 import { Image } from '../../services/image.service'; 
-import { Sidebar } from '../../shared/sidebar/sidebar.component'; 
+
 import { ImageUploadComponent } from '../../shared/image-upload/image-upload.component';
 import { Item } from '../../models/item.model'; 
 
 @Component({
   selector: 'app-post-item',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Sidebar, ImageUploadComponent], 
+  imports: [CommonModule, ReactiveFormsModule, ImageUploadComponent], 
   templateUrl: './post-item.component.html',
   styleUrl: './post-item.component.scss'
 })

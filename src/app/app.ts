@@ -19,7 +19,7 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.socketService.onEvent<{ userId: any }>('user-deactivated').subscribe(data => {
-      const current = this.authService.currentUser();
+      const current = this.authService.getCurrentUser();
       if (current && Number(current.id) === Number(data.userId)) {
         // Show deactivation modal with "Log Out" button
         this.authService.deactivationModalMode.set('logout');

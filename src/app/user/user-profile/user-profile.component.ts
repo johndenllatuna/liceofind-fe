@@ -56,6 +56,8 @@ export class UserProfile implements OnInit, OnDestroy {
     this.isItemModalOpen.set(false);
     this.selectedItem.set(null);
     document.body.style.overflow = '';
+    this.dragCurrentY.set(0);
+    this.isDragging.set(false);
   }
 
 
@@ -251,41 +253,74 @@ export class UserProfile implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
-  // --- Drag to Close Privacy Modal ---
+  // --- Drag to Close Modal (shared by Privacy Policy + Claim Details) ---
   dragStartY = 0;
   dragCurrentY = signal(0);
   isDragging = signal(false);
 
+  // Bound references so we can remove the listeners later
+  private _onMouseMove = (e: MouseEvent) => this._handleDragMove(e);
+  private _onMouseUp   = () => this._handleDragEnd();
+
   onDragStart(event: TouchEvent | MouseEvent) {
+    // Prevent the browser from triggering click/scroll on the same touch
+    event.preventDefault();
     this.isDragging.set(true);
-    this.dragStartY = this.getClientY(event);
+    this.dragStartY = this._getClientY(event);
     this.dragCurrentY.set(0);
+
+    // Attach document-level mouse listeners so the drag tracks even
+    // when the pointer moves outside the small .modal-drag-area element
+    if (event.type === 'mousedown') {
+      document.addEventListener('mousemove', this._onMouseMove);
+      document.addEventListener('mouseup',   this._onMouseUp);
+    }
   }
 
   onDragMove(event: TouchEvent | MouseEvent) {
-    if (!this.isDragging()) return;
-    const currentY = this.getClientY(event);
-    const deltaY = Math.max(0, currentY - this.dragStartY);
+    this._handleDragMove(event);
+  }
 
+  private _handleDragMove(event: TouchEvent | MouseEvent) {
+    if (!this.isDragging()) return;
+    const currentY = this._getClientY(event);
+    const deltaY = Math.max(0, currentY - this.dragStartY);
     this.dragCurrentY.set(deltaY);
   }
 
   onDragEnd() {
+    this._handleDragEnd();
+  }
+
+  private _handleDragEnd() {
     if (!this.isDragging()) return;
     this.isDragging.set(false);
 
-    // If dragged down more than 100px, close the modal
+    // Clean up document-level mouse listeners
+    document.removeEventListener('mousemove', this._onMouseMove);
+    document.removeEventListener('mouseup',   this._onMouseUp);
+
+    // If dragged down more than 100px, close the active modal
     if (this.dragCurrentY() > 100) {
-      this.closePrivacyModal();
+      if (this.showPrivacyModal()) {
+        this.closePrivacyModal();
+      } else if (this.isItemModalOpen()) {
+        this.closeItemModal();
+      }
     } else {
-      // Snap back
+      // Snap back to original position
       this.dragCurrentY.set(0);
     }
   }
 
-  private getClientY(event: TouchEvent | MouseEvent): number {
-    if (event.type.startsWith('touch')) {
+  private _getClientY(event: TouchEvent | MouseEvent): number {
+    if (event.type === 'touchstart' || event.type === 'touchmove') {
+      // .touches is populated during touchstart and touchmove
       return (event as TouchEvent).touches[0].clientY;
+    }
+    if (event.type === 'touchend') {
+      // .touches is EMPTY on touchend — must use .changedTouches instead
+      return (event as TouchEvent).changedTouches[0].clientY;
     }
     return (event as MouseEvent).clientY;
   }

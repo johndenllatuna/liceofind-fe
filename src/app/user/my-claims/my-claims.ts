@@ -66,6 +66,8 @@ export class MyClaims implements OnInit, OnDestroy {
     this.isModalOpen.set(false);
     this.selectedClaim.set(null);
     document.body.style.overflow = '';
+    this.dragCurrentY.set(0);
+    this.isDragging.set(false);
   }
 
   ngOnDestroy() {
@@ -77,5 +79,60 @@ export class MyClaims implements OnInit, OnDestroy {
 
   private capitalize(s: string): string {
     return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  // --- Drag to Close Modal ---
+  dragStartY = 0;
+  dragCurrentY = signal(0);
+  isDragging = signal(false);
+
+  private _onMouseMove = (e: MouseEvent) => this._handleDragMove(e);
+  private _onMouseUp   = () => this._handleDragEnd();
+
+  onDragStart(event: TouchEvent | MouseEvent) {
+    event.preventDefault();
+    this.isDragging.set(true);
+    this.dragStartY = this._getClientY(event);
+    this.dragCurrentY.set(0);
+    if (event.type === 'mousedown') {
+      document.addEventListener('mousemove', this._onMouseMove);
+      document.addEventListener('mouseup',   this._onMouseUp);
+    }
+  }
+
+  onDragMove(event: TouchEvent | MouseEvent) {
+    this._handleDragMove(event);
+  }
+
+  private _handleDragMove(event: TouchEvent | MouseEvent) {
+    if (!this.isDragging()) return;
+    const deltaY = Math.max(0, this._getClientY(event) - this.dragStartY);
+    this.dragCurrentY.set(deltaY);
+  }
+
+  onDragEnd() {
+    this._handleDragEnd();
+  }
+
+  private _handleDragEnd() {
+    if (!this.isDragging()) return;
+    this.isDragging.set(false);
+    document.removeEventListener('mousemove', this._onMouseMove);
+    document.removeEventListener('mouseup',   this._onMouseUp);
+    if (this.dragCurrentY() > 100) {
+      this.closeClaimModal();
+    } else {
+      this.dragCurrentY.set(0);
+    }
+  }
+
+  private _getClientY(event: TouchEvent | MouseEvent): number {
+    if (event.type === 'touchstart' || event.type === 'touchmove') {
+      return (event as TouchEvent).touches[0].clientY;
+    }
+    if (event.type === 'touchend') {
+      return (event as TouchEvent).changedTouches[0].clientY;
+    }
+    return (event as MouseEvent).clientY;
   }
 }

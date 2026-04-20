@@ -16,7 +16,7 @@ export class UserLogin implements OnInit, OnDestroy {
   private authService = inject(AuthService);
 
   // ── Parallax strings bound to the template ──
-  bgTransform   = 'translate(0%, 0%)';
+  bgTransform = 'translate(0%, 0%)';
   cardTransform = 'translate(0%, 0%)';
 
   private _motionHandler = (e: DeviceOrientationEvent) => this._onDeviceMotion(e);
@@ -25,7 +25,7 @@ export class UserLogin implements OnInit, OnDestroy {
   passwordStr = '';
   showPassword = signal(false);
   isLoading = signal(false);
-  
+
   // Toast notification state
   showToast = signal(false);
 
@@ -38,7 +38,7 @@ export class UserLogin implements OnInit, OnDestroy {
           if (state === 'granted') {
             window.addEventListener('deviceorientation', this._motionHandler);
           }
-        }).catch(() => {});
+        }).catch(() => { });
     } else {
       window.addEventListener('deviceorientation', this._motionHandler);
     }
@@ -53,11 +53,11 @@ export class UserLogin implements OnInit, OnDestroy {
     const maxTilt = 20;   // degrees clamped
     const intensity = 1.2; // max % translate
     const gamma = Math.max(-maxTilt, Math.min(maxTilt, e.gamma ?? 0)); // left/right
-    const beta  = Math.max(-maxTilt, Math.min(maxTilt, e.beta  ?? 0)); // front/back
+    const beta = Math.max(-maxTilt, Math.min(maxTilt, e.beta ?? 0)); // front/back
     const x = (gamma / maxTilt) * intensity;
-    const y = (beta  / maxTilt) * intensity;
+    const y = (beta / maxTilt) * intensity;
     // Background moves with tilt; card counter-moves for depth
-    this.bgTransform   = `translate(${x}%, ${y}%)`;
+    this.bgTransform = `translate(${x}%, ${y}%)`;
     this.cardTransform = `translate(${-x * 0.4}%, ${-y * 0.4}%)`;
   }
 
@@ -76,9 +76,9 @@ export class UserLogin implements OnInit, OnDestroy {
     this.authService.login(this.emailStr, this.passwordStr).subscribe({
       next: (user) => {
         this.isLoading.set(false);
-        if (user.role === 'Admin') {
+        if (user && user.role === 'Admin') {
           this.router.navigate(['/admin-dashboard']);
-        } else {
+        } else if (user) {
           this.router.navigate(['/user/home']);
         }
       },

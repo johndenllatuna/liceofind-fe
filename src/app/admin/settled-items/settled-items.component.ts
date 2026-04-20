@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
-import { Sidebar } from '../../shared/sidebar/sidebar.component';
+
 import { ClaimService, Claim } from '../../services/claim.service';
 import { Subscription } from 'rxjs';
 import { Image } from '../../services/image.service';
@@ -9,7 +9,7 @@ import { Image } from '../../services/image.service';
 @Component({
   selector: 'app-settled-items',
   standalone: true,
-  imports: [CommonModule, FormsModule, Sidebar], 
+  imports: [CommonModule, FormsModule], 
   templateUrl: './settled-items.component.html',
   styleUrls: ['./settled-items.component.scss']
 })

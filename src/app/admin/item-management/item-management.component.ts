@@ -4,14 +4,14 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Item } from '../../models/item.model';
 import { ItemService } from '../../services/item.service';
 import { Image } from '../../services/image.service'; // 👈 3. Added Image service
-import { Sidebar } from '../../shared/sidebar/sidebar.component';
+
 import { Subscription } from 'rxjs';
 import { ImageUploadComponent } from '../../shared/image-upload/image-upload.component';
 
 @Component({
   selector: 'app-item-management',
   standalone: true,
-  imports: [CommonModule, Sidebar, ReactiveFormsModule, ImageUploadComponent], // 👈 Added ImageUploadComponent
+  imports: [CommonModule, ReactiveFormsModule, ImageUploadComponent], // 👈 Added ImageUploadComponent
   templateUrl: './item-management.component.html',
   styleUrls: ['./item-management.component.scss']
 })

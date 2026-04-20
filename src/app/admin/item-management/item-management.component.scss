@@ -1,3 +1,4 @@
+@use "sass:color";
 /* ── PREMIUM ANIMATIONS ── */
 
 $easing-premium-entrance: cubic-bezier(0.16, 1, 0.3, 1);
@@ -257,7 +258,7 @@ $maroon: #8a0000;
     color: #ffffff;
 
     &:hover {
-      background: darken($maroon, 5%);
+      background: color.adjust($maroon, $lightness: -5%);
       box-shadow: 0 4px 12px rgba($maroon, 0.25);
     }
   }

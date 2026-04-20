@@ -42,6 +42,68 @@ export class ItemDetail {
   imagePreview: string | undefined = undefined;
   selectedFile: File | undefined = undefined;
 
+  // --- Drag to Close Bottom Sheet ---
+  dragStartY = 0;
+  dragCurrentY = 0;
+  isDragging = false;
+
+  private _onMouseMove = (e: MouseEvent) => this._handleDragMove(e);
+  private _onMouseUp   = () => this._handleDragEnd();
+
+  onDragStart(event: TouchEvent | MouseEvent) {
+    event.preventDefault();
+    this.isDragging = true;
+    this.dragStartY = this._getClientY(event);
+    this.dragCurrentY = 0;
+    if (event.type === 'mousedown') {
+      document.addEventListener('mousemove', this._onMouseMove);
+      document.addEventListener('mouseup',   this._onMouseUp);
+    }
+  }
+
+  onDragMove(event: TouchEvent | MouseEvent) {
+    this._handleDragMove(event);
+  }
+
+  private _handleDragMove(event: TouchEvent | MouseEvent) {
+    if (!this.isDragging) return;
+    this.dragCurrentY = Math.max(0, this._getClientY(event) - this.dragStartY);
+  }
+
+  onDragEnd() {
+    this._handleDragEnd();
+  }
+
+  private _handleDragEnd() {
+    if (!this.isDragging) return;
+    this.isDragging = false;
+    document.removeEventListener('mousemove', this._onMouseMove);
+    document.removeEventListener('mouseup',   this._onMouseUp);
+    if (this.dragCurrentY > 100) {
+      if (this.showClaimModal)   { this.showClaimModal = false; }
+      if (this.showSuccessModal) { this.closeSuccessModal(); }
+    }
+    this.dragCurrentY = 0;
+  }
+
+  private _getClientY(event: TouchEvent | MouseEvent): number {
+    if (event.type === 'touchstart' || event.type === 'touchmove') {
+      return (event as TouchEvent).touches[0].clientY;
+    }
+    if (event.type === 'touchend') {
+      return (event as TouchEvent).changedTouches[0].clientY;
+    }
+    return (event as MouseEvent).clientY;
+  }
+
+  get sheetTransform(): string {
+    return `translateY(${this.dragCurrentY}px)`;
+  }
+
+  get sheetTransition(): string {
+    return this.isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+  }
+
   private router = inject(Router);
   
   vm$: Observable<ItemDetailVm> = this.route.params.pipe(

@@ -24,12 +24,11 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-            "src/favicon.ico",
-            "src/assets"
-            ],
             "styles": [
               "src/styles.scss"
+            ],
+            "assets": [
+              "src/assets"
             ]
           },
           "configurations": {
@@ -69,7 +68,12 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "assets": [
+              "src/assets"
+            ]
+          }
         }
       }
     }
